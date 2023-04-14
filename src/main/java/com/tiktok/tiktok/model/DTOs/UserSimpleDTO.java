@@ -1,6 +1,5 @@
 package com.tiktok.tiktok.model.DTOs;
 
-import com.tiktok.tiktok.model.entities.User;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -10,7 +9,7 @@ import java.time.LocalDate;
 @Setter
 @Getter
 @NoArgsConstructor
-public class UserWithoutPassDTO {
+public class UserSimpleDTO {
     private int id;
     private String name;
     private String email;
@@ -20,5 +19,4 @@ public class UserWithoutPassDTO {
     private String bio;
     private String profilePhotoURL;
     private String username;
-    private boolean isEmailConfirmed;
 }
