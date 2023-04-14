@@ -24,12 +24,15 @@ public class Video {
     private LocalDateTime createdAt;
     @Column(name = "is_private")
     private boolean isPrivate;
+    @Column()
+    private String url;
     @ManyToOne
     @JoinColumn(name = "owner_id")
     private User owner;
     @ManyToOne
     @JoinColumn(name = "sound_id", referencedColumnName = "id")
     private Sound sound;
+
     @OneToMany(mappedBy = "video")
     private List<Comment> comments;
 
