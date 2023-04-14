@@ -1,11 +1,7 @@
 package com.tiktok.tiktok.controller;
 
-<<<<<<< HEAD
-import com.tiktok.tiktok.model.DTOs.UserWithoutPassDTO;
 import com.tiktok.tiktok.model.entities.Video;
-=======
 import com.tiktok.tiktok.model.DTOs.UserSimpleDTO;
->>>>>>> cdc216b247d57d29cde4b2f0d5f51c76de114135
 import com.tiktok.tiktok.service.MediaService;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;

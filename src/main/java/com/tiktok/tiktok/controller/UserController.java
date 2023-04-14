@@ -40,4 +40,9 @@ public class UserController extends AbstractController{
     public UserFullInfoDTO searchByUsername(@PathVariable String username, HttpSession s){
         return userService.searchByUsername(username);
     }
+    @GetMapping("/users/{id}/find")
+    public UserFullInfoDTO getById(@PathVariable int id){
+        System.out.println("Start searching");
+        return userService.getById(id);
+    }
 }

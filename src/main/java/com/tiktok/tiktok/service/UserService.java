@@ -92,4 +92,14 @@ public class UserService extends AbstractService{
         }
         return mapper.map(user,UserFullInfoDTO.class);
     }
+
+    public UserFullInfoDTO getById(int id) {
+        Optional<User> u = userRepository.findById(id);
+        System.out.println("found");
+        if(u.isPresent()){
+            System.out.println("found1");
+            return mapper.map(u.get(), UserFullInfoDTO.class);
+        }
+        throw new NotFoundException("User not found");
+    }
 }
