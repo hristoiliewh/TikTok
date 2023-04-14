@@ -2,6 +2,7 @@ package com.tiktok.tiktok.service;
 
 import com.tiktok.tiktok.model.entities.User;
 import com.tiktok.tiktok.model.exceptions.NotFoundException;
+import com.tiktok.tiktok.model.repositories.SoundRepository;
 import com.tiktok.tiktok.model.repositories.UserRepository;
 import com.tiktok.tiktok.model.repositories.VideoRepository;
 import org.modelmapper.ModelMapper;
