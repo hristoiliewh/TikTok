@@ -1,6 +1,6 @@
 package com.tiktok.tiktok.controller;
 
-import com.tiktok.tiktok.model.DTOs.UserWithoutPassDTO;
+import com.tiktok.tiktok.model.DTOs.UserSimpleDTO;
 import com.tiktok.tiktok.service.MediaService;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,7 +16,7 @@ public class MediaController extends AbstractController{
     private MediaService mediaService;
 
     @PostMapping("/media")
-    public UserWithoutPassDTO upload(@RequestParam("file") MultipartFile file, HttpSession s){
+    public UserSimpleDTO upload(@RequestParam("file") MultipartFile file, HttpSession s){
         int id = getLoggedUserId(s);
         return mediaService.upload(file, id);
     }

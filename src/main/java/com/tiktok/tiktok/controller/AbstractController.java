@@ -1,10 +1,13 @@
 package com.tiktok.tiktok.controller;
 
 import com.tiktok.tiktok.model.DTOs.ErrorDTO;
+import com.tiktok.tiktok.model.entities.User;
 import com.tiktok.tiktok.model.exceptions.BadRequestException;
 import com.tiktok.tiktok.model.exceptions.NotFoundException;
 import com.tiktok.tiktok.model.exceptions.UnauthorizedException;
+import com.tiktok.tiktok.model.repositories.UserRepository;
 import jakarta.servlet.http.HttpSession;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
@@ -12,6 +15,9 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import java.time.LocalDateTime;
 
 public class AbstractController {
+
+    @Autowired
+    private UserRepository userRepository;
     @ExceptionHandler(BadRequestException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ErrorDTO handleBadRequest(Exception e){
@@ -48,5 +54,14 @@ public class AbstractController {
             throw new UnauthorizedException("You have to login!");
         }
         return (int) s.getAttribute("LOGGED_ID");
+    }
+    protected User getUserById(int id){
+        return userRepository.getById(id).orElseThrow(() -> new NotFoundException("User not found"));
+    }
+    protected boolean isLogged(HttpSession s){
+        if (s.getAttribute("LOGGED_ID") != null){
+            return true;
+        }
+        throw new UnauthorizedException("You have to login!");
     }
 }

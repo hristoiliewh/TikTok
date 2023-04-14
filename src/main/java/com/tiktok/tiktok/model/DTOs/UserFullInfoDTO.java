@@ -1,17 +1,17 @@
 package com.tiktok.tiktok.model.DTOs;
 
-import com.tiktok.tiktok.model.entities.User;
-import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import java.time.LocalDate;
+import java.util.List;
 
 @Getter
 @Setter
 @NoArgsConstructor
-public class UserWithProfilePhotoDTO extends RegisterDTO{
+public class UserFullInfoDTO extends UserSimpleDTO{
 
     private String profilePhotoURL;
+    private List<UserSimpleDTO> followers;
+    private List<UserSimpleDTO> following;
 }

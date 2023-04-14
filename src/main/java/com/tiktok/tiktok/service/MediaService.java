@@ -1,6 +1,6 @@
 package com.tiktok.tiktok.service;
 
-import com.tiktok.tiktok.model.DTOs.UserWithoutPassDTO;
+import com.tiktok.tiktok.model.DTOs.UserSimpleDTO;
 import com.tiktok.tiktok.model.entities.User;
 import com.tiktok.tiktok.model.exceptions.BadRequestException;
 import org.apache.commons.io.FilenameUtils;
@@ -14,7 +14,7 @@ import java.util.UUID;
 
 @Service
 public class MediaService extends AbstractService{
-    public UserWithoutPassDTO upload(MultipartFile origin, int userId) {
+    public UserSimpleDTO upload(MultipartFile origin, int userId) {
 
         try {
             User u = getUserById(userId);
@@ -32,7 +32,7 @@ public class MediaService extends AbstractService{
             String path = dir.getName() + File.separator + f.getName();
             u.setProfilePhotoURL(path);
             userRepository.save(u);
-            return mapper.map(u, UserWithoutPassDTO.class);
+            return mapper.map(u, UserSimpleDTO.class);
         } catch (IOException e) {
             System.out.println("IOException by copying a photo.");
             throw new BadRequestException("Failed uploading photo.");
