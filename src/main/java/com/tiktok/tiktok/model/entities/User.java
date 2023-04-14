@@ -7,13 +7,11 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.time.LocalDate;
+import java.util.List;
 
 @Entity(name = "users")
 @Getter
 @Setter
-@NoArgsConstructor
-@AllArgsConstructor
-
 public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -29,15 +27,19 @@ public class User {
     @Column(name = "date_of_birth")
     private LocalDate dateOfBirth;
     @Column
-    private Gender gender;
+    private String gender;
     @Column
     private String bio;
     @Column(name = "profile_photo")
-    private String profilePhoto;
+    private String profilePhotoURL;
     @Column
     private String username;
     @Column(name = "is_email_confirmed")
     private boolean isEmailConfirmed;
+//    @OneToMany(mappedBy = "owner")
+//    private List<Video> videos;
+//    @OneToMany(mappedBy = "owner")
+//    private List<Comment> comments;
 
 
     public enum Gender{

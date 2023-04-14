@@ -4,6 +4,7 @@ import com.tiktok.tiktok.model.DTOs.ErrorDTO;
 import com.tiktok.tiktok.model.exceptions.BadRequestException;
 import com.tiktok.tiktok.model.exceptions.NotFoundException;
 import com.tiktok.tiktok.model.exceptions.UnauthorizedException;
+import jakarta.servlet.http.HttpSession;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
@@ -41,5 +42,11 @@ public class AbstractController {
                 .time(LocalDateTime.now())
                 .status(s.value())
                 .build();
+    }
+    protected int getLoggedUserId(HttpSession s){
+        if(s.getAttribute("LOGGED_ID") == null){
+            throw new UnauthorizedException("You have to login!");
+        }
+        return (int) s.getAttribute("LOGGED_ID");
     }
 }
