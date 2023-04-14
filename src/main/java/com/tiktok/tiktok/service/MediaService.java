@@ -1,5 +1,6 @@
 package com.tiktok.tiktok.service;
 
+import com.tiktok.tiktok.model.DTOs.VideoSimpleDTO;
 import com.tiktok.tiktok.model.entities.Sound;
 import com.tiktok.tiktok.model.DTOs.UserSimpleDTO;
 import com.tiktok.tiktok.model.entities.User;
@@ -49,8 +50,8 @@ public class MediaService extends AbstractService{
            throw new BadRequestException("Failed uploading media.");
        }
     }
-    
-    public Video uploadVideo(int id, MultipartFile origin, String caption, Boolean isPrivate, int soundId) {
+
+    public VideoSimpleDTO uploadVideo(int id, MultipartFile origin, String caption, Boolean isPrivate, int soundId) {
         User user = getUserById(id);
         validateVideoInfo(origin, caption);
 
@@ -66,7 +67,7 @@ public class MediaService extends AbstractService{
         video.setUrl(path);
 
         videoRepository.save(video);
-        return video;
+        return mapper.map(video, VideoSimpleDTO.class);
     }
 
 
