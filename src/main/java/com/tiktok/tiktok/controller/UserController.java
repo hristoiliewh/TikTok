@@ -6,6 +6,8 @@ import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 public class UserController extends AbstractController{
 
@@ -44,5 +46,13 @@ public class UserController extends AbstractController{
     public UserFullInfoDTO getById(@PathVariable int id){
         System.out.println("Start searching");
         return userService.getById(id);
+    }
+    @GetMapping("/users/{id}/followed")
+    public List<UserWithPicNameIdDTO> getAllFollowers(@PathVariable int id, HttpSession s){
+
+        int loggedUserId = getLoggedUserId(s);
+        return userService.getAllFollowers(id);
+
+
     }
 }

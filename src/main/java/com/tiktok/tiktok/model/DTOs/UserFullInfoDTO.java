@@ -15,5 +15,5 @@ public class UserFullInfoDTO extends UserSimpleDTO{
     private String profilePhotoURL;
     private List<UserSimpleDTO> followers;
     private List<UserSimpleDTO> following;
-    private List<Video> videos;
+    private List<VideoWithoutOwnerDTO> videos;
 }

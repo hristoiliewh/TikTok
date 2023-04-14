@@ -1,9 +1,6 @@
 package com.tiktok.tiktok.service;
 
-import com.tiktok.tiktok.model.DTOs.LoginDTO;
-import com.tiktok.tiktok.model.DTOs.RegisterDTO;
-import com.tiktok.tiktok.model.DTOs.UserFullInfoDTO;
-import com.tiktok.tiktok.model.DTOs.UserSimpleDTO;
+import com.tiktok.tiktok.model.DTOs.*;
 import com.tiktok.tiktok.model.entities.User;
 import com.tiktok.tiktok.model.exceptions.BadRequestException;
 import com.tiktok.tiktok.model.exceptions.NotFoundException;
@@ -14,7 +11,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Optional;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 @Service
 public class UserService extends AbstractService{
@@ -67,10 +67,6 @@ public class UserService extends AbstractService{
         String pattern = "^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,}$";
         return email.matches(pattern);
     }
-    public UserSimpleDTO logout(int id){
-        Optional<User> u = userRepository.getById(id);
-        return mapper.map(u, UserSimpleDTO.class);
-    }
 
     public int follow(int followerId, int followToId) {
         User follower = getUserById(followerId);
@@ -101,5 +97,17 @@ public class UserService extends AbstractService{
             return mapper.map(u.get(), UserFullInfoDTO.class);
         }
         throw new NotFoundException("User not found");
+    }
+
+    public List<UserWithPicNameIdDTO> getAllFollowers(int id) {
+        Set<User> users = userRepository.findById(id).get().getFollowers();
+        Optional<User> user = userRepository.findById(id);
+        if (!user.isPresent()){
+            throw new NotFoundException("No followers found");
+        }
+        Set<User> followers = user.get().getFollowers();
+        return followers.stream()
+                .map(f -> mapper.map(f, UserWithPicNameIdDTO.class))
+                .collect(Collectors.toList());
     }
 }
