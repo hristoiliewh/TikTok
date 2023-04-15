@@ -7,6 +7,7 @@ import lombok.Setter;
 @Getter
 @Setter
 @NoArgsConstructor
-public class DeleteVideoDTO {
-    private String deleteText = "Successfully delete video";
+public class VideoDeletedDTO {
+    private String deleteText = "Video deleted successfully";
+    private int id;
 }

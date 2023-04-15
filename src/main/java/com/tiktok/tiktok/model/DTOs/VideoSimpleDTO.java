@@ -33,5 +33,4 @@ public class VideoSimpleDTO {
 
     private SoundSimpleDTO sound;
 
-    private List<Comment> comments;
 }

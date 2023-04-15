@@ -24,5 +24,4 @@ public class VideoWithoutOwnerDTO {
 
     private SoundSimpleDTO sound;
 
-    private List<Comment> comments;
 }
