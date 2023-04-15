@@ -54,6 +54,9 @@ public class UserService extends AbstractService{
         if(userRepository.existsByEmail(dto.getEmail())){
             throw new BadRequestException("Email already exists!");
         }
+        if(!isValidUsername(dto.getUsername())){
+            throw new BadRequestException("Invalid username!");
+        }
         if(userRepository.existsByUsername(dto.getUsername())){
             throw new BadRequestException("Username already exists!");
         }
@@ -100,6 +103,11 @@ public class UserService extends AbstractService{
     private boolean isValidEmail(String email) {
         String pattern = "^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,}$";
         return email.matches(pattern);
+    }
+
+    private boolean isValidUsername(String username){
+        String pattern = "^[a-zA-Z0-9._-]{3,30}$";
+        return username.matches(pattern);
     }
 
     public int follow(int followerId, int followToId) {

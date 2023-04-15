@@ -7,6 +7,7 @@ import com.tiktok.tiktok.model.DTOs.UserSimpleDTO;
 import com.tiktok.tiktok.model.entities.User;
 import com.tiktok.tiktok.model.entities.Video;
 import com.tiktok.tiktok.model.exceptions.BadRequestException;
+import com.tiktok.tiktok.model.exceptions.NotFoundException;
 import org.apache.commons.io.FilenameUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -104,5 +105,14 @@ public class MediaService extends AbstractService {
         sound.setUrl(path);
         soundRepository.save(sound);
         return mapper.map(sound, SoundSimpleDTO.class);
+    }
+
+    public File download(String fileName) {
+        fileName = "uploads" + File.separator + fileName;
+        File f = new File(fileName);
+        if(f.exists()){
+            return f;
+        }
+        throw new NotFoundException("File not found");
     }
 }

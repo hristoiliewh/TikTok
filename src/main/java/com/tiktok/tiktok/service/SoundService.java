@@ -25,7 +25,7 @@ public class SoundService extends AbstractService{
     }
 
     public List<SoundSimpleDTO> getByName(String soundName) {
-        List<Sound> sound = soundRepository.findAllContains(soundName);
+        List<Optional<Sound>> sound = soundRepository.findAllContains(soundName);
         if (sound.size() == 0){
             throw new NotFoundException("Sound not found");
         }
