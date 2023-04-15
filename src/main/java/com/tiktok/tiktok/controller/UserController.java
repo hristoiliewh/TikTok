@@ -81,4 +81,8 @@ public class UserController extends AbstractController{
     public UserConfirmedDTO confirmRegistration(@PathVariable int id, @RequestBody ConfirmDTO dto){
         return userService.confirmRegistration(id, dto);
     }
+    @PostMapping("/users/forgot-password")
+    public PasswordDTO forgottenPassword(@RequestBody ForgottenPasswordDTO dto){
+        return userService.forgottenPassword(dto);
+    }
 }
