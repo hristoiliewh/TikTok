@@ -15,6 +15,7 @@ public class RegisterDTO {
     private String name;
     private String password;
     private String confirmPassword;
+    private String confirmationCode;
     private String email;
     private String phoneNumber;
     private LocalDate dateOfBirth;

@@ -24,6 +24,8 @@ public class User {
     private String password;
     @Column
     private String email;
+    @Column(name = "confirmation_code")
+    private String confirmationCode;
     @Column(name = "phone_number")
     private String phoneNumber;
     @Column(name = "date_of_birth")

@@ -1,7 +1,7 @@
 package com.tiktok.tiktok.controller;
 
 import com.tiktok.tiktok.model.DTOs.*;
-import com.tiktok.tiktok.model.entities.Video;
+import com.tiktok.tiktok.service.MailSenderService;
 import com.tiktok.tiktok.service.UserService;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,11 +14,14 @@ public class UserController extends AbstractController{
 
     @Autowired
     private UserService userService;
+    @Autowired
+    private MailSenderService senderService;
 
     @PostMapping("/users/signup")
     public UserSimpleDTO register(@RequestBody RegisterDTO dto){
 
         UserSimpleDTO u = userService.register(dto);
+
         return u;
     }
     @PostMapping("/users/login")
@@ -74,6 +77,8 @@ public class UserController extends AbstractController{
         System.out.println("nasdkjbasbfkjbskj;dsa");
         return userService.editAccount(corrections, id);
     }
-
-
+    @PutMapping("/users/{id}/confirm-registration")
+    public UserConfirmedDTO confirmRegistration(@PathVariable int id, @RequestBody ConfirmDTO dto){
+        return userService.confirmRegistration(id, dto);
+    }
 }

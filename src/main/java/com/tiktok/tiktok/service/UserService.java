@@ -15,10 +15,13 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Service
 public class UserService extends AbstractService{
+    @Autowired
+    private MailSenderService senderService;
     @Autowired
     private ModelMapper mapper;
     @Autowired
@@ -46,10 +49,21 @@ public class UserService extends AbstractService{
         }
         User u = mapper.map(dto, User.class);
         u.setPassword(encoder.encode(u.getPassword()));
+        String confirmationCode = UUID.randomUUID().toString();
+        u.setConfirmationCode(confirmationCode);
         userRepository.save(u);
-//        new Thread(() -> {
-//            //MailSender.sendEmail(u.getEmail(), "Bravo, eto ti link", "Reg successful");
-//        }).start();
+
+        String confirmationLink = "https://localuser:6666/confirm/" + confirmationCode;
+        new Thread(() -> {
+            senderService.sendEmail(dto.getEmail(),
+                    "Confirm your registration",
+                    "Dear " + dto.getName() + ",\n\n" +
+                            "Thank you for registering with our service. To complete your registration," +
+                            " please click on the following link:\n\n" +
+                            confirmationLink + "\n\n" +
+                            "Best regards,\n" +
+                            "TikTok Team.");
+        }).start();
         return mapper.map(u, UserSimpleDTO.class);
     }
     public UserFullInfoDTO login(LoginDTO dto) {
@@ -59,6 +73,9 @@ public class UserService extends AbstractService{
         }
         if(!encoder.matches(dto.getPassword(), u.get().getPassword())){
             throw new UnauthorizedException("Wrong credentials");
+        }
+        if (u.get().isEmailConfirmed() == false){
+            throw new UnauthorizedException("Your email is not confirmed. Please confirm you registration before login.");
         }
         return mapper.map(u, UserFullInfoDTO.class);
     }
@@ -191,5 +208,15 @@ public class UserService extends AbstractService{
 //            //MailSender.sendEmail(u.getEmail(), "Bravo, eto ti link", "Reg successful");
 //        }).start();
         return mapper.map(u, UserSimpleDTO.class);
+    }
+
+    public UserConfirmedDTO confirmRegistration(int id, ConfirmDTO dto) {
+        User user = getUserById(id);
+        if (!userRepository.existsByConfirmationCodeAndId(dto.getConfirmationCode(), id)){
+            throw new NotFoundException("The confirmation code does not match with the user");
+        }
+        user.setEmailConfirmed(true);
+        userRepository.save(user);
+        return mapper.map(user, UserConfirmedDTO.class);
     }
 }
