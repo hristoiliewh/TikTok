@@ -2,6 +2,7 @@ package com.tiktok.tiktok.service;
 
 import com.tiktok.tiktok.model.DTOs.*;
 import com.tiktok.tiktok.model.entities.User;
+import com.tiktok.tiktok.model.entities.Video;
 import com.tiktok.tiktok.model.exceptions.BadRequestException;
 import com.tiktok.tiktok.model.exceptions.NotFoundException;
 import com.tiktok.tiktok.model.exceptions.UnauthorizedException;
@@ -39,6 +40,9 @@ public class UserService extends AbstractService{
         }
         if(userRepository.existsByUsername(dto.getUsername())){
             throw new BadRequestException("Username already exists!");
+        }
+        if (userRepository.existsByPhoneNumber(dto.getPhoneNumber())){
+            throw new BadRequestException("Phone number already exists");
         }
         User u = mapper.map(dto, User.class);
         u.setPassword(encoder.encode(u.getPassword()));
@@ -100,14 +104,92 @@ public class UserService extends AbstractService{
     }
 
     public List<UserWithPicNameIdDTO> getAllFollowers(int id) {
-        Set<User> users = userRepository.findById(id).get().getFollowers();
         Optional<User> user = userRepository.findById(id);
         if (!user.isPresent()){
+            throw new NotFoundException("User not found");
+        }
+        Set<User> followers = userRepository.findById(id).get().getFollowers();
+        if (followers.size() == 0){
             throw new NotFoundException("No followers found");
         }
-        Set<User> followers = user.get().getFollowers();
         return followers.stream()
                 .map(f -> mapper.map(f, UserWithPicNameIdDTO.class))
                 .collect(Collectors.toList());
+    }
+
+    public List<UserWithPicNameIdDTO> getAllFollowing(int id) {
+        Optional<User> user = userRepository.findById(id);
+        if (!user.isPresent()){
+            throw new NotFoundException("User not found");
+        }
+        Set<User> following = userRepository.findById(id).get().getFollowing();
+        if (following.size() == 0){
+            throw new NotFoundException("No following users found");
+        }
+        return following.stream()
+                .map(f -> mapper.map(f, UserWithPicNameIdDTO.class))
+                .collect(Collectors.toList());
+    }
+
+    public List<VideoWithoutOwnerDTO> getAllVideos(int id) {
+        Optional<User> user = userRepository.findById(id);
+        if (!user.isPresent()){
+            throw new NotFoundException("User not found");
+        }
+        List<Video> videos = userRepository.findById(id).get().getVideos();
+        if (videos.size() == 0){
+            throw new NotFoundException("No videos found");
+        }
+        return videos.stream()
+                .map(v -> mapper.map(v, VideoWithoutOwnerDTO.class))
+                .collect(Collectors.toList());
+    }
+
+    public UserDeletedDTO deleteAccount(int id) {
+        Optional<User> user = userRepository.findById(id);
+        if (user.isEmpty()){
+            throw new NotFoundException("User not found");
+        }
+        userRepository.deleteById(id);
+        return mapper.map(user, UserDeletedDTO.class);
+    }
+
+    public UserSimpleDTO editAccount(UserEditDTO corrections, int id) {
+        User u = getUserById(id);
+        if (!corrections.getPassword().equals(corrections.getConfirmPassword())){
+            throw new BadRequestException("Password missmatch");
+        }
+        if (corrections.getEmail().equals(null)){
+            if (!isValidEmail(corrections.getEmail())){
+                throw new BadRequestException("Invalid Email");
+            }
+            if (userRepository.existsByEmail(corrections.getEmail())){
+                throw new BadRequestException("Email already exists");
+            }
+            u.setEmail(corrections.getEmail());
+        }
+        if (corrections.getUsername().equals(null)){
+            if (userRepository.existsByUsername(corrections.getUsername())){
+                throw new BadRequestException("Username already exists");
+            }
+            u.setUsername(corrections.getUsername());
+        }
+        if (corrections.getPhoneNumber().equals(null)){
+            if (userRepository.existsByPhoneNumber(corrections.getPhoneNumber())){
+                throw new BadRequestException("Phone number already exists");
+            }
+            u.setPhoneNumber(corrections.getPhoneNumber());
+        }
+        if (corrections.getBio().equals(null)){
+            if (corrections.getBio().length() >= 200){
+                throw new BadRequestException("Too long bio. It must be max 200 symbols.");
+            }
+            u.setBio(corrections.getBio());
+        }
+        userRepository.save(u);
+//        new Thread(() -> {
+//            //MailSender.sendEmail(u.getEmail(), "Bravo, eto ti link", "Reg successful");
+//        }).start();
+        return mapper.map(u, UserSimpleDTO.class);
     }
 }

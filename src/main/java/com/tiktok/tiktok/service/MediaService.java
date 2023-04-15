@@ -21,6 +21,10 @@ import java.util.UUID;
 
 public class MediaService extends AbstractService{
     public UserSimpleDTO upload(MultipartFile origin, int userId) {
+        String contentType = origin.getContentType();
+        if (!contentType.equals("image/jpeg") && !contentType.equals("image/png")) {
+            throw new BadRequestException("Only JPEG and PNG images are allowed");
+        }
         User u = getUserById(userId);
 
         String path = uploadMedia(origin);

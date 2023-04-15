@@ -16,8 +16,6 @@ import java.time.LocalDateTime;
 
 public class AbstractController {
 
-    @Autowired
-    private UserRepository userRepository;
     @ExceptionHandler(BadRequestException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ErrorDTO handleBadRequest(Exception e){
@@ -54,9 +52,6 @@ public class AbstractController {
             throw new UnauthorizedException("You have to login!");
         }
         return (int) s.getAttribute("LOGGED_ID");
-    }
-    protected User getUserById(int id){
-        return userRepository.getById(id).orElseThrow(() -> new NotFoundException("User not found"));
     }
     protected boolean isLogged(HttpSession s){
         if (s.getAttribute("LOGGED_ID") != null){

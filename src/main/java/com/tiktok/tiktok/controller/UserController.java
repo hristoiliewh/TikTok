@@ -1,6 +1,7 @@
 package com.tiktok.tiktok.controller;
 
 import com.tiktok.tiktok.model.DTOs.*;
+import com.tiktok.tiktok.model.entities.Video;
 import com.tiktok.tiktok.service.UserService;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -49,10 +50,30 @@ public class UserController extends AbstractController{
     }
     @GetMapping("/users/{id}/followed")
     public List<UserWithPicNameIdDTO> getAllFollowers(@PathVariable int id, HttpSession s){
-
-        int loggedUserId = getLoggedUserId(s);
+        isLogged(s);
         return userService.getAllFollowers(id);
-
-
     }
+    @GetMapping("/users/{id}/following")
+    public List<UserWithPicNameIdDTO> getAllFollowing(@PathVariable int id, HttpSession s){
+        isLogged(s);
+        return userService.getAllFollowing(id);
+    }
+    @GetMapping("/users/{id}/videos")
+    public List<VideoWithoutOwnerDTO> getAllVideos(@PathVariable int id, HttpSession s){
+        isLogged(s);
+        return userService.getAllVideos(id);
+    }
+    @DeleteMapping("/users")
+    public UserDeletedDTO deleteAccount(HttpSession s){
+        int loggedUserId = getLoggedUserId(s);
+        return userService.deleteAccount(loggedUserId);
+    }
+    @PutMapping("/users/edit")
+    public UserSimpleDTO editAccount(@RequestBody UserEditDTO corrections, HttpSession s){
+        int id = getLoggedUserId(s);
+        System.out.println("nasdkjbasbfkjbskj;dsa");
+        return userService.editAccount(corrections, id);
+    }
+
+
 }
