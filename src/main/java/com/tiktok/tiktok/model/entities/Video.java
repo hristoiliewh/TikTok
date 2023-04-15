@@ -7,7 +7,9 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.time.LocalDateTime;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 @Entity(name = "videos")
 @Getter
@@ -35,5 +37,11 @@ public class Video {
 
     @OneToMany(mappedBy = "video")
     private List<Comment> comments;
+
+    @ManyToMany
+    @JoinTable(name = "video_tags",
+            joinColumns = @JoinColumn(name = "video_id"),
+            inverseJoinColumns = @JoinColumn(name = "hashtag_id"))
+    private Set<Hashtag> hashtags = new HashSet<>();
 
 }

@@ -1,5 +1,6 @@
 package com.tiktok.tiktok.model.entities;
 
+import com.tiktok.tiktok.model.DTOs.CommentWithoutVideoDTO;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -7,6 +8,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 
 @Getter
@@ -26,8 +28,13 @@ public class Comment {
     @ManyToOne
     @JoinColumn(name = "owner_id")
     private User owner;
+    @ManyToOne
+    @JoinColumn(name = "parent_id")
+    private Comment parentComment;
 
-//    private Comment parentComment;
+    @OneToMany(mappedBy = "parentComment")
+    private List<Comment> repliedComments;
+    @JoinColumn()
     @Column(name = "created_at")
     private LocalDateTime createdAt;
 

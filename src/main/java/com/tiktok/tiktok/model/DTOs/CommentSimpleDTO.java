@@ -9,14 +9,12 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.time.LocalDateTime;
+import java.util.List;
+
 @Setter
 @Getter
 @NoArgsConstructor
-public class CommentSimpleDTO {
-    private int id;
-    private String text;
-    private UserSimpleDTO owner;
+public class CommentSimpleDTO extends CommentWithoutVideoDTO{
     private VideoWithoutOwnerDTO video;
-    //    private Comment parentComment;
-    private LocalDateTime createdAt;
+
 }

@@ -36,4 +36,5 @@ public class VideoController extends AbstractController{
         return videoService.addComment(videoId, loggedUserId, text);
     }
 
+
 }

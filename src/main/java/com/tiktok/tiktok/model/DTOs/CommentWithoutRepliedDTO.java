@@ -5,11 +5,16 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.time.LocalDateTime;
-import java.util.List;
 
 @Setter
 @Getter
 @NoArgsConstructor
-public class CommentWithoutVideoDTO extends CommentWithoutVideoAndParentComment{
+public class CommentWithoutRepliedDTO {
+    private int id;
+    private String text;
+    private UserSimpleDTO owner;
     private CommentWithoutVideoDTO parentComment;
+    private LocalDateTime createdAt;
+    private VideoWithoutOwnerDTO video;
+
 }

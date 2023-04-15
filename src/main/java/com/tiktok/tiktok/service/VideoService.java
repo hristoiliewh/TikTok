@@ -24,7 +24,7 @@ public class VideoService extends AbstractService{
     public VideoDeletedDTO deleteVideo(int videoId, int loggedUserId) {
         Video video = getVideoById(videoId);
         if (video.getOwner().getId() != loggedUserId){
-            throw new UnauthorizedException("Can't delete this video");
+            throw new UnauthorizedException("Can't delete this video. You are unauthorized.");
         }
         videoRepository.deleteById(videoId);
         return mapper.map(video, VideoDeletedDTO.class);
