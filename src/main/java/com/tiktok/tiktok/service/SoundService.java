@@ -5,7 +5,6 @@ import com.tiktok.tiktok.model.entities.Sound;
 import com.tiktok.tiktok.model.exceptions.NotFoundException;
 import org.springframework.stereotype.Service;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
