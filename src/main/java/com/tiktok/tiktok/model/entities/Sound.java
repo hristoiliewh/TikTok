@@ -20,6 +20,9 @@ public class Sound {
     private int id;
     @Column
     private String name;
+    @Column
+    private String url;
+
     @OneToMany(mappedBy = "sound")
     private List<Video> videos;
 }

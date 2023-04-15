@@ -10,4 +10,5 @@ import lombok.Setter;
 public class SoundSimpleDTO {
     private int id;
     private String name;
+    private String url;
 }

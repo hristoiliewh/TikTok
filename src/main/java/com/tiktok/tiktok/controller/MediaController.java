@@ -2,8 +2,10 @@ package com.tiktok.tiktok.controller;
 
 
 
+import com.tiktok.tiktok.model.DTOs.SoundSimpleDTO;
 import com.tiktok.tiktok.model.DTOs.VideoSimpleDTO;
 import com.tiktok.tiktok.model.DTOs.UserSimpleDTO;
+import com.tiktok.tiktok.model.entities.Sound;
 import com.tiktok.tiktok.service.MediaService;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,5 +35,13 @@ public class MediaController extends AbstractController{
                                       HttpSession s) {
         int ownerId = getLoggedUserId(s);
         return mediaService.uploadVideo(ownerId, file, caption, isPrivate, soundId);
+    }
+
+    @PostMapping("/sounds")
+    public SoundSimpleDTO uploadSound(@RequestParam("file") MultipartFile file,
+                                      @RequestParam("name") String name,
+                                      HttpSession s) {
+        isLogged(s);
+        return mediaService.uploadSound(file, name);
     }
 }

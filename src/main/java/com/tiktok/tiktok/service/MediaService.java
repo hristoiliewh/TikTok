@@ -1,5 +1,6 @@
 package com.tiktok.tiktok.service;
 
+import com.tiktok.tiktok.model.DTOs.SoundSimpleDTO;
 import com.tiktok.tiktok.model.DTOs.VideoSimpleDTO;
 import com.tiktok.tiktok.model.entities.Sound;
 import com.tiktok.tiktok.model.DTOs.UserSimpleDTO;
@@ -19,7 +20,7 @@ import java.util.UUID;
 
 @Service
 
-public class MediaService extends AbstractService{
+public class MediaService extends AbstractService {
     public UserSimpleDTO upload(MultipartFile origin, int userId) {
         String contentType = origin.getContentType();
         if (!contentType.equals("image/jpeg") && !contentType.equals("image/png")) {
@@ -35,24 +36,24 @@ public class MediaService extends AbstractService{
     }
 
     private String uploadMedia(MultipartFile origin) {
-       try {
-           String name = UUID.randomUUID().toString();
-           String ext = FilenameUtils.getExtension(origin.getOriginalFilename());
+        try {
+            String name = UUID.randomUUID().toString();
+            String ext = FilenameUtils.getExtension(origin.getOriginalFilename());
 
-           name = name + "." + ext;
-           File dir = new File("uploads");
-           if (!dir.exists()) {
-               dir.mkdirs();
-           }
-           File f = new File(dir, name);
-           Files.copy(origin.getInputStream(), f.toPath());
+            name = name + "." + ext;
+            File dir = new File("uploads");
+            if (!dir.exists()) {
+                dir.mkdirs();
+            }
+            File f = new File(dir, name);
+            Files.copy(origin.getInputStream(), f.toPath());
 
-           String path = dir.getName() + File.separator + f.getName();
-           return path;
-       } catch (IOException e) {
-           System.out.println("IOException by copying media.");
-           throw new BadRequestException("Failed uploading media.");
-       }
+            String path = dir.getName() + File.separator + f.getName();
+            return path;
+        } catch (IOException e) {
+            System.out.println("IOException by copying media.");
+            throw new BadRequestException("Failed uploading media.");
+        }
     }
 
     public VideoSimpleDTO uploadVideo(int id, MultipartFile origin, String caption, Boolean isPrivate, int soundId) {
@@ -85,5 +86,23 @@ public class MediaService extends AbstractService{
         if (!file.getContentType().equals("video/mp4")) {
             throw new BadRequestException("Invalid video format!");
         }
+    }
+
+    public SoundSimpleDTO uploadSound(MultipartFile file, String name) {
+        String fileName = file.getOriginalFilename();
+        String fileExtension = fileName.substring(fileName.lastIndexOf('.') + 1);
+
+        if (!fileExtension.equalsIgnoreCase("mp3") || fileExtension.equalsIgnoreCase("wav")) {
+            throw new BadRequestException("Invalid sound format!");
+        }
+        if (soundRepository.existsByName(name)) {
+            throw new BadRequestException("Name exists. Please enter another name of the sound.");
+        }
+        Sound sound = new Sound();
+        String path = uploadMedia(file);
+        sound.setName(name);
+        sound.setUrl(path);
+        soundRepository.save(sound);
+        return mapper.map(sound, SoundSimpleDTO.class);
     }
 }

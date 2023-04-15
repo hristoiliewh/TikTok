@@ -1,6 +1,7 @@
 package com.tiktok.tiktok.service;
 
 import com.tiktok.tiktok.model.entities.Comment;
+import com.tiktok.tiktok.model.entities.Sound;
 import com.tiktok.tiktok.model.entities.User;
 import com.tiktok.tiktok.model.entities.Video;
 import com.tiktok.tiktok.model.exceptions.NotFoundException;
@@ -35,5 +36,8 @@ public abstract class AbstractService {
     }
     protected Comment getCommentById(int id) {
         return commentRepository.findById(id).orElseThrow(() -> new NotFoundException("Comment not found"));
+    }
+    protected Sound getSoundById(int soundId) {
+        return soundRepository.findById(soundId).orElseThrow(() -> new NotFoundException("Sound not found"));
     }
 }
