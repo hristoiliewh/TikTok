@@ -27,4 +27,9 @@ public class CommentController extends AbstractController{
         int loggedUserId = getLoggedUserId(s);
         return commentService.replyToComment(commentId, loggedUserId, text);
     }
+    @PostMapping("/comments/{commentId}/react")
+    public CommentReactionDTO likeDislike(@PathVariable int commentId, HttpSession s){
+        int userId = getLoggedUserId(s);
+        return commentService.likeDislike(commentId, userId);
+    }
 }

@@ -1,12 +1,11 @@
 package com.tiktok.tiktok.service;
 
 import com.tiktok.tiktok.model.DTOs.*;
-import com.tiktok.tiktok.model.entities.Comment;
-import com.tiktok.tiktok.model.entities.Sound;
-import com.tiktok.tiktok.model.entities.User;
-import com.tiktok.tiktok.model.entities.Video;
+import com.tiktok.tiktok.model.entities.*;
 import com.tiktok.tiktok.model.exceptions.NotFoundException;
 import com.tiktok.tiktok.model.exceptions.UnauthorizedException;
+import com.tiktok.tiktok.model.repositories.VideoReactionRepository;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -16,10 +15,11 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import static org.modelmapper.Converters.Collection.map;
-
 @Service
 public class VideoService extends AbstractService{
+
+    @Autowired
+    private VideoReactionRepository videoReactionRepository;
 
     public VideoDeletedDTO deleteVideo(int videoId, int loggedUserId) {
         Video video = getVideoById(videoId);
@@ -110,5 +110,24 @@ public class VideoService extends AbstractService{
         return videosNotPrivate.stream()
                 .map(v -> mapper.map(v, VideoSimpleDTO.class))
                 .collect(Collectors.toList());
+    }
+
+    public VideoReactionDTO likeDislike(int videoId, int userId) {
+        Video video = getVideoById(videoId);
+        User user = getUserById(userId);
+        Optional<VideoReactions> videoReactions = videoReactionRepository.findByVideoAndUser(video, user);
+        if (videoReactions.isPresent()){
+            VideoReactions reactions1 = videoReactions.get();
+            reactions1.setLiked(!reactions1.isLiked());
+            videoReactionRepository.save(reactions1);
+            return mapper.map(reactions1, VideoReactionDTO.class);
+        } else{
+            VideoReactions reactions = new VideoReactions();
+            reactions.setUser(user);
+            reactions.setVideo(video);
+            reactions.setLiked(true);
+            videoReactionRepository.save(reactions);
+            return mapper.map(reactions, VideoReactionDTO.class);
+        }
     }
 }

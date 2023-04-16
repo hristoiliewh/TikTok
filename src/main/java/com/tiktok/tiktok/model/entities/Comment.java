@@ -1,14 +1,15 @@
 package com.tiktok.tiktok.model.entities;
 
+import com.tiktok.tiktok.model.DTOs.CommentReactionDTO;
 import com.tiktok.tiktok.model.DTOs.CommentWithoutVideoDTO;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 import java.time.LocalDateTime;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Objects;
+import java.util.Set;
 
 
 @Getter
@@ -38,4 +39,18 @@ public class Comment {
     @Column(name = "created_at")
     private LocalDateTime createdAt;
 
+    @OneToMany(mappedBy = "comment")
+    Set<CommentReactions> reactions = new HashSet<>();
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof Comment comment)) return false;
+        return id == comment.id;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id);
+    }
 }

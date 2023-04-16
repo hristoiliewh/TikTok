@@ -37,7 +37,7 @@ public class UserController extends AbstractController{
         s.invalidate();
         return new LogoutDTO();
     }
-    @PostMapping("/users/{followToId}/follow")
+    @PostMapping("/users/{followToId}/follow-unfollow")
     public int follow(@PathVariable int followToId, HttpSession s){
         int followerId = getLoggedUserId(s);
         return userService.follow(followerId, followToId);

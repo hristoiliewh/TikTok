@@ -9,6 +9,7 @@ import lombok.Setter;
 import java.time.LocalDate;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 
 @Entity(name = "users")
@@ -53,9 +54,21 @@ public class User {
     @ManyToMany(mappedBy = "followers")
     private Set<User> following = new HashSet<>();
 
+    @OneToMany(mappedBy = "user")
+    Set<VideoReactions> reactions = new HashSet<>();
 
-    public enum Gender{
-        MALE, FEMALE
+    @OneToMany(mappedBy = "user")
+    Set<CommentReactions> commentReactions = new HashSet<>();
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof User user)) return false;
+        return id == user.id;
     }
 
+    @Override
+    public int hashCode() {
+        return Objects.hash(id);
+    }
 }

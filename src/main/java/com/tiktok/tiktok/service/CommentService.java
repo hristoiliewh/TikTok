@@ -1,15 +1,20 @@
 package com.tiktok.tiktok.service;
 
 import com.tiktok.tiktok.model.DTOs.*;
-import com.tiktok.tiktok.model.entities.Comment;
-import com.tiktok.tiktok.model.entities.User;
+import com.tiktok.tiktok.model.entities.*;
 import com.tiktok.tiktok.model.exceptions.UnauthorizedException;
+import com.tiktok.tiktok.model.repositories.CommentReactionRepository;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.Optional;
 
 @Service
 public class CommentService extends AbstractService{
+
+    @Autowired
+    private CommentReactionRepository commentReactionRepository;
 
 
     public CommentWithoutVideoAndParentComment getById(int commentId) {
@@ -40,5 +45,24 @@ public class CommentService extends AbstractService{
 
         commentRepository.save(comment);
         return mapper.map(comment, CommentWithoutRepliedDTO.class);
+    }
+
+    public CommentReactionDTO likeDislike(int commentId, int userId) {
+        Comment comment = getCommentById(commentId);
+        User user = getUserById(userId);
+        Optional<CommentReactions> commentReactions = commentReactionRepository.findByCommentAndUser(comment, user);
+        if (commentReactions.isPresent()){
+            CommentReactions reactions1 = commentReactions.get();
+            reactions1.setLiked(!reactions1.isLiked());
+            commentReactionRepository.save(reactions1);
+            return mapper.map(reactions1, CommentReactionDTO.class);
+        } else{
+            CommentReactions reactions = new CommentReactions();
+            reactions.setUser(user);
+            reactions.setComment(comment);
+            reactions.setLiked(true);
+            commentReactionRepository.save(reactions);
+            return mapper.map(reactions, CommentReactionDTO.class);
+        }
     }
 }

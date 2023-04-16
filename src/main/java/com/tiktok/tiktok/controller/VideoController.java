@@ -47,5 +47,11 @@ public class VideoController extends AbstractController{
         return videoService.getByHashtag(hashtag, userId);
     }
 
+    @PostMapping("/videos/{videoId}/react")
+    public VideoReactionDTO likeDislike(@PathVariable int videoId, HttpSession s){
+        int userId = getLoggedUserId(s);
+        return videoService.likeDislike(videoId, userId);
+    }
+
 
 }
