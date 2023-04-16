@@ -130,4 +130,14 @@ public class VideoService extends AbstractService{
             return mapper.map(reactions, VideoReactionDTO.class);
         }
     }
+
+    public NumberOfReactionsDTO getReactions(int videoId, int userId) {
+        Video video = getVideoById(videoId);
+        if (!isPossibleToWatch(video,userId)){
+            throw new UnauthorizedException("This video is private and you do not have access to it.");
+        }
+        NumberOfReactionsDTO dto = new NumberOfReactionsDTO();
+        dto.setReactions(video.getReactions().size());
+        return dto;
+    }
 }

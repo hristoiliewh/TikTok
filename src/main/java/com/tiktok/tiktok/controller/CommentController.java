@@ -32,4 +32,9 @@ public class CommentController extends AbstractController{
         int userId = getLoggedUserId(s);
         return commentService.likeDislike(commentId, userId);
     }
+    @GetMapping("/comments/{commentId}/reactions")
+    public NumberOfReactionsDTO getReactions(@PathVariable int commentId, HttpSession s){
+        int userId = checkIfIsLogged(s);
+        return commentService.getReactions(commentId, userId);
+    }
 }

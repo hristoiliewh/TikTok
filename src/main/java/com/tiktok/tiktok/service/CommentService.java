@@ -65,4 +65,16 @@ public class CommentService extends AbstractService{
             return mapper.map(reactions, CommentReactionDTO.class);
         }
     }
+
+    public NumberOfReactionsDTO getReactions(int commentId, int userId) {
+        Comment comment = getCommentById(commentId);
+        System.out.println("lnefkjsbdff");
+        Video video = getVideoById(comment.getVideo().getId());
+        if (!isPossibleToWatch(video,userId)){
+            throw new UnauthorizedException("This video is private and you do not have access to it's comments.");
+        }
+        NumberOfReactionsDTO dto = new NumberOfReactionsDTO();
+        dto.setReactions(comment.getReactions().size());
+        return dto;
+    }
 }
