@@ -44,4 +44,6 @@ public class Video {
             inverseJoinColumns = @JoinColumn(name = "hashtag_id"))
     private Set<Hashtag> hashtags = new HashSet<>();
 
+//    inverseJoinColumns
+
 }

@@ -65,7 +65,6 @@ public class UserService extends AbstractService{
         if (userRepository.existsByPhoneNumber(dto.getPhoneNumber())){
             throw new BadRequestException("Phone number already exists");
         }
-        hashtagService.checkForHashtags(dto.getBio());
         User u = mapper.map(dto, User.class);
         u.setPassword(encoder.encode(u.getPassword()));
         String confirmationCode = UUID.randomUUID().toString();

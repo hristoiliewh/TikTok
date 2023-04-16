@@ -1,6 +1,8 @@
 package com.tiktok.tiktok.service;
 
 import com.tiktok.tiktok.model.entities.Hashtag;
+import com.tiktok.tiktok.model.entities.User;
+import com.tiktok.tiktok.model.entities.Video;
 import com.tiktok.tiktok.model.exceptions.BadRequestException;
 import com.tiktok.tiktok.model.repositories.HashtagRepository;
 import org.modelmapper.ModelMapper;
@@ -8,7 +10,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 @Service
 public class HashtagService extends AbstractService{
@@ -16,14 +20,20 @@ public class HashtagService extends AbstractService{
     @Autowired
     private ModelMapper mapper;
 
-    public void upload(String hashtag) {
+    public Hashtag upload(String hashtag) {
         if (!isValidHashtag(hashtag)){
             throw new BadRequestException("Hashtags can contains only letters and/or digits and should be at least 3 digits long.");
         }
-        Hashtag tag = new Hashtag();
-        tag.setTag("#" + hashtag);
 
-        hashtagRepository.save(tag);
+        Hashtag tag = new Hashtag();
+        if (hashtagRepository.findByTag("#" + hashtag) == null){
+            tag.setTag("#" + hashtag);
+            hashtagRepository.save(tag);
+            return tag;
+        }
+        else{
+            return hashtagRepository.findByTag("#" + hashtag);
+        }
     }
 
     private boolean isValidHashtag(String hashtag){
@@ -31,7 +41,7 @@ public class HashtagService extends AbstractService{
         return hashtag.matches(pattern);
     }
 
-    public void checkForHashtags(String text) {
+    public Set<Hashtag> checkForHashtags(String text) {
         List<String> hashtags = new ArrayList<>();
         String[] words = text.split(" ");
         for (String word : words) {
@@ -39,8 +49,10 @@ public class HashtagService extends AbstractService{
                 hashtags.add(word.substring(1));
             }
         }
+        Set<Hashtag> validHashtags = new HashSet<>();
         for (String h : hashtags){
-            upload(h);
+            validHashtags.add(upload(h));
         }
+        return validHashtags;
     }
 }

@@ -18,10 +18,7 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 
 @Service
 
@@ -79,7 +76,8 @@ public class MediaService extends AbstractService {
         String path = uploadMedia(origin);
         video.setUrl(path);
 
-        hashtagService.checkForHashtags(caption);
+        Set<Hashtag> hashtags = hashtagService.checkForHashtags(caption);
+        video.getHashtags().addAll(hashtags);
 
         videoRepository.save(video);
         return mapper.map(video, VideoSimpleDTO.class);

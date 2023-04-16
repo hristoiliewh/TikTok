@@ -39,5 +39,11 @@ public class VideoController extends AbstractController{
         return videoService.getByName(videoName);
     }
 
+    @GetMapping("/videos/hashtag/{hashtag}")
+    public List<VideoSimpleDTO> getByHashtag(@PathVariable String hashtag) {
+
+        return videoService.getByHashtag(hashtag);
+    }
+
 
 }

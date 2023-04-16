@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import static org.modelmapper.Converters.Collection.map;
@@ -67,6 +68,19 @@ public class VideoService extends AbstractService{
         }
         return videos.stream()
                 .map(s -> mapper.map(s, VideoSimpleDTO.class))
+                .collect(Collectors.toList());
+    }
+
+    public List<VideoSimpleDTO> getByHashtag(String hashtag) {
+        if (!hashtagRepository.existsByTag("#" + hashtag)){
+            throw new NotFoundException("No results found for #" + hashtag + "");
+        }
+        Set<Video> videos = hashtagRepository.findByTag("#" + hashtag).getVideo();
+        if (videos.size() == 0){
+            throw new NotFoundException("No videos with the given hashtag found");
+        }
+        return videos.stream()
+                .map(v -> mapper.map(v, VideoSimpleDTO.class))
                 .collect(Collectors.toList());
     }
 }
