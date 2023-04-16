@@ -84,20 +84,20 @@ public class MediaService extends AbstractService {
     }
 
 
-    private void validateVideoInfo(MultipartFile file, String caption) {
-        if (file.isEmpty()) {
+    private void validateVideoInfo(MultipartFile origin, String caption) {
+        if (origin.isEmpty()) {
             throw new BadRequestException("The file is not attached!");
         }
         if (caption.length() > 200) {
             throw new BadRequestException("The video caption is too long. Please enter caption up to 200 symbols.");
         }
-        if (!file.getContentType().equals("video/mp4")) {
+        if (!origin.getContentType().equals("video/mp4")) {
             throw new BadRequestException("Invalid video format!");
         }
     }
 
-    public SoundSimpleDTO uploadSound(MultipartFile file, String name) {
-        String fileName = file.getOriginalFilename();
+    public SoundSimpleDTO uploadSound(MultipartFile origin, String name) {
+        String fileName = origin.getOriginalFilename();
         String fileExtension = fileName.substring(fileName.lastIndexOf('.') + 1);
 
         if (!fileExtension.equalsIgnoreCase("mp3") || fileExtension.equalsIgnoreCase("wav")) {
@@ -107,7 +107,7 @@ public class MediaService extends AbstractService {
             throw new BadRequestException("Name exists. Please enter another name of the sound.");
         }
         Sound sound = new Sound();
-        String path = uploadMedia(file);
+        String path = uploadMedia(origin);
         sound.setName(name);
         sound.setUrl(path);
         soundRepository.save(sound);
@@ -122,6 +122,4 @@ public class MediaService extends AbstractService {
         }
         throw new NotFoundException("File not found");
     }
-
-
 }

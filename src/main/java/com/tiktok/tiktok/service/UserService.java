@@ -133,22 +133,13 @@ public class UserService extends AbstractService{
         return mapper.map(user,UserFullInfoDTO.class);
     }
 
-    public UserFullInfoDTO getById(int id) {
-        Optional<User> u = userRepository.findById(id);
-        System.out.println("found");
-        if(u.isPresent()){
-            System.out.println("found1");
-            return mapper.map(u.get(), UserFullInfoDTO.class);
-        }
-        throw new NotFoundException("User not found");
+    public UserFullInfoDTO getById(int userId) {
+        User user = getUserById(userId);
+        return mapper.map(user, UserFullInfoDTO.class);
     }
 
-    public List<UserWithPicNameIdDTO> getAllFollowers(int id) {
-        Optional<User> user = userRepository.findById(id);
-        if (!user.isPresent()){
-            throw new NotFoundException("User not found");
-        }
-        Set<User> followers = userRepository.findById(id).get().getFollowers();
+    public List<UserWithPicNameIdDTO> getAllFollowers(int userId) {
+        Set<User> followers = getUserById(userId).getFollowers();
         if (followers.size() == 0){
             throw new NotFoundException("No followers found");
         }
@@ -157,12 +148,8 @@ public class UserService extends AbstractService{
                 .collect(Collectors.toList());
     }
 
-    public List<UserWithPicNameIdDTO> getAllFollowing(int id) {
-        Optional<User> user = userRepository.findById(id);
-        if (!user.isPresent()){
-            throw new NotFoundException("User not found");
-        }
-        Set<User> following = userRepository.findById(id).get().getFollowing();
+    public List<UserWithPicNameIdDTO> getAllFollowing(int userId) {
+        Set<User> following = getUserById(userId).getFollowing();
         if (following.size() == 0){
             throw new NotFoundException("No following users found");
         }
@@ -171,12 +158,8 @@ public class UserService extends AbstractService{
                 .collect(Collectors.toList());
     }
 
-    public List<VideoWithoutOwnerDTO> getAllVideos(int id) {
-        Optional<User> user = userRepository.findById(id);
-        if (!user.isPresent()){
-            throw new NotFoundException("User not found");
-        }
-        List<Video> videos = userRepository.findById(id).get().getVideos();
+    public List<VideoWithoutOwnerDTO> getAllVideos(int userId) {
+        List<Video> videos = getUserById(userId).getVideos();
         if (videos.size() == 0){
             throw new NotFoundException("No videos found");
         }
@@ -185,17 +168,14 @@ public class UserService extends AbstractService{
                 .collect(Collectors.toList());
     }
 
-    public UserDeletedDTO deleteAccount(int id) {
-        Optional<User> user = userRepository.findById(id);
-        if (user.isEmpty()){
-            throw new NotFoundException("User not found");
-        }
-        userRepository.deleteById(id);
+    public UserDeletedDTO deleteAccount(int userId) {
+        User user = getUserById(userId);
+        userRepository.deleteById(userId);
         return mapper.map(user, UserDeletedDTO.class);
     }
 
-    public UserSimpleDTO editAccount(UserEditDTO corrections, int id) {
-        User u = getUserById(id);
+    public UserSimpleDTO editAccount(UserEditDTO corrections, int userId) {
+        User u = getUserById(userId);
         if (!corrections.getPassword().equals(corrections.getConfirmPassword())){
             throw new BadRequestException("Password missmatch");
         }
@@ -227,15 +207,12 @@ public class UserService extends AbstractService{
             u.setBio(corrections.getBio());
         }
         userRepository.save(u);
-//        new Thread(() -> {
-//            //MailSender.sendEmail(u.getEmail(), "Bravo, eto ti link", "Reg successful");
-//        }).start();
         return mapper.map(u, UserSimpleDTO.class);
     }
 
-    public UserConfirmedDTO confirmRegistration(int id, ConfirmDTO dto) {
-        User user = getUserById(id);
-        if (!userRepository.existsByConfirmationCodeAndId(dto.getConfirmationCode(), id)){
+    public UserConfirmedDTO confirmRegistration(int userId, ConfirmDTO dto) {
+        User user = getUserById(userId);
+        if (!userRepository.existsByConfirmationCodeAndId(dto.getConfirmationCode(), userId)){
             throw new NotFoundException("The confirmation code does not match with the user");
         }
         user.setEmailConfirmed(true);

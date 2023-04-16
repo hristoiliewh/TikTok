@@ -27,8 +27,8 @@ public class MediaController extends AbstractController{
 
     public UserSimpleDTO upload(@RequestParam("file") MultipartFile file, HttpSession s){
 
-        int id = getLoggedUserId(s);
-        return mediaService.upload(file, id);
+        int ownerId = getLoggedUserId(s);
+        return mediaService.upload(file, ownerId);
     }
     @PostMapping("/videos/media")
     public VideoSimpleDTO uploadVideo(@RequestParam("file") MultipartFile file,
@@ -49,12 +49,12 @@ public class MediaController extends AbstractController{
     }
 
     @GetMapping("/media/{fileName}")
-    public void download(@PathVariable String fileName, HttpServletResponse resp){
+    public void download(@PathVariable String fileName, HttpServletResponse resp) throws Exception {
         try {
             File f = mediaService.download(fileName);
             Files.copy(f.toPath(), resp.getOutputStream());
         } catch (IOException e) {
-            System.out.println("IOException while downloading media");
+            throw new Exception("Error downloading media. Please contact administration!");
         }
     }
 }

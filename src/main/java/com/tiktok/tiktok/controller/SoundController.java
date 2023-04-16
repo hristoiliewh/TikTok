@@ -1,14 +1,10 @@
 package com.tiktok.tiktok.controller;
 
 import com.tiktok.tiktok.model.DTOs.SoundSimpleDTO;
-import com.tiktok.tiktok.model.entities.Sound;
 import com.tiktok.tiktok.service.SoundService;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -31,6 +27,4 @@ public class SoundController extends AbstractController {
     public List<SoundSimpleDTO> getByName(@PathVariable String soundName) {
         return soundService.getByName(soundName);
     }
-
-
 }
