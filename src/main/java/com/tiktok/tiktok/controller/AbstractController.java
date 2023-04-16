@@ -59,4 +59,11 @@ public class AbstractController {
         }
         throw new UnauthorizedException("You have to login!");
     }
+
+    protected int checkIfIsLogged(HttpSession s){
+        if (s.getAttribute("LOGGED_ID") != null){
+            return (int) s.getAttribute("LOGGED_ID");
+        }
+        return 0;
+    }
 }

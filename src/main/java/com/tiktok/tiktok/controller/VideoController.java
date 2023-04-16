@@ -19,12 +19,14 @@ public class VideoController extends AbstractController{
     }
 
     @GetMapping("/videos/{videoId}")
-    public VideoSimpleDTO getById(@PathVariable int videoId){
-        return videoService.getById(videoId);
+    public VideoSimpleDTO getById(@PathVariable int videoId, HttpSession s){
+        int userId = checkIfIsLogged(s);
+        return videoService.getById(videoId, userId);
     }
     @GetMapping("/videos/{videoId}/comments")
-    public List<CommentWithoutVideoDTO> getAllComments(@PathVariable int videoId){
-        return videoService.getAllComments(videoId);
+    public List<CommentWithoutVideoDTO> getAllComments(@PathVariable int videoId, HttpSession s){
+        int userId = checkIfIsLogged(s);
+        return videoService.getAllComments(videoId, userId);
     }
 
     @PostMapping("/videos/{videoId}/comment")
@@ -34,15 +36,15 @@ public class VideoController extends AbstractController{
     }
 
     @GetMapping("/videos/{videoName}/find")
-    public List<VideoSimpleDTO> getByName(@PathVariable String videoName) {
-
-        return videoService.getByName(videoName);
+    public List<VideoSimpleDTO> getByName(@PathVariable String videoName, HttpSession s) {
+        int userId = checkIfIsLogged(s);
+        return videoService.getByName(videoName, userId);
     }
 
     @GetMapping("/videos/hashtag/{hashtag}")
-    public List<VideoSimpleDTO> getByHashtag(@PathVariable String hashtag) {
-
-        return videoService.getByHashtag(hashtag);
+    public List<VideoSimpleDTO> getByHashtag(@PathVariable String hashtag, HttpSession s) {
+        int userId = checkIfIsLogged(s);
+        return videoService.getByHashtag(hashtag, userId);
     }
 
 

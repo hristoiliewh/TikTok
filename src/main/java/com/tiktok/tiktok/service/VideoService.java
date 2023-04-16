@@ -10,6 +10,7 @@ import com.tiktok.tiktok.model.exceptions.UnauthorizedException;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -29,13 +30,19 @@ public class VideoService extends AbstractService{
         return mapper.map(video, VideoDeletedDTO.class);
     }
 
-    public VideoSimpleDTO getById(int videoId) {
+    public VideoSimpleDTO getById(int videoId, int userId) {
         Video video = getVideoById(videoId);
+        if (!isPossibleToWatch(video, userId)) {
+            throw new UnauthorizedException("This video is private and you do not have access to it.");
+        }
         return mapper.map(video, VideoSimpleDTO.class);
     }
 
-    public List<CommentWithoutVideoDTO> getAllComments(int videoId) {
+    public List<CommentWithoutVideoDTO> getAllComments(int videoId, int userId) {
         Video video = getVideoById(videoId);
+        if (!isPossibleToWatch(video, userId)){
+            throw new UnauthorizedException("This video is private and you do not have access to it.");
+        }
         List<Comment> comments = video.getComments();
         if (comments.size() == 0){
             throw new NotFoundException("No comments found");
@@ -48,6 +55,9 @@ public class VideoService extends AbstractService{
 
     public CommentSimpleDTO addComment(int videoId, int loggedUserId, String text) {
         Video video = getVideoById(videoId);
+        if (!isPossibleToWatch(video,loggedUserId)){
+            throw new UnauthorizedException("This video is private and you do not have access to it.");
+        }
         User owner = getUserById(loggedUserId);
 
         Comment comment = new Comment();
@@ -61,17 +71,26 @@ public class VideoService extends AbstractService{
         return mapper.map(comment, CommentSimpleDTO.class);
     }
 
-    public List<VideoSimpleDTO> getByName(String videoName) {
+    public List<VideoSimpleDTO> getByName(String videoName, int userId) {
         List<Video> videos = videoRepository.findAllContains(videoName);
         if (videos.size() == 0){
-            throw new NotFoundException("Video not found");
+            throw new NotFoundException("No videos with the given name found.");
         }
-        return videos.stream()
-                .map(s -> mapper.map(s, VideoSimpleDTO.class))
+        List<Video> videosNotPrivate = new ArrayList<>();
+        for (Video v : videos){
+            if (isPossibleToWatch(v,userId)){
+                videosNotPrivate.add(v);
+            }
+        }
+        if (videosNotPrivate.size() == 0){
+            throw new NotFoundException("No videos with the given name found.");
+        }
+        return videosNotPrivate.stream()
+                .map(v -> mapper.map(v, VideoSimpleDTO.class))
                 .collect(Collectors.toList());
     }
 
-    public List<VideoSimpleDTO> getByHashtag(String hashtag) {
+    public List<VideoSimpleDTO> getByHashtag(String hashtag, int userId) {
         if (!hashtagRepository.existsByTag("#" + hashtag)){
             throw new NotFoundException("No results found for #" + hashtag + "");
         }
@@ -79,7 +98,16 @@ public class VideoService extends AbstractService{
         if (videos.size() == 0){
             throw new NotFoundException("No videos with the given hashtag found");
         }
-        return videos.stream()
+        List<Video> videosNotPrivate = new ArrayList<>();
+        for (Video v : videos){
+            if (isPossibleToWatch(v, userId)){
+                videosNotPrivate.add(v);
+            }
+        }
+        if (videosNotPrivate.size() == 0){
+            throw new NotFoundException("No videos with the given hashtag found");
+        }
+        return videosNotPrivate.stream()
                 .map(v -> mapper.map(v, VideoSimpleDTO.class))
                 .collect(Collectors.toList());
     }
