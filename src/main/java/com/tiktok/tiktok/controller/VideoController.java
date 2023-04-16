@@ -53,5 +53,11 @@ public class VideoController extends AbstractController{
         return videoService.likeDislike(videoId, userId);
     }
 
+    @GetMapping("/videos/{videoId}/reactions")
+    public NumberOfReactionsDTO getReactions(@PathVariable int videoId, HttpSession s){
+        int userId = checkIfIsLogged(s);
+        return videoService.getReactions(videoId, userId);
+    }
+
 
 }
