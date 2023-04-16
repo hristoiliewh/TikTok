@@ -11,7 +11,7 @@ import java.util.List;
 @NoArgsConstructor
 public class CommentWithoutVideoAndParentComment {
     private int id;
-    private String text;
+    private String comment;
     private UserSimpleDTO owner;
     private List<CommentWithoutVideoAndParentComment> repliedComments;
     private LocalDateTime createdAt;

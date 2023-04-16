@@ -11,7 +11,7 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 public class CommentWithoutRepliedDTO {
     private int id;
-    private String text;
+    private String comment;
     private UserSimpleDTO owner;
     private CommentWithoutVideoDTO parentComment;
     private LocalDateTime createdAt;

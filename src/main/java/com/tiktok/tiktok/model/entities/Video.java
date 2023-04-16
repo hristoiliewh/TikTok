@@ -46,7 +46,7 @@ public class Video {
     private Set<Hashtag> hashtags = new HashSet<>();
 
     @OneToMany(mappedBy = "video")
-    Set<VideoReactions> reactions = new HashSet<>();
+    private Set<VideoReactions> reactions = new HashSet<>();
 
     @Override
     public boolean equals(Object o) {

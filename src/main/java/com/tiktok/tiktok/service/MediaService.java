@@ -26,6 +26,7 @@ public class MediaService extends AbstractService {
 
     @Autowired
     private HashtagService hashtagService;
+
     public UserSimpleDTO upload(MultipartFile origin, int userId) {
         String contentType = origin.getContentType();
         if (!contentType.equals("image/jpeg") && !contentType.equals("image/png")) {
@@ -61,8 +62,8 @@ public class MediaService extends AbstractService {
         }
     }
 
-    public VideoSimpleDTO uploadVideo(int id, MultipartFile origin, String caption, Boolean isPrivate, int soundId) {
-        User user = getUserById(id);
+    public VideoSimpleDTO uploadVideo(int userId, MultipartFile origin, String caption, Boolean isPrivate, int soundId) {
+        User user = getUserById(userId);
         validateVideoInfo(origin, caption);
 
         Video video = new Video();

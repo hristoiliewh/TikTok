@@ -18,13 +18,15 @@ import java.util.Set;
 public class HashtagService extends AbstractService{
 
     @Autowired
+    private HashtagRepository hashtagRepository;
+
+    @Autowired
     private ModelMapper mapper;
 
     public Hashtag upload(String hashtag) {
         if (!isValidHashtag(hashtag)){
             throw new BadRequestException("Hashtags can contains only letters and/or digits and should be at least 3 digits long.");
         }
-
         Hashtag tag = new Hashtag();
         if (hashtagRepository.findByTag("#" + hashtag) == null){
             tag.setTag("#" + hashtag);

@@ -1,7 +1,6 @@
 package com.tiktok.tiktok.controller;
 
 import com.tiktok.tiktok.model.DTOs.*;
-import com.tiktok.tiktok.service.MailSenderService;
 import com.tiktok.tiktok.service.UserService;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,8 +13,6 @@ public class UserController extends AbstractController{
 
     @Autowired
     private UserService userService;
-    @Autowired
-    private MailSenderService senderService;
 
     @PostMapping("/users/signup")
     public UserSimpleDTO register(@RequestBody RegisterDTO dto){
@@ -26,10 +23,10 @@ public class UserController extends AbstractController{
     }
     @PostMapping("/users/login")
     public UserFullInfoDTO login(@RequestBody LoginDTO dto, HttpSession s){
-        UserFullInfoDTO respDto = userService.login(dto);
+        UserFullInfoDTO u = userService.login(dto);
         s.setAttribute("LOGGED", true);
-        s.setAttribute("LOGGED_ID", respDto.getId());
-        return respDto;
+        s.setAttribute("LOGGED_ID", u.getId());
+        return u;
     }
     @PostMapping("/users/logout")
     public LogoutDTO logout(HttpSession s){
@@ -73,9 +70,9 @@ public class UserController extends AbstractController{
     }
     @PutMapping("/users/edit")
     public UserSimpleDTO editAccount(@RequestBody UserEditDTO corrections, HttpSession s){
-        int id = getLoggedUserId(s);
+        int loggedUserId = getLoggedUserId(s);
         System.out.println("nasdkjbasbfkjbskj;dsa");
-        return userService.editAccount(corrections, id);
+        return userService.editAccount(corrections, loggedUserId);
     }
     @PutMapping("/users/{id}/confirm-registration")
     public UserConfirmedDTO confirmRegistration(@PathVariable int id, @RequestBody ConfirmDTO dto){

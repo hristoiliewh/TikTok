@@ -17,8 +17,11 @@ public class CommentService extends AbstractService{
     private CommentReactionRepository commentReactionRepository;
 
 
-    public CommentWithoutVideoAndParentComment getById(int commentId) {
+    public CommentWithoutVideoAndParentComment getById(int commentId, int loggedUserId) {
         Comment comment = getCommentById(commentId);
+        if (comment.getOwner().getId() != loggedUserId){
+            throw new UnauthorizedException("Can't delete this comment. You are unauthorized.");
+        }
         return mapper.map(comment, CommentWithoutVideoAndParentComment.class);
     }
 
@@ -40,7 +43,7 @@ public class CommentService extends AbstractService{
         comment.setParentComment(parentComment);
         comment.setVideo(parentComment.getVideo());
         comment.setOwner(owner);
-        comment.setText(text);
+        comment.setComment(text);
         comment.setCreatedAt(LocalDateTime.now());
 
         commentRepository.save(comment);

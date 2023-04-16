@@ -17,8 +17,8 @@ import java.io.Serializable;
 public class CommentsReactionsKey implements Serializable {
 
     @Column(name = "comment_id")
-    int commentId;
+    private int commentId;
 
     @Column(name = "user_id")
-    int userId;
+    private int userId;
 }

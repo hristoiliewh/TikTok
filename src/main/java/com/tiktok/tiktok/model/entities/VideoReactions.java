@@ -11,18 +11,18 @@ import lombok.Setter;
 @NoArgsConstructor
 public class VideoReactions {
     @EmbeddedId
-    VideosReactionsKey id = new VideosReactionsKey();
+    private VideosReactionsKey id = new VideosReactionsKey();
 
     @ManyToOne
     @MapsId("userId")
     @JoinColumn(name = "user_id")
-    User user;
+    private User user;
 
     @ManyToOne
     @MapsId("videoId")
     @JoinColumn(name = "video_id")
-    Video video;
+    private Video video;
 
     @Column(name = "is_liked")
-    boolean isLiked;
+    private boolean isLiked;
 }

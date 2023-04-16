@@ -17,14 +17,14 @@ public class CommentReactions {
     @ManyToOne
     @MapsId("commentId")
     @JoinColumn(name = "comment_id")
-    Comment comment;
+    private Comment comment;
 
     @ManyToOne
     @MapsId("userId")
     @JoinColumn(name = "user_id")
-    User user;
+    private User user;
 
     @Column(name = "is_liked")
-    boolean isLiked;
+    private boolean isLiked;
 }
 

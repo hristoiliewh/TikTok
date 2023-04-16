@@ -20,44 +20,42 @@ public class VideoController extends AbstractController{
 
     @GetMapping("/videos/{videoId}")
     public VideoSimpleDTO getById(@PathVariable int videoId, HttpSession s){
-        int userId = checkIfIsLogged(s);
-        return videoService.getById(videoId, userId);
+        int loggedUserId = checkIfIsLogged(s);
+        return videoService.getById(videoId, loggedUserId);
     }
     @GetMapping("/videos/{videoId}/comments")
     public List<CommentWithoutVideoDTO> getAllComments(@PathVariable int videoId, HttpSession s){
-        int userId = checkIfIsLogged(s);
-        return videoService.getAllComments(videoId, userId);
+        int loggedUserId = checkIfIsLogged(s);
+        return videoService.getAllComments(videoId, loggedUserId);
     }
 
     @PostMapping("/videos/{videoId}/comment")
-    public CommentSimpleDTO addComment(@PathVariable int videoId, @RequestBody String text, HttpSession s){
+    public CommentSimpleDTO addComment(@PathVariable int videoId, @RequestBody String comment, HttpSession s){
         int loggedUserId = getLoggedUserId(s);
-        return videoService.addComment(videoId, loggedUserId, text);
+        return videoService.addComment(videoId, loggedUserId, comment);
     }
 
     @GetMapping("/videos/{videoName}/find")
     public List<VideoSimpleDTO> getByName(@PathVariable String videoName, HttpSession s) {
-        int userId = checkIfIsLogged(s);
-        return videoService.getByName(videoName, userId);
+        int loggedUserId = checkIfIsLogged(s);
+        return videoService.getByName(videoName, loggedUserId);
     }
 
     @GetMapping("/videos/hashtag/{hashtag}")
     public List<VideoSimpleDTO> getByHashtag(@PathVariable String hashtag, HttpSession s) {
-        int userId = checkIfIsLogged(s);
-        return videoService.getByHashtag(hashtag, userId);
+        int loggedUserId = checkIfIsLogged(s);
+        return videoService.getByHashtag(hashtag, loggedUserId);
     }
 
     @PostMapping("/videos/{videoId}/react")
     public VideoReactionDTO likeDislike(@PathVariable int videoId, HttpSession s){
-        int userId = getLoggedUserId(s);
-        return videoService.likeDislike(videoId, userId);
+        int loggedUserId = getLoggedUserId(s);
+        return videoService.likeDislike(videoId, loggedUserId);
     }
 
     @GetMapping("/videos/{videoId}/reactions")
     public NumberOfReactionsDTO getReactions(@PathVariable int videoId, HttpSession s){
-        int userId = checkIfIsLogged(s);
-        return videoService.getReactions(videoId, userId);
+        int loggedUserId = checkIfIsLogged(s);
+        return videoService.getReactions(videoId, loggedUserId);
     }
-
-
 }

@@ -12,8 +12,9 @@ public class CommentController extends AbstractController{
     private CommentService commentService;
 
     @GetMapping("/comments/{commentId}")
-    public CommentWithoutVideoAndParentComment getById(@PathVariable int commentId){
-        return commentService.getById(commentId);
+    public CommentWithoutVideoAndParentComment getById(@PathVariable int commentId, HttpSession s){
+        int loggedUserId = getLoggedUserId(s);
+        return commentService.getById(commentId, loggedUserId);
     }
 
     @DeleteMapping("/comments/{commentId}")
@@ -29,12 +30,12 @@ public class CommentController extends AbstractController{
     }
     @PostMapping("/comments/{commentId}/react")
     public CommentReactionDTO likeDislike(@PathVariable int commentId, HttpSession s){
-        int userId = getLoggedUserId(s);
-        return commentService.likeDislike(commentId, userId);
+        int loggedUserId = getLoggedUserId(s);
+        return commentService.likeDislike(commentId, loggedUserId);
     }
     @GetMapping("/comments/{commentId}/reactions")
     public NumberOfReactionsDTO getReactions(@PathVariable int commentId, HttpSession s){
-        int userId = checkIfIsLogged(s);
-        return commentService.getReactions(commentId, userId);
+        int loggedUserId = checkIfIsLogged(s);
+        return commentService.getReactions(commentId, loggedUserId);
     }
 }

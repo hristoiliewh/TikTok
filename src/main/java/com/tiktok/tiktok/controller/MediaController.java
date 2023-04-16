@@ -27,8 +27,8 @@ public class MediaController extends AbstractController{
 
     public UserSimpleDTO upload(@RequestParam("file") MultipartFile file, HttpSession s){
 
-        int ownerId = getLoggedUserId(s);
-        return mediaService.upload(file, ownerId);
+        int loggedUserId = getLoggedUserId(s);
+        return mediaService.upload(file, loggedUserId);
     }
     @PostMapping("/videos/media")
     public VideoSimpleDTO uploadVideo(@RequestParam("file") MultipartFile file,
@@ -36,8 +36,8 @@ public class MediaController extends AbstractController{
                                       @RequestParam("isPrivate") Boolean isPrivate,
                                       @RequestParam("soundId") int soundId,
                                       HttpSession s) {
-        int ownerId = getLoggedUserId(s);
-        return mediaService.uploadVideo(ownerId, file, caption, isPrivate, soundId);
+        int loggedUserId = getLoggedUserId(s);
+        return mediaService.uploadVideo(loggedUserId, file, caption, isPrivate, soundId);
     }
 
     @PostMapping("/sounds")

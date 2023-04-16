@@ -55,10 +55,10 @@ public class User {
     private Set<User> following = new HashSet<>();
 
     @OneToMany(mappedBy = "user")
-    Set<VideoReactions> reactions = new HashSet<>();
+    private Set<VideoReactions> reactions = new HashSet<>();
 
     @OneToMany(mappedBy = "user")
-    Set<CommentReactions> commentReactions = new HashSet<>();
+    private Set<CommentReactions> commentReactions = new HashSet<>();
 
     @Override
     public boolean equals(Object o) {

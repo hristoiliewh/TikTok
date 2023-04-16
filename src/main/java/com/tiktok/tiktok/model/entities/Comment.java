@@ -22,7 +22,7 @@ public class Comment {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
     @Column
-    private String text;
+    private String comment;
     @ManyToOne
     @JoinColumn(name = "video_id")
     private Video video;

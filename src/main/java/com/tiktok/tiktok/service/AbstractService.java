@@ -20,8 +20,6 @@ public abstract class AbstractService {
     @Autowired
     protected VideoRepository videoRepository;
     @Autowired
-    protected HashtagRepository hashtagRepository;
-    @Autowired
     protected SoundRepository soundRepository;
     @Autowired
     protected CommentRepository commentRepository;

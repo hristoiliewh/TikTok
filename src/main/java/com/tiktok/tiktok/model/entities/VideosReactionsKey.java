@@ -18,8 +18,8 @@ import java.io.Serializable;
 public class VideosReactionsKey implements Serializable {
 
     @Column(name = "video_id")
-    int videoId;
+    private int videoId;
 
     @Column(name = "user_id")
-    int userId;
+    private int userId;
 }

@@ -1,7 +1,5 @@
 package com.tiktok.tiktok.model.DTOs;
 
-import com.tiktok.tiktok.model.entities.User;
-import jakarta.persistence.Column;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
