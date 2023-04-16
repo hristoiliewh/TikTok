@@ -1,9 +1,6 @@
 package com.tiktok.tiktok.controller;
 
-import com.tiktok.tiktok.model.DTOs.CommentSimpleDTO;
-import com.tiktok.tiktok.model.DTOs.CommentWithoutVideoDTO;
-import com.tiktok.tiktok.model.DTOs.VideoDeletedDTO;
-import com.tiktok.tiktok.model.DTOs.VideoSimpleDTO;
+import com.tiktok.tiktok.model.DTOs.*;
 import com.tiktok.tiktok.service.VideoService;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,6 +31,12 @@ public class VideoController extends AbstractController{
     public CommentSimpleDTO addComment(@PathVariable int videoId, @RequestBody String text, HttpSession s){
         int loggedUserId = getLoggedUserId(s);
         return videoService.addComment(videoId, loggedUserId, text);
+    }
+
+    @GetMapping("/videos/{videoName}/find")
+    public List<VideoSimpleDTO> getByName(@PathVariable String videoName) {
+
+        return videoService.getByName(videoName);
     }
 
 

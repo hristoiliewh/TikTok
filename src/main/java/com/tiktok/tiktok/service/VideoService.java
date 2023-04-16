@@ -1,10 +1,8 @@
 package com.tiktok.tiktok.service;
 
-import com.tiktok.tiktok.model.DTOs.CommentSimpleDTO;
-import com.tiktok.tiktok.model.DTOs.CommentWithoutVideoDTO;
-import com.tiktok.tiktok.model.DTOs.VideoDeletedDTO;
-import com.tiktok.tiktok.model.DTOs.VideoSimpleDTO;
+import com.tiktok.tiktok.model.DTOs.*;
 import com.tiktok.tiktok.model.entities.Comment;
+import com.tiktok.tiktok.model.entities.Sound;
 import com.tiktok.tiktok.model.entities.User;
 import com.tiktok.tiktok.model.entities.Video;
 import com.tiktok.tiktok.model.exceptions.NotFoundException;
@@ -60,5 +58,15 @@ public class VideoService extends AbstractService{
         commentRepository.save(comment);
 
         return mapper.map(comment, CommentSimpleDTO.class);
+    }
+
+    public List<VideoSimpleDTO> getByName(String videoName) {
+        List<Video> videos = videoRepository.findAllContains(videoName);
+        if (videos.size() == 0){
+            throw new NotFoundException("Video not found");
+        }
+        return videos.stream()
+                .map(s -> mapper.map(s, VideoSimpleDTO.class))
+                .collect(Collectors.toList());
     }
 }

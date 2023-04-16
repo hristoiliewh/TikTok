@@ -2,6 +2,7 @@ package com.tiktok.tiktok.service;
 
 import com.tiktok.tiktok.model.DTOs.SoundSimpleDTO;
 import com.tiktok.tiktok.model.DTOs.VideoSimpleDTO;
+import com.tiktok.tiktok.model.entities.Hashtag;
 import com.tiktok.tiktok.model.entities.Sound;
 import com.tiktok.tiktok.model.DTOs.UserSimpleDTO;
 import com.tiktok.tiktok.model.entities.User;
@@ -9,6 +10,7 @@ import com.tiktok.tiktok.model.entities.Video;
 import com.tiktok.tiktok.model.exceptions.BadRequestException;
 import com.tiktok.tiktok.model.exceptions.NotFoundException;
 import org.apache.commons.io.FilenameUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -16,12 +18,17 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
 @Service
 
 public class MediaService extends AbstractService {
+
+    @Autowired
+    private HashtagService hashtagService;
     public UserSimpleDTO upload(MultipartFile origin, int userId) {
         String contentType = origin.getContentType();
         if (!contentType.equals("image/jpeg") && !contentType.equals("image/png")) {
@@ -72,6 +79,8 @@ public class MediaService extends AbstractService {
         String path = uploadMedia(origin);
         video.setUrl(path);
 
+        hashtagService.checkForHashtags(caption);
+
         videoRepository.save(video);
         return mapper.map(video, VideoSimpleDTO.class);
     }
@@ -115,4 +124,6 @@ public class MediaService extends AbstractService {
         }
         throw new NotFoundException("File not found");
     }
+
+
 }

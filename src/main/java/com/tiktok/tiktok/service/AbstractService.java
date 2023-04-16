@@ -5,10 +5,7 @@ import com.tiktok.tiktok.model.entities.Sound;
 import com.tiktok.tiktok.model.entities.User;
 import com.tiktok.tiktok.model.entities.Video;
 import com.tiktok.tiktok.model.exceptions.NotFoundException;
-import com.tiktok.tiktok.model.repositories.CommentRepository;
-import com.tiktok.tiktok.model.repositories.SoundRepository;
-import com.tiktok.tiktok.model.repositories.UserRepository;
-import com.tiktok.tiktok.model.repositories.VideoRepository;
+import com.tiktok.tiktok.model.repositories.*;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -21,6 +18,8 @@ public abstract class AbstractService {
     protected UserRepository userRepository;
     @Autowired
     protected VideoRepository videoRepository;
+    @Autowired
+    protected HashtagRepository hashtagRepository;
     @Autowired
     protected SoundRepository soundRepository;
     @Autowired
