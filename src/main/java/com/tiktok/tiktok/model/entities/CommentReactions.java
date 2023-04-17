@@ -6,10 +6,10 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-@Entity(name = "users_react_to_comments")
 @Getter
 @Setter
 @NoArgsConstructor
+@Entity(name = "users_react_to_comments")
 public class CommentReactions {
     @EmbeddedId
     CommentsReactionsKey id = new CommentsReactionsKey();

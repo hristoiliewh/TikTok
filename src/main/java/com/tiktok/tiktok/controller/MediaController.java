@@ -1,11 +1,9 @@
 package com.tiktok.tiktok.controller;
 
 
-
 import com.tiktok.tiktok.model.DTOs.SoundSimpleDTO;
 import com.tiktok.tiktok.model.DTOs.VideoSimpleDTO;
 import com.tiktok.tiktok.model.DTOs.UserSimpleDTO;
-import com.tiktok.tiktok.model.entities.Sound;
 import com.tiktok.tiktok.service.MediaService;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
@@ -18,32 +16,33 @@ import java.io.IOException;
 import java.nio.file.Files;
 
 @RestController
-public class MediaController extends AbstractController{
+public class MediaController extends AbstractController {
 
     @Autowired
     private MediaService mediaService;
 
-    @PostMapping("/media")
+    @PostMapping("/users/media")
 
-    public UserSimpleDTO upload(@RequestParam("file") MultipartFile file, HttpSession s){
+    public UserSimpleDTO uploadProfilePhoto(@RequestParam("file") MultipartFile file, HttpSession s) throws Exception {
 
         int loggedUserId = getLoggedUserId(s);
-        return mediaService.upload(file, loggedUserId);
+        return mediaService.uploadProfilePhoto(file, loggedUserId);
     }
+
     @PostMapping("/videos/media")
     public VideoSimpleDTO uploadVideo(@RequestParam("file") MultipartFile file,
                                       @RequestParam("caption") String caption,
                                       @RequestParam("isPrivate") Boolean isPrivate,
                                       @RequestParam("soundId") int soundId,
-                                      HttpSession s) {
+                                      HttpSession s) throws Exception {
         int loggedUserId = getLoggedUserId(s);
         return mediaService.uploadVideo(loggedUserId, file, caption, isPrivate, soundId);
     }
 
-    @PostMapping("/sounds")
+    @PostMapping("/sounds/media")
     public SoundSimpleDTO uploadSound(@RequestParam("file") MultipartFile file,
                                       @RequestParam("name") String name,
-                                      HttpSession s) {
+                                      HttpSession s) throws Exception {
         isLogged(s);
         return mediaService.uploadSound(file, name);
     }

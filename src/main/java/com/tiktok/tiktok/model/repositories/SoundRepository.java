@@ -12,6 +12,7 @@ import java.util.List;
 public interface SoundRepository extends JpaRepository<Sound, Integer> {
 
     boolean existsByName(String name);
+
     @Query(value = "SELECT * FROM sounds WHERE name LIKE %:name%", nativeQuery = true)
     List<Sound> findAllContains(@Param("name") String name);
 

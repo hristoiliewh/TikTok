@@ -26,18 +26,22 @@ public abstract class AbstractService {
     @Autowired
     protected ModelMapper mapper;
 
-    protected User getUserById(int id){
+    protected User getUserById(int id) {
         return userRepository.findById(id).orElseThrow(() -> new NotFoundException("User not found"));
     }
-    protected Video getVideoById(int id){
+
+    protected Video getVideoById(int id) {
         return videoRepository.findById(id).orElseThrow(() -> new NotFoundException("Video not found"));
     }
+
     protected Comment getCommentById(int id) {
         return commentRepository.findById(id).orElseThrow(() -> new NotFoundException("Comment not found"));
     }
+
     protected Sound getSoundById(int soundId) {
         return soundRepository.findById(soundId).orElseThrow(() -> new NotFoundException("Sound not found"));
     }
+
     protected boolean isPossibleToWatch(Video video, int userId) {
         if (video.isPrivate() && video.getOwner().getId() != userId) {
             return false;

@@ -12,11 +12,11 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 
-@Entity(name = "videos")
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
+@Entity(name = "videos")
 public class Video {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

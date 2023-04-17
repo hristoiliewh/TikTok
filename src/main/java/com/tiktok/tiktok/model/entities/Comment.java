@@ -1,7 +1,5 @@
 package com.tiktok.tiktok.model.entities;
 
-import com.tiktok.tiktok.model.DTOs.CommentReactionDTO;
-import com.tiktok.tiktok.model.DTOs.CommentWithoutVideoDTO;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -10,7 +8,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
 import java.util.Set;
-
 
 @Getter
 @Setter

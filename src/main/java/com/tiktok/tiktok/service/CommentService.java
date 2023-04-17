@@ -11,7 +11,7 @@ import java.time.LocalDateTime;
 import java.util.Optional;
 
 @Service
-public class CommentService extends AbstractService{
+public class CommentService extends AbstractService {
 
     @Autowired
     private CommentReactionRepository commentReactionRepository;
@@ -19,7 +19,7 @@ public class CommentService extends AbstractService{
 
     public CommentWithoutVideoAndParentComment getById(int commentId, int loggedUserId) {
         Comment comment = getCommentById(commentId);
-        if (comment.getOwner().getId() != loggedUserId){
+        if (comment.getOwner().getId() != loggedUserId) {
             throw new UnauthorizedException("Can't delete this comment. You are unauthorized.");
         }
         return mapper.map(comment, CommentWithoutVideoAndParentComment.class);
@@ -28,7 +28,7 @@ public class CommentService extends AbstractService{
 
     public CommentDeletedDTO deleteComment(int commentId, int loggedUserId) {
         Comment comment = getCommentById(commentId);
-        if (comment.getOwner().getId() != loggedUserId){
+        if (comment.getOwner().getId() != loggedUserId) {
             throw new UnauthorizedException("Can't delete this comment. You are unauthorized.");
         }
         commentRepository.deleteById(commentId);
@@ -54,12 +54,12 @@ public class CommentService extends AbstractService{
         Comment comment = getCommentById(commentId);
         User user = getUserById(userId);
         Optional<CommentReactions> commentReactions = commentReactionRepository.findByCommentAndUser(comment, user);
-        if (commentReactions.isPresent()){
+        if (commentReactions.isPresent()) {
             CommentReactions reactions1 = commentReactions.get();
             reactions1.setLiked(!reactions1.isLiked());
             commentReactionRepository.save(reactions1);
             return mapper.map(reactions1, CommentReactionDTO.class);
-        } else{
+        } else {
             CommentReactions reactions = new CommentReactions();
             reactions.setUser(user);
             reactions.setComment(comment);
@@ -73,7 +73,7 @@ public class CommentService extends AbstractService{
         Comment comment = getCommentById(commentId);
         System.out.println("lnefkjsbdff");
         Video video = getVideoById(comment.getVideo().getId());
-        if (!isPossibleToWatch(video,userId)){
+        if (!isPossibleToWatch(video, userId)) {
             throw new UnauthorizedException("This video is private and you do not have access to it's comments.");
         }
         NumberOfReactionsDTO dto = new NumberOfReactionsDTO();

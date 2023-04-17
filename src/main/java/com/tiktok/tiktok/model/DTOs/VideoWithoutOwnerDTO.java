@@ -21,5 +21,4 @@ public class VideoWithoutOwnerDTO {
     private String url;
 
     private SoundSimpleDTO sound;
-
 }

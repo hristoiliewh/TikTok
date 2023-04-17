@@ -20,5 +20,4 @@ public class RegisterDTO {
     private String gender;
     private String bio;
     private String username;
-
 }

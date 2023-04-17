@@ -15,30 +15,26 @@ import java.util.List;
 import java.util.Set;
 
 @Service
-public class HashtagService extends AbstractService{
+public class HashtagService extends AbstractService {
 
     @Autowired
     private HashtagRepository hashtagRepository;
 
-    @Autowired
-    private ModelMapper mapper;
-
     public Hashtag upload(String hashtag) {
-        if (!isValidHashtag(hashtag)){
+        if (!isValidHashtag(hashtag)) {
             throw new BadRequestException("Hashtags can contains only letters and/or digits and should be at least 3 digits long.");
         }
         Hashtag tag = new Hashtag();
-        if (hashtagRepository.findByTag("#" + hashtag) == null){
+        if (hashtagRepository.findByTag("#" + hashtag) == null) {
             tag.setTag("#" + hashtag);
             hashtagRepository.save(tag);
             return tag;
-        }
-        else{
+        } else {
             return hashtagRepository.findByTag("#" + hashtag);
         }
     }
 
-    private boolean isValidHashtag(String hashtag){
+    private boolean isValidHashtag(String hashtag) {
         String pattern = "^[a-zA-Z0-9._-]{3,30}$";
         return hashtag.matches(pattern);
     }
@@ -52,7 +48,7 @@ public class HashtagService extends AbstractService{
             }
         }
         Set<Hashtag> validHashtags = new HashSet<>();
-        for (String h : hashtags){
+        for (String h : hashtags) {
             validHashtags.add(upload(h));
         }
         return validHashtags;

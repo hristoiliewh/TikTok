@@ -5,10 +5,10 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-@Entity(name = "users_react_to_videos")
 @Getter
 @Setter
 @NoArgsConstructor
+@Entity(name = "users_react_to_videos")
 public class VideoReactions {
     @EmbeddedId
     private VideosReactionsKey id = new VideosReactionsKey();

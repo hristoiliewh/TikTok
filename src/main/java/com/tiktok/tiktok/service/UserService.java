@@ -17,19 +17,13 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
-public class UserService extends AbstractService{
+public class UserService extends AbstractService {
     @Autowired
     private MailSenderService senderService;
     @Autowired
-    private HashtagService hashtagService;
-    @Autowired
-    private ModelMapper mapper;
-    @Autowired
-    private UserRepository userRepository;
-    @Autowired
     private BCryptPasswordEncoder encoder;
 
-    private static class PasswordGenerator{
+    private static class PasswordGenerator {
         private static final String CHARACTERS = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*()_+";
         private static final Random random = new SecureRandom();
 
@@ -44,26 +38,26 @@ public class UserService extends AbstractService{
     }
 
     public UserSimpleDTO register(RegisterDTO dto) {
-        if(!dto.getPassword().equals(dto.getConfirmPassword())){
+        if (!dto.getPassword().equals(dto.getConfirmPassword())) {
             throw new BadRequestException("Passwords missmatch!");
         }
-        if(!isStrongPassword(dto.getPassword())){
+        if (!isStrongPassword(dto.getPassword())) {
             throw new BadRequestException("Weak password!");
         }
-        if(!isValidEmail(dto.getEmail())){
+        if (!isValidEmail(dto.getEmail())) {
             throw new BadRequestException("Invalid email!");
         }
-        if(userRepository.existsByEmail(dto.getEmail())){
+        if (userRepository.existsByEmail(dto.getEmail())) {
             throw new BadRequestException("Email already exists!");
         }
-        if(!isValidUsername(dto.getUsername())){
+        if (!isValidUsername(dto.getUsername())) {
             throw new BadRequestException("Invalid username!");
         }
-        if(userRepository.existsByUsername(dto.getUsername())){
+        if (userRepository.existsByUsername(dto.getUsername())) {
             throw new BadRequestException("Username already exists!");
         }
-        if (userRepository.existsByPhoneNumber(dto.getPhoneNumber())){
-            throw new BadRequestException("Phone number already exists");
+        if (userRepository.existsByPhoneNumber(dto.getPhoneNumber())) {
+            throw new BadRequestException("Phone number already exists!");
         }
         User u = mapper.map(dto, User.class);
         u.setPassword(encoder.encode(u.getPassword()));
@@ -84,19 +78,21 @@ public class UserService extends AbstractService{
         }).start();
         return mapper.map(u, UserSimpleDTO.class);
     }
+
     public UserFullInfoDTO login(LoginDTO dto) {
         Optional<User> u = userRepository.getByUsername(dto.getUsername());
-        if(!u.isPresent()){
+        if (!u.isPresent()) {
             throw new UnauthorizedException("Wrong credentials");
         }
-        if(!encoder.matches(dto.getPassword(), u.get().getPassword())){
+        if (!encoder.matches(dto.getPassword(), u.get().getPassword())) {
             throw new UnauthorizedException("Wrong credentials");
         }
-        if (u.get().isEmailConfirmed() == false){
+        if (!u.get().isEmailConfirmed()) {
             throw new UnauthorizedException("Your email is not confirmed. Please confirm you registration before login.");
         }
         return mapper.map(u, UserFullInfoDTO.class);
     }
+
     private boolean isStrongPassword(String password) {
         String pattern = "^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[@#$%^&+=!])(?=\\S+$).{8,}$";
         return password.matches(pattern);
@@ -107,7 +103,7 @@ public class UserService extends AbstractService{
         return email.matches(pattern);
     }
 
-    private boolean isValidUsername(String username){
+    private boolean isValidUsername(String username) {
         String pattern = "^[a-zA-Z0-9._-]{3,30}$";
         return username.matches(pattern);
     }
@@ -127,10 +123,10 @@ public class UserService extends AbstractService{
 
     public UserFullInfoDTO searchByUsername(String username) {
         Optional<User> user = userRepository.getByUsername(username);
-        if (!user.isPresent()){
+        if (!user.isPresent()) {
             throw new NotFoundException("User not found");
         }
-        return mapper.map(user,UserFullInfoDTO.class);
+        return mapper.map(user, UserFullInfoDTO.class);
     }
 
     public UserFullInfoDTO getById(int userId) {
@@ -140,7 +136,7 @@ public class UserService extends AbstractService{
 
     public List<UserWithPicNameIdDTO> getAllFollowers(int userId) {
         Set<User> followers = getUserById(userId).getFollowers();
-        if (followers.size() == 0){
+        if (followers.size() == 0) {
             throw new NotFoundException("No followers found");
         }
         return followers.stream()
@@ -150,7 +146,7 @@ public class UserService extends AbstractService{
 
     public List<UserWithPicNameIdDTO> getAllFollowing(int userId) {
         Set<User> following = getUserById(userId).getFollowing();
-        if (following.size() == 0){
+        if (following.size() == 0) {
             throw new NotFoundException("No following users found");
         }
         return following.stream()
@@ -160,7 +156,7 @@ public class UserService extends AbstractService{
 
     public List<VideoWithoutOwnerDTO> getAllVideos(int userId) {
         List<Video> videos = getUserById(userId).getVideos();
-        if (videos.size() == 0){
+        if (videos.size() == 0) {
             throw new NotFoundException("No videos found");
         }
         return videos.stream()
@@ -176,32 +172,32 @@ public class UserService extends AbstractService{
 
     public UserSimpleDTO editAccount(UserEditDTO corrections, int userId) {
         User u = getUserById(userId);
-        if (!corrections.getPassword().equals(corrections.getConfirmPassword())){
+        if (!corrections.getPassword().equals(corrections.getConfirmPassword())) {
             throw new BadRequestException("Password missmatch");
         }
-        if (corrections.getEmail().equals(null)){
-            if (!isValidEmail(corrections.getEmail())){
+        if (corrections.getEmail().equals(null)) {
+            if (!isValidEmail(corrections.getEmail())) {
                 throw new BadRequestException("Invalid Email");
             }
-            if (userRepository.existsByEmail(corrections.getEmail())){
+            if (userRepository.existsByEmail(corrections.getEmail())) {
                 throw new BadRequestException("Email already exists");
             }
             u.setEmail(corrections.getEmail());
         }
-        if (corrections.getUsername().equals(null)){
-            if (userRepository.existsByUsername(corrections.getUsername())){
+        if (corrections.getUsername().equals(null)) {
+            if (userRepository.existsByUsername(corrections.getUsername())) {
                 throw new BadRequestException("Username already exists");
             }
             u.setUsername(corrections.getUsername());
         }
-        if (corrections.getPhoneNumber().equals(null)){
-            if (userRepository.existsByPhoneNumber(corrections.getPhoneNumber())){
+        if (corrections.getPhoneNumber().equals(null)) {
+            if (userRepository.existsByPhoneNumber(corrections.getPhoneNumber())) {
                 throw new BadRequestException("Phone number already exists");
             }
             u.setPhoneNumber(corrections.getPhoneNumber());
         }
-        if (corrections.getBio().equals(null)){
-            if (corrections.getBio().length() >= 200){
+        if (corrections.getBio().equals(null)) {
+            if (corrections.getBio().length() >= 200) {
                 throw new BadRequestException("Too long bio. It must be max 200 symbols.");
             }
             u.setBio(corrections.getBio());
@@ -212,7 +208,7 @@ public class UserService extends AbstractService{
 
     public UserConfirmedDTO confirmRegistration(int userId, ConfirmDTO dto) {
         User user = getUserById(userId);
-        if (!userRepository.existsByConfirmationCodeAndId(dto.getConfirmationCode(), userId)){
+        if (!userRepository.existsByConfirmationCodeAndId(dto.getConfirmationCode(), userId)) {
             throw new NotFoundException("The confirmation code does not match with the user");
         }
         user.setEmailConfirmed(true);
@@ -222,7 +218,7 @@ public class UserService extends AbstractService{
 
     public PasswordDTO forgottenPassword(ForgottenPasswordDTO dto) {
         Optional<User> user = userRepository.getByEmail(dto.getEmail());
-        if (!user.isPresent()){
+        if (!user.isPresent()) {
             throw new NotFoundException("The given email is not registered in our system.");
         }
         String pass = PasswordGenerator.generatePassword();

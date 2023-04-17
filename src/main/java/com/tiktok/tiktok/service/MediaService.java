@@ -27,7 +27,7 @@ public class MediaService extends AbstractService {
     @Autowired
     private HashtagService hashtagService;
 
-    public UserSimpleDTO upload(MultipartFile origin, int userId) {
+    public UserSimpleDTO uploadProfilePhoto(MultipartFile origin, int userId) throws Exception {
         String contentType = origin.getContentType();
         if (!contentType.equals("image/jpeg") && !contentType.equals("image/png")) {
             throw new BadRequestException("Only JPEG and PNG images are allowed");
@@ -37,32 +37,11 @@ public class MediaService extends AbstractService {
         String path = uploadMedia(origin);
         u.setProfilePhotoURL(path);
         userRepository.save(u);
-
         return mapper.map(u, UserSimpleDTO.class);
     }
 
-    private String uploadMedia(MultipartFile origin) {
-        try {
-            String name = UUID.randomUUID().toString();
-            String ext = FilenameUtils.getExtension(origin.getOriginalFilename());
 
-            name = name + "." + ext;
-            File dir = new File("uploads");
-            if (!dir.exists()) {
-                dir.mkdirs();
-            }
-            File f = new File(dir, name);
-            Files.copy(origin.getInputStream(), f.toPath());
-
-            String path = dir.getName() + File.separator + f.getName();
-            return path;
-        } catch (IOException e) {
-            System.out.println("IOException by copying media.");
-            throw new BadRequestException("Failed uploading media.");
-        }
-    }
-
-    public VideoSimpleDTO uploadVideo(int userId, MultipartFile origin, String caption, Boolean isPrivate, int soundId) {
+    public VideoSimpleDTO uploadVideo(int userId, MultipartFile origin, String caption, Boolean isPrivate, int soundId) throws Exception {
         User user = getUserById(userId);
         validateVideoInfo(origin, caption);
 
@@ -84,7 +63,6 @@ public class MediaService extends AbstractService {
         return mapper.map(video, VideoSimpleDTO.class);
     }
 
-
     private void validateVideoInfo(MultipartFile origin, String caption) {
         if (origin.isEmpty()) {
             throw new BadRequestException("The file is not attached!");
@@ -97,7 +75,7 @@ public class MediaService extends AbstractService {
         }
     }
 
-    public SoundSimpleDTO uploadSound(MultipartFile origin, String name) {
+    public SoundSimpleDTO uploadSound(MultipartFile origin, String name) throws Exception {
         String fileName = origin.getOriginalFilename();
         String fileExtension = fileName.substring(fileName.lastIndexOf('.') + 1);
 
@@ -115,10 +93,30 @@ public class MediaService extends AbstractService {
         return mapper.map(sound, SoundSimpleDTO.class);
     }
 
+    private String uploadMedia(MultipartFile origin) throws Exception {
+        try {
+            String name = UUID.randomUUID().toString();
+            String ext = FilenameUtils.getExtension(origin.getOriginalFilename());
+
+            name = name + "." + ext;
+            File dir = new File("uploads");
+            if (!dir.exists()) {
+                dir.mkdirs();
+            }
+            File f = new File(dir, name);
+            Files.copy(origin.getInputStream(), f.toPath());
+
+            String path = dir.getName() + File.separator + f.getName();
+            return path;
+        } catch (IOException e) {
+            throw new Exception("Error uploading media. Please contact administration!");
+        }
+    }
+
     public File download(String fileName) {
         fileName = "uploads" + File.separator + fileName;
         File f = new File(fileName);
-        if(f.exists()){
+        if (f.exists()) {
             return f;
         }
         throw new NotFoundException("File not found");

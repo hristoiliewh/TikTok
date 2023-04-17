@@ -17,7 +17,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
-public class VideoService extends AbstractService{
+public class VideoService extends AbstractService {
 
     @Autowired
     private VideoReactionRepository videoReactionRepository;
@@ -27,7 +27,7 @@ public class VideoService extends AbstractService{
 
     public VideoDeletedDTO deleteVideo(int videoId, int loggedUserId) {
         Video video = getVideoById(videoId);
-        if (video.getOwner().getId() != loggedUserId){
+        if (video.getOwner().getId() != loggedUserId) {
             throw new UnauthorizedException("Can't delete this video. You are unauthorized.");
         }
         videoRepository.deleteById(videoId);
@@ -44,11 +44,11 @@ public class VideoService extends AbstractService{
 
     public List<CommentWithoutVideoDTO> getAllComments(int videoId, int loggedUserId) {
         Video video = getVideoById(videoId);
-        if (!isPossibleToWatch(video, loggedUserId)){
+        if (!isPossibleToWatch(video, loggedUserId)) {
             throw new UnauthorizedException("This video is private and you do not have access to it.");
         }
         List<Comment> comments = video.getComments();
-        if (comments.size() == 0){
+        if (comments.size() == 0) {
             throw new NotFoundException("No comments found");
         }
         return comments.stream()
@@ -59,7 +59,7 @@ public class VideoService extends AbstractService{
 
     public CommentSimpleDTO addComment(int videoId, int loggedUserId, String comment) {
         Video video = getVideoById(videoId);
-        if (!isPossibleToWatch(video,loggedUserId)){
+        if (!isPossibleToWatch(video, loggedUserId)) {
             throw new UnauthorizedException("This video is private and you do not have access to it.");
         }
         User owner = getUserById(loggedUserId);
@@ -77,16 +77,16 @@ public class VideoService extends AbstractService{
 
     public List<VideoSimpleDTO> getByName(String videoName, int loggedUserId) {
         List<Video> videos = videoRepository.findAllContains(videoName);
-        if (videos.size() == 0){
+        if (videos.size() == 0) {
             throw new NotFoundException("No videos with the given name found.");
         }
         List<Video> videosNotPrivate = new ArrayList<>();
-        for (Video v : videos){
-            if (isPossibleToWatch(v,loggedUserId)){
+        for (Video v : videos) {
+            if (isPossibleToWatch(v, loggedUserId)) {
                 videosNotPrivate.add(v);
             }
         }
-        if (videosNotPrivate.size() == 0){
+        if (videosNotPrivate.size() == 0) {
             throw new NotFoundException("No videos with the given name found.");
         }
         return videosNotPrivate.stream()
@@ -95,20 +95,20 @@ public class VideoService extends AbstractService{
     }
 
     public List<VideoSimpleDTO> getByHashtag(String hashtag, int loggedUserId) {
-        if (!hashtagRepository.existsByTag("#" + hashtag)){
+        if (!hashtagRepository.existsByTag("#" + hashtag)) {
             throw new NotFoundException("No results found for #" + hashtag + "");
         }
         Set<Video> videos = hashtagRepository.findByTag("#" + hashtag).getVideo();
-        if (videos.size() == 0){
+        if (videos.size() == 0) {
             throw new NotFoundException("No videos with the given hashtag found");
         }
         List<Video> videosNotPrivate = new ArrayList<>();
-        for (Video v : videos){
-            if (isPossibleToWatch(v, loggedUserId)){
+        for (Video v : videos) {
+            if (isPossibleToWatch(v, loggedUserId)) {
                 videosNotPrivate.add(v);
             }
         }
-        if (videosNotPrivate.size() == 0){
+        if (videosNotPrivate.size() == 0) {
             throw new NotFoundException("No videos with the given hashtag found");
         }
         return videosNotPrivate.stream()
@@ -120,12 +120,12 @@ public class VideoService extends AbstractService{
         Video video = getVideoById(videoId);
         User user = getUserById(loggedUserId);
         Optional<VideoReactions> videoReactions = videoReactionRepository.findByVideoAndUser(video, user);
-        if (videoReactions.isPresent()){
+        if (videoReactions.isPresent()) {
             VideoReactions reactions1 = videoReactions.get();
             reactions1.setLiked(!reactions1.isLiked());
             videoReactionRepository.save(reactions1);
             return mapper.map(reactions1, VideoReactionDTO.class);
-        } else{
+        } else {
             VideoReactions reactions = new VideoReactions();
             reactions.setUser(user);
             reactions.setVideo(video);
@@ -137,7 +137,7 @@ public class VideoService extends AbstractService{
 
     public NumberOfReactionsDTO getReactions(int videoId, int loggedUserId) {
         Video video = getVideoById(videoId);
-        if (!isPossibleToWatch(video,loggedUserId)){
+        if (!isPossibleToWatch(video, loggedUserId)) {
             throw new UnauthorizedException("This video is private and you do not have access to it.");
         }
         NumberOfReactionsDTO dto = new NumberOfReactionsDTO();

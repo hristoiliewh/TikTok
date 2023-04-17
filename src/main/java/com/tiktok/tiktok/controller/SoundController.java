@@ -18,11 +18,13 @@ public class SoundController extends AbstractController {
     public SoundSimpleDTO getById(@PathVariable int soundId) {
         return soundService.getById(soundId);
     }
+
     @GetMapping("/sounds")
     public List<SoundSimpleDTO> getAll(HttpSession s) {
         isLogged(s);
         return soundService.getAll();
     }
+
     @GetMapping("/sounds/{soundName}")
     public List<SoundSimpleDTO> getByName(@PathVariable String soundName) {
         return soundService.getByName(soundName);

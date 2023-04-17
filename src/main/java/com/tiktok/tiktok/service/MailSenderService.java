@@ -13,7 +13,7 @@ public class MailSenderService {
 
     public void sendEmail(String toEmail,
                           String subject,
-                          String body){
+                          String body) {
         SimpleMailMessage message = new SimpleMailMessage();
         message.setFrom("ittalents.tiktok@gmail.com");
         message.setTo(toEmail);
@@ -21,6 +21,5 @@ public class MailSenderService {
         message.setSubject(subject);
 
         mailSender.send(message);
-
     }
 }

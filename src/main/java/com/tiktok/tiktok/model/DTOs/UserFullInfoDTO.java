@@ -10,8 +10,6 @@ import java.util.List;
 @Setter
 @NoArgsConstructor
 public class UserFullInfoDTO extends UserSimpleDTO{
-
-    private String profilePhotoURL;
     private List<UserSimpleDTO> followers;
     private List<UserSimpleDTO> following;
     private List<VideoWithoutOwnerDTO> videos;

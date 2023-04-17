@@ -7,34 +7,36 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-public class CommentController extends AbstractController{
+public class CommentController extends AbstractController {
     @Autowired
     private CommentService commentService;
 
     @GetMapping("/comments/{commentId}")
-    public CommentWithoutVideoAndParentComment getById(@PathVariable int commentId, HttpSession s){
+    public CommentWithoutVideoAndParentComment getById(@PathVariable int commentId, HttpSession s) {
         int loggedUserId = getLoggedUserId(s);
         return commentService.getById(commentId, loggedUserId);
     }
 
     @DeleteMapping("/comments/{commentId}")
-    public CommentDeletedDTO deleteComment(@PathVariable int commentId, HttpSession s){
+    public CommentDeletedDTO deleteComment(@PathVariable int commentId, HttpSession s) {
         int loggedUserId = getLoggedUserId(s);
         return commentService.deleteComment(commentId, loggedUserId);
     }
 
     @PostMapping("/comments/{commentId}/reply")
-    public CommentWithoutRepliedDTO replyToComment(@PathVariable int commentId, @RequestBody String text, HttpSession s){
+    public CommentWithoutRepliedDTO replyToComment(@PathVariable int commentId, @RequestBody String text, HttpSession s) {
         int loggedUserId = getLoggedUserId(s);
         return commentService.replyToComment(commentId, loggedUserId, text);
     }
+
     @PostMapping("/comments/{commentId}/react")
-    public CommentReactionDTO likeDislike(@PathVariable int commentId, HttpSession s){
+    public CommentReactionDTO likeDislike(@PathVariable int commentId, HttpSession s) {
         int loggedUserId = getLoggedUserId(s);
         return commentService.likeDislike(commentId, loggedUserId);
     }
+
     @GetMapping("/comments/{commentId}/reactions")
-    public NumberOfReactionsDTO getReactions(@PathVariable int commentId, HttpSession s){
+    public NumberOfReactionsDTO getReactions(@PathVariable int commentId, HttpSession s) {
         int loggedUserId = checkIfIsLogged(s);
         return commentService.getReactions(commentId, loggedUserId);
     }

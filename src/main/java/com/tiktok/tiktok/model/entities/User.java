@@ -12,9 +12,9 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 
-@Entity(name = "users")
 @Getter
 @Setter
+@Entity(name = "users")
 public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

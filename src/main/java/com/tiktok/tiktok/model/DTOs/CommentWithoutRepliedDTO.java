@@ -16,5 +16,4 @@ public class CommentWithoutRepliedDTO {
     private CommentWithoutVideoDTO parentComment;
     private LocalDateTime createdAt;
     private VideoWithoutOwnerDTO video;
-
 }
