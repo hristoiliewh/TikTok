@@ -7,6 +7,6 @@ import lombok.Setter;
 @Setter
 @Getter
 @NoArgsConstructor
-public class CommentSimpleDTO extends CommentWithoutVideoDTO {
+public class CommentFullInfoDTO extends CommentWithoutVideoDTO {
     private VideoWithoutOwnerDTO video;
 }

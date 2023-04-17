@@ -6,10 +6,13 @@ import com.tiktok.tiktok.service.UserService;
 import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 public class UserController extends AbstractController {
@@ -18,8 +21,7 @@ public class UserController extends AbstractController {
     private UserService userService;
 
     @PostMapping("/users/signup")
-    public ResponseEntity<UserSimpleDTO> register(@RequestBody RegisterDTO dto) {
-
+    public ResponseEntity<UserSimpleDTO> register(@Valid @RequestBody RegisterDTO dto) {
         UserSimpleDTO userSimpleDTO = userService.register(dto);
         return ResponseEntity.ok(userSimpleDTO);
     }

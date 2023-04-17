@@ -10,6 +10,7 @@ import com.tiktok.tiktok.model.exceptions.UnauthorizedException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
+
 import java.security.SecureRandom;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -39,17 +40,8 @@ public class UserService extends AbstractService {
         if (!dto.getPassword().equals(dto.getConfirmPassword())) {
             throw new BadRequestException("Passwords missmatch!");
         }
-        if (!isStrongPassword(dto.getPassword())) {
-            throw new BadRequestException("Weak password!");
-        }
-        if (!isValidEmail(dto.getEmail())) {
-            throw new BadRequestException("Invalid email!");
-        }
         if (userRepository.existsByEmail(dto.getEmail())) {
             throw new BadRequestException("Email already exists!");
-        }
-        if (!isValidUsername(dto.getUsername())) {
-            throw new BadRequestException("Invalid username!");
         }
         if (userRepository.existsByUsername(dto.getUsername())) {
             throw new BadRequestException("Username already exists!");
@@ -92,20 +84,6 @@ public class UserService extends AbstractService {
         return mapper.map(u.get(), UserFullInfoDTO.class);
     }
 
-    private boolean isStrongPassword(String password) {
-        String pattern = "^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[@#$%^&+=!])(?=\\S+$).{8,}$";
-        return password.matches(pattern);
-    }
-
-    private boolean isValidEmail(String email) {
-        String pattern = "^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,}$";
-        return email.matches(pattern);
-    }
-
-    private boolean isValidUsername(String username) {
-        String pattern = "^[a-zA-Z0-9._-]{3,30}$";
-        return username.matches(pattern);
-    }
 
     public int follow(int followerId, int followToId) {
         User follower = getUserById(followerId);
@@ -174,8 +152,20 @@ public class UserService extends AbstractService {
         if (!corrections.getPassword().equals(corrections.getConfirmPassword())) {
             throw new BadRequestException("Password missmatch");
         }
-        if (corrections.getEmail().equals(null)) {
-            if (!isValidEmail(corrections.getEmail())) {
+        if (!corrections.getPassword().equals("")) {
+            if (!corrections.getPassword().matches("^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[@#$%^&+=])(?=\\S+$).{8,}$")) {
+                throw new BadRequestException("Weak password");
+            }
+            u.setPassword(corrections.getPassword());
+        }
+        if (!corrections.getName().equals("")) {
+            if (!corrections.getName().matches("^[A-Za-z -]{2,50}$")) {
+                throw new BadRequestException("Invalid name format");
+            }
+            u.setName(corrections.getName());
+        }
+        if (!corrections.getEmail().equals("")) {
+            if (!corrections.getEmail().matches("^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,}$")) {
                 throw new BadRequestException("Invalid Email");
             }
             if (userRepository.existsByEmail(corrections.getEmail())) {
@@ -183,21 +173,27 @@ public class UserService extends AbstractService {
             }
             u.setEmail(corrections.getEmail());
         }
-        if (corrections.getUsername().equals(null)) {
+        if (!corrections.getUsername().equals("")) {
+            if (!corrections.getPhoneNumber().matches("^[a-zA-Z0-9]*$")) {
+                throw new BadRequestException("Username must contain only alphanumeric characters");
+            }
             if (userRepository.existsByUsername(corrections.getUsername())) {
                 throw new BadRequestException("Username already exists");
             }
             u.setUsername(corrections.getUsername());
         }
-        if (corrections.getPhoneNumber().equals(null)) {
+        if (!corrections.getPhoneNumber().equals("")) {
+            if (!corrections.getPhoneNumber().matches("^\\d{10}$")) {
+                throw new BadRequestException("Invalid phone number format");
+            }
             if (userRepository.existsByPhoneNumber(corrections.getPhoneNumber())) {
                 throw new BadRequestException("Phone number already exists");
             }
             u.setPhoneNumber(corrections.getPhoneNumber());
         }
-        if (corrections.getBio().equals(null)) {
+        if (!corrections.getBio().equals("")) {
             if (corrections.getBio().length() >= 200) {
-                throw new BadRequestException("Too long bio. It must be max 200 symbols.");
+                throw new BadRequestException("The bio should not be larger than 200 symbols.");
             }
             u.setBio(corrections.getBio());
         }
@@ -210,7 +206,7 @@ public class UserService extends AbstractService {
         if (!user.isPresent()) {
             throw new NotFoundException("Not a valid confirmation code.");
         }
-        if (user.get().isEmailConfirmed()){
+        if (user.get().isEmailConfirmed()) {
             throw new BadRequestException("Registration already confirmed.");
         }
         user.get().setEmailConfirmed(true);

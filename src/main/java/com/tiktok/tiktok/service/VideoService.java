@@ -57,7 +57,7 @@ public class VideoService extends AbstractService {
     }
 
 
-    public CommentSimpleDTO addComment(int videoId, int loggedUserId, String comment) {
+    public CommentFullInfoDTO addComment(int videoId, int loggedUserId, String comment) {
         Video video = getVideoById(videoId);
         if (!isPossibleToWatch(video, loggedUserId)) {
             throw new UnauthorizedException("This video is private and you do not have access to it.");
@@ -72,7 +72,7 @@ public class VideoService extends AbstractService {
 
         commentRepository.save(c);
 
-        return mapper.map(c, CommentSimpleDTO.class);
+        return mapper.map(c, CommentFullInfoDTO.class);
     }
 
     public List<VideoSimpleDTO> getByName(String videoName, int loggedUserId) {

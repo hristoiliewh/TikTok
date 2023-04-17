@@ -36,10 +36,10 @@ public class VideoController extends AbstractController {
     }
 
     @PostMapping("/videos/{videoId}/comment")
-    public ResponseEntity<CommentSimpleDTO> addComment(@PathVariable int videoId, @RequestBody String comment, HttpSession s) {
+    public ResponseEntity<CommentFullInfoDTO> addComment(@PathVariable int videoId, @RequestBody String comment, HttpSession s) {
         int loggedUserId = getLoggedUserId(s);
-        CommentSimpleDTO commentSimpleDTO = videoService.addComment(videoId, loggedUserId, comment);
-        return ResponseEntity.ok(commentSimpleDTO);
+        CommentFullInfoDTO commentFullInfoDTO = videoService.addComment(videoId, loggedUserId, comment);
+        return ResponseEntity.ok(commentFullInfoDTO);
     }
 
     @GetMapping("/videos/{videoName}/find")
