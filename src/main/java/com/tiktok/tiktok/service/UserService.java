@@ -1,17 +1,15 @@
 package com.tiktok.tiktok.service;
 
 import com.tiktok.tiktok.model.DTOs.*;
+import org.mindrot.jbcrypt.BCrypt;
 import com.tiktok.tiktok.model.entities.User;
 import com.tiktok.tiktok.model.entities.Video;
 import com.tiktok.tiktok.model.exceptions.BadRequestException;
 import com.tiktok.tiktok.model.exceptions.NotFoundException;
 import com.tiktok.tiktok.model.exceptions.UnauthorizedException;
-import com.tiktok.tiktok.model.repositories.UserRepository;
-import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
-
 import java.security.SecureRandom;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -80,6 +78,7 @@ public class UserService extends AbstractService {
     }
 
     public UserFullInfoDTO login(LoginDTO dto) {
+
         Optional<User> u = userRepository.getByUsername(dto.getUsername());
         if (!u.isPresent()) {
             throw new UnauthorizedException("Wrong credentials");
@@ -90,7 +89,7 @@ public class UserService extends AbstractService {
         if (!u.get().isEmailConfirmed()) {
             throw new UnauthorizedException("Your email is not confirmed. Please confirm you registration before login.");
         }
-        return mapper.map(u, UserFullInfoDTO.class);
+        return mapper.map(u.get(), UserFullInfoDTO.class);
     }
 
     private boolean isStrongPassword(String password) {
@@ -206,13 +205,16 @@ public class UserService extends AbstractService {
         return mapper.map(u, UserSimpleDTO.class);
     }
 
-    public UserConfirmedDTO confirmRegistration(int userId, ConfirmDTO dto) {
-        User user = getUserById(userId);
-        if (!userRepository.existsByConfirmationCodeAndId(dto.getConfirmationCode(), userId)) {
-            throw new NotFoundException("The confirmation code does not match with the user");
+    public UserConfirmedDTO confirmRegistration(String confirmationCode) {
+        Optional<User> user = userRepository.getByConfirmationCode(confirmationCode);
+        if (!user.isPresent()) {
+            throw new NotFoundException("Not a valid confirmation code.");
         }
-        user.setEmailConfirmed(true);
-        userRepository.save(user);
+        if (user.get().isEmailConfirmed()){
+            throw new BadRequestException("Registration already confirmed.");
+        }
+        user.get().setEmailConfirmed(true);
+        userRepository.save(user.get());
         return mapper.map(user, UserConfirmedDTO.class);
     }
 

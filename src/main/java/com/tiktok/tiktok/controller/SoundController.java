@@ -4,6 +4,7 @@ import com.tiktok.tiktok.model.DTOs.SoundSimpleDTO;
 import com.tiktok.tiktok.service.SoundService;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -15,18 +16,22 @@ public class SoundController extends AbstractController {
 
 
     @GetMapping("/sounds/{soundId}/find")
-    public SoundSimpleDTO getById(@PathVariable int soundId) {
-        return soundService.getById(soundId);
+    public ResponseEntity<SoundSimpleDTO> getById(@PathVariable int soundId) {
+        SoundSimpleDTO soundSimpleDTO = soundService.getById(soundId);
+        return ResponseEntity.ok(soundSimpleDTO);
     }
 
     @GetMapping("/sounds")
-    public List<SoundSimpleDTO> getAll(HttpSession s) {
+    public ResponseEntity<List<SoundSimpleDTO>> getAll(HttpSession s) {
         isLogged(s);
-        return soundService.getAll();
+        List<SoundSimpleDTO> soundSimpleDTOS = soundService.getAll();
+        return ResponseEntity.ok(soundSimpleDTOS);
     }
 
     @GetMapping("/sounds/{soundName}")
-    public List<SoundSimpleDTO> getByName(@PathVariable String soundName) {
-        return soundService.getByName(soundName);
+    public ResponseEntity<List<SoundSimpleDTO>> getByName(@PathVariable String soundName) {
+
+        List<SoundSimpleDTO> soundSimpleDTOS = soundService.getByName(soundName);
+        return ResponseEntity.ok(soundSimpleDTOS);
     }
 }

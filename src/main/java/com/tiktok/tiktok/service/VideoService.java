@@ -118,6 +118,9 @@ public class VideoService extends AbstractService {
 
     public VideoReactionDTO likeDislike(int videoId, int loggedUserId) {
         Video video = getVideoById(videoId);
+        if (!isPossibleToWatch(video, loggedUserId)) {
+            throw new UnauthorizedException("This video is private and you do not have access to it.");
+        }
         User user = getUserById(loggedUserId);
         Optional<VideoReactions> videoReactions = videoReactionRepository.findByVideoAndUser(video, user);
         if (videoReactions.isPresent()) {

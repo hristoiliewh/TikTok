@@ -8,6 +8,7 @@ import com.tiktok.tiktok.service.MediaService;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -23,28 +24,31 @@ public class MediaController extends AbstractController {
 
     @PostMapping("/users/media")
 
-    public UserSimpleDTO uploadProfilePhoto(@RequestParam("file") MultipartFile file, HttpSession s) throws Exception {
+    public ResponseEntity<UserSimpleDTO> uploadProfilePhoto(@RequestParam("file") MultipartFile file, HttpSession s) throws Exception {
 
         int loggedUserId = getLoggedUserId(s);
-        return mediaService.uploadProfilePhoto(file, loggedUserId);
+        UserSimpleDTO userSimpleDTO = mediaService.uploadProfilePhoto(file, loggedUserId);
+        return ResponseEntity.ok(userSimpleDTO);
     }
 
     @PostMapping("/videos/media")
-    public VideoSimpleDTO uploadVideo(@RequestParam("file") MultipartFile file,
+    public ResponseEntity<VideoSimpleDTO> uploadVideo(@RequestParam("file") MultipartFile file,
                                       @RequestParam("caption") String caption,
                                       @RequestParam("isPrivate") Boolean isPrivate,
                                       @RequestParam("soundId") int soundId,
                                       HttpSession s) throws Exception {
         int loggedUserId = getLoggedUserId(s);
-        return mediaService.uploadVideo(loggedUserId, file, caption, isPrivate, soundId);
+        VideoSimpleDTO videoSimpleDTO = mediaService.uploadVideo(loggedUserId, file, caption, isPrivate, soundId);
+        return ResponseEntity.ok(videoSimpleDTO);
     }
 
     @PostMapping("/sounds/media")
-    public SoundSimpleDTO uploadSound(@RequestParam("file") MultipartFile file,
+    public ResponseEntity<SoundSimpleDTO> uploadSound(@RequestParam("file") MultipartFile file,
                                       @RequestParam("name") String name,
                                       HttpSession s) throws Exception {
         isLogged(s);
-        return mediaService.uploadSound(file, name);
+        SoundSimpleDTO soundSimpleDTO = mediaService.uploadSound(file, name);
+        return ResponseEntity.ok(soundSimpleDTO);
     }
 
     @GetMapping("/media/{fileName}")

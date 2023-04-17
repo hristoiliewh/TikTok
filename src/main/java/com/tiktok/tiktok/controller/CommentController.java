@@ -4,6 +4,7 @@ import com.tiktok.tiktok.model.DTOs.*;
 import com.tiktok.tiktok.service.CommentService;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -12,32 +13,37 @@ public class CommentController extends AbstractController {
     private CommentService commentService;
 
     @GetMapping("/comments/{commentId}")
-    public CommentWithoutVideoAndParentComment getById(@PathVariable int commentId, HttpSession s) {
+    public ResponseEntity<CommentWithoutVideoAndParentComment> getById(@PathVariable int commentId, HttpSession s) {
         int loggedUserId = getLoggedUserId(s);
-        return commentService.getById(commentId, loggedUserId);
+        CommentWithoutVideoAndParentComment comment = commentService.getById(commentId, loggedUserId);
+        return ResponseEntity.ok(comment);
     }
 
     @DeleteMapping("/comments/{commentId}")
-    public CommentDeletedDTO deleteComment(@PathVariable int commentId, HttpSession s) {
+    public ResponseEntity<CommentDeletedDTO> deleteComment(@PathVariable int commentId, HttpSession s) {
         int loggedUserId = getLoggedUserId(s);
-        return commentService.deleteComment(commentId, loggedUserId);
+        CommentDeletedDTO commentDeletedDTO = commentService.deleteComment(commentId, loggedUserId);
+        return ResponseEntity.ok(commentDeletedDTO);
     }
 
     @PostMapping("/comments/{commentId}/reply")
-    public CommentWithoutRepliedDTO replyToComment(@PathVariable int commentId, @RequestBody String text, HttpSession s) {
+    public ResponseEntity<CommentWithoutRepliedDTO> replyToComment(@PathVariable int commentId, @RequestBody String text, HttpSession s) {
         int loggedUserId = getLoggedUserId(s);
-        return commentService.replyToComment(commentId, loggedUserId, text);
+        CommentWithoutRepliedDTO comment = commentService.replyToComment(commentId, loggedUserId, text);
+        return ResponseEntity.ok(comment);
     }
 
     @PostMapping("/comments/{commentId}/react")
-    public CommentReactionDTO likeDislike(@PathVariable int commentId, HttpSession s) {
+    public ResponseEntity<CommentReactionDTO> likeDislike(@PathVariable int commentId, HttpSession s) {
         int loggedUserId = getLoggedUserId(s);
-        return commentService.likeDislike(commentId, loggedUserId);
+        CommentReactionDTO comment = commentService.likeDislike(commentId, loggedUserId);
+        return ResponseEntity.ok(comment);
     }
 
     @GetMapping("/comments/{commentId}/reactions")
-    public NumberOfReactionsDTO getReactions(@PathVariable int commentId, HttpSession s) {
+    public ResponseEntity<NumberOfReactionsDTO> getReactions(@PathVariable int commentId, HttpSession s) {
         int loggedUserId = checkIfIsLogged(s);
-        return commentService.getReactions(commentId, loggedUserId);
+        NumberOfReactionsDTO number = commentService.getReactions(commentId, loggedUserId);
+        return ResponseEntity.ok(number);
     }
 }

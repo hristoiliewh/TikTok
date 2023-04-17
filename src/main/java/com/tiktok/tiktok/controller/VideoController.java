@@ -4,6 +4,7 @@ import com.tiktok.tiktok.model.DTOs.*;
 import com.tiktok.tiktok.service.VideoService;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -14,50 +15,58 @@ public class VideoController extends AbstractController {
     private VideoService videoService;
 
     @DeleteMapping("/videos/{videoId}")
-    public VideoDeletedDTO deleteVideo(@PathVariable int videoId, HttpSession s) {
+    public ResponseEntity<VideoDeletedDTO> deleteVideo(@PathVariable int videoId, HttpSession s) {
         int loggedUserId = getLoggedUserId(s);
-        return videoService.deleteVideo(videoId, loggedUserId);
+        VideoDeletedDTO videoDeletedDTO = videoService.deleteVideo(videoId, loggedUserId);
+        return ResponseEntity.ok(videoDeletedDTO);
     }
 
     @GetMapping("/videos/{videoId}")
-    public VideoSimpleDTO getById(@PathVariable int videoId, HttpSession s) {
+    public ResponseEntity<VideoSimpleDTO> getById(@PathVariable int videoId, HttpSession s) {
         int loggedUserId = checkIfIsLogged(s);
-        return videoService.getById(videoId, loggedUserId);
+        VideoSimpleDTO videoSimpleDTO = videoService.getById(videoId, loggedUserId);
+        return ResponseEntity.ok(videoSimpleDTO);
     }
 
     @GetMapping("/videos/{videoId}/comments")
-    public List<CommentWithoutVideoDTO> getAllComments(@PathVariable int videoId, HttpSession s) {
+    public ResponseEntity<List<CommentWithoutVideoDTO>> getAllComments(@PathVariable int videoId, HttpSession s) {
         int loggedUserId = checkIfIsLogged(s);
-        return videoService.getAllComments(videoId, loggedUserId);
+        List<CommentWithoutVideoDTO> commentWithoutVideoDTOS = videoService.getAllComments(videoId, loggedUserId);
+        return ResponseEntity.ok(commentWithoutVideoDTOS);
     }
 
     @PostMapping("/videos/{videoId}/comment")
-    public CommentSimpleDTO addComment(@PathVariable int videoId, @RequestBody String comment, HttpSession s) {
+    public ResponseEntity<CommentSimpleDTO> addComment(@PathVariable int videoId, @RequestBody String comment, HttpSession s) {
         int loggedUserId = getLoggedUserId(s);
-        return videoService.addComment(videoId, loggedUserId, comment);
+        CommentSimpleDTO commentSimpleDTO = videoService.addComment(videoId, loggedUserId, comment);
+        return ResponseEntity.ok(commentSimpleDTO);
     }
 
     @GetMapping("/videos/{videoName}/find")
-    public List<VideoSimpleDTO> getByName(@PathVariable String videoName, HttpSession s) {
+    public ResponseEntity<List<VideoSimpleDTO>> getByName(@PathVariable String videoName, HttpSession s) {
         int loggedUserId = checkIfIsLogged(s);
-        return videoService.getByName(videoName, loggedUserId);
+        List<VideoSimpleDTO> videoSimpleDTOS = videoService.getByName(videoName, loggedUserId);
+        return ResponseEntity.ok(videoSimpleDTOS);
     }
 
     @GetMapping("/videos/hashtag/{hashtag}")
-    public List<VideoSimpleDTO> getByHashtag(@PathVariable String hashtag, HttpSession s) {
+    public ResponseEntity<List<VideoSimpleDTO>> getByHashtag(@PathVariable String hashtag, HttpSession s) {
         int loggedUserId = checkIfIsLogged(s);
-        return videoService.getByHashtag(hashtag, loggedUserId);
+        List<VideoSimpleDTO> videoSimpleDTOS = videoService.getByHashtag(hashtag, loggedUserId);
+        return ResponseEntity.ok(videoSimpleDTOS);
     }
 
     @PostMapping("/videos/{videoId}/react")
-    public VideoReactionDTO likeDislike(@PathVariable int videoId, HttpSession s) {
+    public ResponseEntity<VideoReactionDTO> likeDislike(@PathVariable int videoId, HttpSession s) {
         int loggedUserId = getLoggedUserId(s);
-        return videoService.likeDislike(videoId, loggedUserId);
+        VideoReactionDTO videoReactionDTO = videoService.likeDislike(videoId, loggedUserId);
+        return ResponseEntity.ok(videoReactionDTO);
     }
 
     @GetMapping("/videos/{videoId}/reactions")
-    public NumberOfReactionsDTO getReactions(@PathVariable int videoId, HttpSession s) {
+    public ResponseEntity<NumberOfReactionsDTO> getReactions(@PathVariable int videoId, HttpSession s) {
         int loggedUserId = checkIfIsLogged(s);
-        return videoService.getReactions(videoId, loggedUserId);
+        NumberOfReactionsDTO numberOfReactionsDTO = videoService.getReactions(videoId, loggedUserId);
+        return ResponseEntity.ok(numberOfReactionsDTO);
     }
 }
