@@ -14,7 +14,7 @@ public class RegisterDTO {
 
     @Pattern(regexp = "^[A-Za-z -]{2,50}$", message = "Invalid name format")
     private String name;
-    @Pattern(regexp = "^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[@#$%^&+=])(?=\\S+$).{8,}$", message = "Weak password")
+    @Pattern(regexp = "^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[!@#$%^&*()_+])(?=\\S+$).{8,}$", message = "Weak password")
     private String password;
     private String confirmPassword;
     private String confirmationCode;

@@ -20,6 +20,7 @@ public class UserController extends AbstractController {
     @Autowired
     private UserService userService;
 
+
     @PostMapping("/users/signup")
     public ResponseEntity<UserSimpleDTO> register(@Valid @RequestBody RegisterDTO dto) {
         UserSimpleDTO userSimpleDTO = userService.register(dto);

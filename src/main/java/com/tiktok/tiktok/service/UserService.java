@@ -12,6 +12,8 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.security.SecureRandom;
+import java.time.LocalDate;
+import java.time.Period;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -49,6 +51,9 @@ public class UserService extends AbstractService {
         if (userRepository.existsByPhoneNumber(dto.getPhoneNumber())) {
             throw new BadRequestException("Phone number already exists!");
         }
+        if (!isValidAge(dto.getDateOfBirth())){
+            throw new BadRequestException("You must be older than 16 years.");
+        }
         User u = mapper.map(dto, User.class);
         u.setPassword(encoder.encode(u.getPassword()));
         String confirmationCode = UUID.randomUUID().toString();
@@ -84,6 +89,16 @@ public class UserService extends AbstractService {
         return mapper.map(u.get(), UserFullInfoDTO.class);
     }
 
+
+    private boolean isValidAge(LocalDate dateOfBirth){
+        LocalDate today = LocalDate.now();
+        Period ageLimit = Period.ofYears(16);
+        LocalDate minimumDateOfBirth = today.minus(ageLimit);
+        if (dateOfBirth.isBefore(minimumDateOfBirth)){
+            return true;
+        }
+        return false;
+    }
 
     public int follow(int followerId, int followToId) {
         User follower = getUserById(followerId);
@@ -153,7 +168,7 @@ public class UserService extends AbstractService {
             throw new BadRequestException("Password missmatch");
         }
         if (!corrections.getPassword().equals("")) {
-            if (!corrections.getPassword().matches("^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[@#$%^&+=])(?=\\S+$).{8,}$")) {
+            if (!corrections.getPassword().matches("^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[!@#$%^&*()_+])(?=\\S+$).{8,}$")) {
                 throw new BadRequestException("Weak password");
             }
             u.setPassword(corrections.getPassword());
