@@ -16,7 +16,7 @@ import java.util.Map;
 
 @RestController
 public class UserController extends AbstractController {
-
+    //Comment from testing purposes from Hristo
     @Autowired
     private UserService userService;
 
@@ -106,8 +106,7 @@ public class UserController extends AbstractController {
     }
 
     @PostMapping("/users/forgot-password")
-    public ResponseEntity<PasswordDTO> forgottenPassword(@RequestBody ForgottenPasswordDTO dto) {
-        PasswordDTO passwordDTO = userService.forgottenPassword(dto);
-        return ResponseEntity.ok(passwordDTO);
+    public String forgottenPassword(@RequestBody ForgottenPasswordDTO dto) {
+        return userService.forgottenPassword(dto);
     }
 }

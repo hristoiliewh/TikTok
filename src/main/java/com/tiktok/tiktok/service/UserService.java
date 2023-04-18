@@ -229,7 +229,7 @@ public class UserService extends AbstractService {
         return mapper.map(user, UserConfirmedDTO.class);
     }
 
-    public PasswordDTO forgottenPassword(ForgottenPasswordDTO dto) {
+    public String forgottenPassword(ForgottenPasswordDTO dto) {
         Optional<User> user = userRepository.getByEmail(dto.getEmail());
         if (!user.isPresent()) {
             throw new NotFoundException("The given email is not registered in our system.");
@@ -248,6 +248,6 @@ public class UserService extends AbstractService {
                             "Best regards,\n" +
                             "TikTok Team.");
         }).start();
-        return mapper.map(pass, PasswordDTO.class);
+        return "Password changed successfully.";
     }
 }

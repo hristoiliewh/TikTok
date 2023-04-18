@@ -138,13 +138,12 @@ public class VideoService extends AbstractService {
         }
     }
 
-    public NumberOfReactionsDTO getReactions(int videoId, int loggedUserId) {
+    public int getReactions(int videoId, int loggedUserId) {
         Video video = getVideoById(videoId);
         if (!isPossibleToWatch(video, loggedUserId)) {
             throw new UnauthorizedException("This video is private and you do not have access to it.");
         }
-        NumberOfReactionsDTO dto = new NumberOfReactionsDTO();
-        dto.setReactions(video.getReactions().size());
-        return dto;
+        int reactions = video.getReactions().size();
+        return reactions;
     }
 }
