@@ -36,17 +36,22 @@ public class VideoService extends AbstractService {
 
     public VideoSimpleDTO getById(int videoId, int loggedUserId) {
         Video video = getVideoById(videoId);
-        if (!isPossibleToWatch(video, loggedUserId)) {
-            throw new UnauthorizedException("This video is private and you do not have access to it.");
-        }
+        canWatch(video, loggedUserId);
         return mapper.map(video, VideoSimpleDTO.class);
+    }
+    public List<VideoWithoutOwnerDTO> getAllVideos(int userId) {
+        List<Video> videos = getUserById(userId).getVideos();
+        if (videos.size() == 0) {
+            throw new NotFoundException("No videos found");
+        }
+        return videos.stream()
+                .map(v -> mapper.map(v, VideoWithoutOwnerDTO.class))
+                .collect(Collectors.toList());
     }
 
     public List<CommentWithoutVideoDTO> getAllComments(int videoId, int loggedUserId) {
         Video video = getVideoById(videoId);
-        if (!isPossibleToWatch(video, loggedUserId)) {
-            throw new UnauthorizedException("This video is private and you do not have access to it.");
-        }
+        canWatch(video, loggedUserId);
         List<Comment> comments = video.getComments();
         if (comments.size() == 0) {
             throw new NotFoundException("No comments found");
@@ -54,25 +59,6 @@ public class VideoService extends AbstractService {
         return comments.stream()
                 .map(comment -> mapper.map(comment, CommentWithoutVideoDTO.class))
                 .collect(Collectors.toList());
-    }
-
-
-    public CommentFullInfoDTO addComment(int videoId, int loggedUserId, String comment) {
-        Video video = getVideoById(videoId);
-        if (!isPossibleToWatch(video, loggedUserId)) {
-            throw new UnauthorizedException("This video is private and you do not have access to it.");
-        }
-        User owner = getUserById(loggedUserId);
-
-        Comment c = new Comment();
-        c.setVideo(video);
-        c.setOwner(owner);
-        c.setComment(comment.trim());
-        c.setCreatedAt(LocalDateTime.now());
-
-        commentRepository.save(c);
-
-        return mapper.map(c, CommentFullInfoDTO.class);
     }
 
     public List<VideoSimpleDTO> getByName(String videoName, int loggedUserId) {
@@ -118,9 +104,7 @@ public class VideoService extends AbstractService {
 
     public VideoReactionDTO likeDislike(int videoId, int loggedUserId) {
         Video video = getVideoById(videoId);
-        if (!isPossibleToWatch(video, loggedUserId)) {
-            throw new UnauthorizedException("This video is private and you do not have access to it.");
-        }
+        canWatch(video, loggedUserId);
         User user = getUserById(loggedUserId);
         Optional<VideoReactions> videoReactions = videoReactionRepository.findByVideoAndUser(video, user);
         if (videoReactions.isPresent()) {
@@ -140,10 +124,14 @@ public class VideoService extends AbstractService {
 
     public int getReactions(int videoId, int loggedUserId) {
         Video video = getVideoById(videoId);
+        canWatch(video, loggedUserId);
+        int reactions = video.getReactions().size();
+        return reactions;
+    }
+
+    private void canWatch(Video video, int loggedUserId){
         if (!isPossibleToWatch(video, loggedUserId)) {
             throw new UnauthorizedException("This video is private and you do not have access to it.");
         }
-        int reactions = video.getReactions().size();
-        return reactions;
     }
 }

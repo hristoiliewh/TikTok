@@ -27,19 +27,18 @@ public class VideoController extends AbstractController {
         VideoSimpleDTO videoSimpleDTO = videoService.getById(videoId, loggedUserId);
         return ResponseEntity.ok(videoSimpleDTO);
     }
+    @GetMapping("/users/{id}/videos")
+    public ResponseEntity<List<VideoWithoutOwnerDTO>> getAllVideos(@PathVariable int id, HttpSession s) {
+        isLogged(s);
+        List<VideoWithoutOwnerDTO> videoWithoutOwnerDTO =  videoService.getAllVideos(id);
+        return ResponseEntity.ok(videoWithoutOwnerDTO);
+    }
 
     @GetMapping("/videos/{videoId}/comments")
     public ResponseEntity<List<CommentWithoutVideoDTO>> getAllComments(@PathVariable int videoId, HttpSession s) {
         int loggedUserId = checkIfIsLogged(s);
         List<CommentWithoutVideoDTO> commentWithoutVideoDTOS = videoService.getAllComments(videoId, loggedUserId);
         return ResponseEntity.ok(commentWithoutVideoDTOS);
-    }
-
-    @PostMapping("/videos/{videoId}/comment")
-    public ResponseEntity<CommentFullInfoDTO> addComment(@PathVariable int videoId, @RequestBody String comment, HttpSession s) {
-        int loggedUserId = getLoggedUserId(s);
-        CommentFullInfoDTO commentFullInfoDTO = videoService.addComment(videoId, loggedUserId, comment);
-        return ResponseEntity.ok(commentFullInfoDTO);
     }
 
     @GetMapping("/videos/{videoName}/find")

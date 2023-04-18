@@ -16,7 +16,6 @@ import java.util.Map;
 
 @RestController
 public class UserController extends AbstractController {
-    //Comment from testing purposes from Hristo
     @Autowired
     private UserService userService;
 
@@ -30,18 +29,14 @@ public class UserController extends AbstractController {
     @PostMapping("/users/login")
     public ResponseEntity<UserFullInfoDTO> login(@RequestBody LoginDTO dto, HttpSession s) {
         UserFullInfoDTO u = userService.login(dto);
-        s.setAttribute("LOGGED", true);
         s.setAttribute("LOGGED_ID", u.getId());
         return ResponseEntity.ok(u);
     }
 
     @PostMapping("/users/logout")
-    public ResponseEntity<LogoutDTO> logout(HttpSession s) {
-        int loggedUserId = getLoggedUserId(s);
+    public void logout(HttpSession s) {
+        isLogged(s);
         s.invalidate();
-        LogoutDTO dto = new LogoutDTO();
-        dto.setId(loggedUserId);
-        return ResponseEntity.ok(dto);
     }
 
     @PostMapping("/users/{followToId}/follow-unfollow")
@@ -78,13 +73,6 @@ public class UserController extends AbstractController {
         return ResponseEntity.ok(user);
     }
 
-    @GetMapping("/users/{id}/videos")
-    public ResponseEntity<List<VideoWithoutOwnerDTO>> getAllVideos(@PathVariable int id, HttpSession s) {
-        isLogged(s);
-        List<VideoWithoutOwnerDTO> videoWithoutOwnerDTO =  userService.getAllVideos(id);
-        return ResponseEntity.ok(videoWithoutOwnerDTO);
-    }
-
     @DeleteMapping("/users")
     public ResponseEntity<UserDeletedDTO> deleteAccount(HttpSession s) {
         int loggedUserId = getLoggedUserId(s);
@@ -92,7 +80,7 @@ public class UserController extends AbstractController {
         return ResponseEntity.ok(userDeletedDTO);
     }
 
-    @PutMapping("/users/edit")
+    @PutMapping("/users")
     public ResponseEntity<UserSimpleDTO> editAccount(@RequestBody UserEditDTO corrections, HttpSession s) {
         int loggedUserId = getLoggedUserId(s);
         UserSimpleDTO dto = userService.editAccount(corrections, loggedUserId);

@@ -146,16 +146,6 @@ public class UserService extends AbstractService {
                 .collect(Collectors.toList());
     }
 
-    public List<VideoWithoutOwnerDTO> getAllVideos(int userId) {
-        List<Video> videos = getUserById(userId).getVideos();
-        if (videos.size() == 0) {
-            throw new NotFoundException("No videos found");
-        }
-        return videos.stream()
-                .map(v -> mapper.map(v, VideoWithoutOwnerDTO.class))
-                .collect(Collectors.toList());
-    }
-
     public UserDeletedDTO deleteAccount(int userId) {
         User user = getUserById(userId);
         userRepository.deleteById(userId);

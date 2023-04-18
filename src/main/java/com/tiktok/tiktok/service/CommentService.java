@@ -16,6 +16,23 @@ public class CommentService extends AbstractService {
     @Autowired
     private CommentReactionRepository commentReactionRepository;
 
+    public CommentFullInfoDTO addComment(int videoId, int loggedUserId, String comment) {
+        Video video = getVideoById(videoId);
+        if (!isPossibleToWatch(video, loggedUserId)) {
+            throw new UnauthorizedException("This video is private and you do not have access to it.");
+        }
+        User owner = getUserById(loggedUserId);
+
+        Comment c = new Comment();
+        c.setVideo(video);
+        c.setOwner(owner);
+        c.setComment(comment.trim());
+        c.setCreatedAt(LocalDateTime.now());
+
+        commentRepository.save(c);
+
+        return mapper.map(c, CommentFullInfoDTO.class);
+    }
 
     public CommentWithoutVideoAndParentComment getById(int commentId, int loggedUserId) {
         Comment comment = getCommentById(commentId);
@@ -69,15 +86,12 @@ public class CommentService extends AbstractService {
         }
     }
 
-    public NumberOfReactionsDTO getReactions(int commentId, int userId) {
+    public int getReactions(int commentId, int userId) {
         Comment comment = getCommentById(commentId);
-        System.out.println("lnefkjsbdff");
         Video video = getVideoById(comment.getVideo().getId());
         if (!isPossibleToWatch(video, userId)) {
             throw new UnauthorizedException("This video is private and you do not have access to it's comments.");
         }
-        NumberOfReactionsDTO dto = new NumberOfReactionsDTO();
-        dto.setReactions(comment.getReactions().size());
-        return dto;
+        return comment.getReactions().size();
     }
 }

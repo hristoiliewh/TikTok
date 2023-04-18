@@ -12,6 +12,13 @@ public class CommentController extends AbstractController {
     @Autowired
     private CommentService commentService;
 
+    @PostMapping("/videos/{videoId}/comment")
+    public ResponseEntity<CommentFullInfoDTO> addComment(@PathVariable int videoId, @RequestBody CommentAddDTO dto, HttpSession s) {
+        int loggedUserId = getLoggedUserId(s);
+        CommentFullInfoDTO commentFullInfoDTO = commentService.addComment(videoId, loggedUserId, dto.getComment());
+        return ResponseEntity.ok(commentFullInfoDTO);
+    }
+
     @GetMapping("/comments/{commentId}")
     public ResponseEntity<CommentWithoutVideoAndParentComment> getById(@PathVariable int commentId, HttpSession s) {
         int loggedUserId = getLoggedUserId(s);
@@ -27,9 +34,9 @@ public class CommentController extends AbstractController {
     }
 
     @PostMapping("/comments/{commentId}/reply")
-    public ResponseEntity<CommentWithoutRepliedDTO> replyToComment(@PathVariable int commentId, @RequestBody String text, HttpSession s) {
+    public ResponseEntity<CommentWithoutRepliedDTO> replyToComment(@PathVariable int commentId, @RequestBody CommentAddDTO dto, HttpSession s) {
         int loggedUserId = getLoggedUserId(s);
-        CommentWithoutRepliedDTO comment = commentService.replyToComment(commentId, loggedUserId, text);
+        CommentWithoutRepliedDTO comment = commentService.replyToComment(commentId, loggedUserId, dto.getComment());
         return ResponseEntity.ok(comment);
     }
 
@@ -41,9 +48,8 @@ public class CommentController extends AbstractController {
     }
 
     @GetMapping("/comments/{commentId}/reactions")
-    public ResponseEntity<NumberOfReactionsDTO> getReactions(@PathVariable int commentId, HttpSession s) {
+    public int getReactions(@PathVariable int commentId, HttpSession s) {
         int loggedUserId = checkIfIsLogged(s);
-        NumberOfReactionsDTO number = commentService.getReactions(commentId, loggedUserId);
-        return ResponseEntity.ok(number);
+        return commentService.getReactions(commentId, loggedUserId);
     }
 }

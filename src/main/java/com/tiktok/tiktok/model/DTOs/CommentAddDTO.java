@@ -5,10 +5,8 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Getter
-
+@Setter
 @NoArgsConstructor
-public class LogoutDTO {
-    @Setter
-    private int id;
-    private String logoutText = "Successfully logged out";
+public class CommentAddDTO {
+    private String comment;
 }
