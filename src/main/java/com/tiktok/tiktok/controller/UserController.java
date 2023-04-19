@@ -19,14 +19,11 @@ import java.util.Map;
 @RestController
 public class UserController extends AbstractController {
 
-    protected static final Logger logger = LogManager.getLogger(AbstractService.class);
-
     @Autowired
     private UserService userService;
 
     @PostMapping("/users/signup")
     public ResponseEntity<UserSimpleDTO> register(@Valid @RequestBody RegisterDTO dto) {
-        logger.error("Error");
         UserSimpleDTO userSimpleDTO = userService.register(dto);
         return ResponseEntity.ok(userSimpleDTO);
     }

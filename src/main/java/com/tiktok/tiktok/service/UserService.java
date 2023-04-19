@@ -46,19 +46,23 @@ public class UserService extends AbstractService {
     public UserSimpleDTO register(RegisterDTO dto) {
 
         if (!dto.getPassword().equals(dto.getConfirmPassword())) {
+            logger.error("Passwords missmatch! - RegisterDTO: {}", dto);
             throw new BadRequestException("Passwords missmatch!");
-
         }
         if (userRepository.existsByEmail(dto.getEmail())) {
+            logger.error("Email already exists! - RegisterDTO: {}", dto.getEmail());
             throw new BadRequestException("Email already exists!");
         }
         if (userRepository.existsByUsername(dto.getUsername())) {
+            logger.error("Username already exists! - RegisterDTO: {}", dto.getUsername());
             throw new BadRequestException("Username already exists!");
         }
         if (userRepository.existsByPhoneNumber(dto.getPhoneNumber())) {
+            logger.error("Phone number already exists! - RegisterDTO: {}", dto.getPhoneNumber());
             throw new BadRequestException("Phone number already exists!");
         }
         if (!isValidAge(dto.getDateOfBirth())){
+            logger.error("User is younger than 16 years! - RegisterDTO: {}", dto.getDateOfBirth());
             throw new BadRequestException("You must be older than 16 years.");
         }
         User u = mapper.map(dto, User.class);
@@ -76,23 +80,30 @@ public class UserService extends AbstractService {
                             "http://localhost:80/users/confirm-registration/" + confirmationCode + "\n\n" +
                             "Best regards,\n" +
                             "TikTok Team.");
+            logger.info("Registration email sent to {}", dto.getEmail());
         }).start();
         return mapper.map(u, UserSimpleDTO.class);
     }
 
     public UserFullInfoDTO login(LoginDTO dto) {
-
-        Optional<User> u = userRepository.getByUsername(dto.getUsername());
-        if (!u.isPresent()) {
-            throw new UnauthorizedException("Wrong credentials");
+        try {
+            Optional<User> u = userRepository.getByUsername(dto.getUsername());
+            if (!u.isPresent()) {
+                throw new UnauthorizedException("Wrong credentials");
+            }
+            if (!encoder.matches(dto.getPassword(), u.get().getPassword())) {
+                throw new UnauthorizedException("Wrong credentials");
+            }
+            if (!u.get().isEmailConfirmed()) {
+                throw new UnauthorizedException("Your email is not confirmed. Please confirm you registration before login.");
+            }
+            logger.info("User {} logged in successfully.", dto.getUsername());
+            return mapper.map(u.get(), UserFullInfoDTO.class);
         }
-        if (!encoder.matches(dto.getPassword(), u.get().getPassword())) {
-            throw new UnauthorizedException("Wrong credentials");
+        catch (UnauthorizedException e){
+            logger.error("Error during user login: {}", e.getMessage());
+            throw e;
         }
-        if (!u.get().isEmailConfirmed()) {
-            throw new UnauthorizedException("Your email is not confirmed. Please confirm you registration before login.");
-        }
-        return mapper.map(u.get(), UserFullInfoDTO.class);
     }
 
 
@@ -101,6 +112,7 @@ public class UserService extends AbstractService {
         Period ageLimit = Period.ofYears(16);
         LocalDate minimumDateOfBirth = today.minus(ageLimit);
         if (dateOfBirth.isBefore(minimumDateOfBirth)){
+            logger.warn("Invalid age: user with date of birth {} is under 16 years old.", dateOfBirth);
             return true;
         }
         return false;
@@ -116,7 +128,8 @@ public class UserService extends AbstractService {
             following.getFollowers().add(follower);
         }
         userRepository.save(following);
-        return following.getFollowers().size();
+        int followersCount = following.getFollowers().size();
+        return followersCount;
     }
 
     public UserFullInfoDTO searchByUsername(String username) {
@@ -137,9 +150,10 @@ public class UserService extends AbstractService {
         if (followers.size() == 0) {
             throw new NotFoundException("No followers found");
         }
-        return followers.stream()
+        List<UserWithPicNameIdDTO> followersDTO = followers.stream()
                 .map(f -> mapper.map(f, UserWithPicNameIdDTO.class))
                 .collect(Collectors.toList());
+        return followersDTO;
     }
 
     public List<UserWithPicNameIdDTO> getAllFollowing(int userId) {
@@ -147,14 +161,17 @@ public class UserService extends AbstractService {
         if (following.size() == 0) {
             throw new NotFoundException("No following users found");
         }
-        return following.stream()
+        List<UserWithPicNameIdDTO> followingDTO = following.stream()
                 .map(f -> mapper.map(f, UserWithPicNameIdDTO.class))
                 .collect(Collectors.toList());
+
+        return followingDTO;
     }
 
     public UserDeletedDTO deleteAccount(int userId) {
         User user = getUserById(userId);
         userRepository.deleteById(userId);
+        logger.info("User account deleted successfully with userId: {}", userId);
         return mapper.map(user, UserDeletedDTO.class);
     }
 
@@ -209,20 +226,27 @@ public class UserService extends AbstractService {
             u.setBio(corrections.getBio());
         }
         userRepository.save(u);
+        logger.info("User account updated successfully with userId: {}", userId);
         return mapper.map(u, UserSimpleDTO.class);
     }
 
     public UserConfirmedDTO confirmRegistration(String confirmationCode) {
-        Optional<User> user = userRepository.getByConfirmationCode(confirmationCode);
-        if (!user.isPresent()) {
-            throw new NotFoundException("Not a valid confirmation code.");
+        try {
+            Optional<User> user = userRepository.getByConfirmationCode(confirmationCode);
+            if (!user.isPresent()) {
+                throw new NotFoundException("Not a valid confirmation code.");
+            }
+            if (user.get().isEmailConfirmed()) {
+                throw new BadRequestException("Registration already confirmed.");
+            }
+            user.get().setEmailConfirmed(true);
+            userRepository.save(user.get());
+            logger.info("User with id " + user.get().getId() + " has confirmed their registration.");
+            return mapper.map(user, UserConfirmedDTO.class);
+        } catch (NotFoundException | BadRequestException e) {
+            logger.error("An error occurred during confirmRegistration: " + e.getMessage());
+            throw e;
         }
-        if (user.get().isEmailConfirmed()) {
-            throw new BadRequestException("Registration already confirmed.");
-        }
-        user.get().setEmailConfirmed(true);
-        userRepository.save(user.get());
-        return mapper.map(user, UserConfirmedDTO.class);
     }
 
     public String forgottenPassword(ForgottenPasswordDTO dto) {
@@ -233,6 +257,7 @@ public class UserService extends AbstractService {
         String pass = PasswordGenerator.generatePassword();
         user.get().setPassword(encoder.encode(pass));
         userRepository.save(user.get());
+        logger.info("User with id " + user.get().getId() + " has reset their password.");
         new Thread(() -> {
             senderService.sendEmail(dto.getEmail(),
                     "Reset Password",
@@ -246,4 +271,5 @@ public class UserService extends AbstractService {
         }).start();
         return "Password changed successfully.";
     }
+
 }

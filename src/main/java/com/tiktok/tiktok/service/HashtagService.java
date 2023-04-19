@@ -22,7 +22,8 @@ public class HashtagService extends AbstractService {
 
     public Hashtag upload(String hashtag) {
         if (!isValidHashtag(hashtag)) {
-            throw new BadRequestException("Hashtags can contains only letters and/or digits and should be at least 3 digits long.");
+            logger.error("Invalid hashtag: {}", hashtag);
+            throw new BadRequestException("Hashtags can contain only letters and/or digits and should be at least 3 digits long.");
         }
         Hashtag tag = new Hashtag();
         if (hashtagRepository.findByTag("#" + hashtag) == null) {
@@ -33,6 +34,7 @@ public class HashtagService extends AbstractService {
             return hashtagRepository.findByTag("#" + hashtag);
         }
     }
+
 
     private boolean isValidHashtag(String hashtag) {
         String pattern = "^[a-zA-Z0-9._-]{3,30}$";

@@ -15,7 +15,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import java.util.Optional;
 
 public abstract class AbstractService {
-
+    protected static final Logger logger = LogManager.getLogger(AbstractService.class);
 
     @Autowired
     protected UserRepository userRepository;

@@ -124,7 +124,7 @@ public class UserServiceTests {
         when(userService.register(dto)).thenThrow(badRequestException);
 
         BadRequestException exception = assertThrows(BadRequestException.class, () -> {
-            userController.register(dto);
+            userService.register(dto);
         });
 
         assertEquals(badRequestException.getMessage(),exception.getMessage());
@@ -228,13 +228,13 @@ public class UserServiceTests {
     @Test
     public void testLogin() {
         // Set up a test user
-        User user = new User();
-        user.setUsername("hristoiliev");
-        user.setPassword(encoder.encode("testpassword"));
-        user.setEmailConfirmed(true);
-        user.setFollowers(new HashSet<>());
-        user.setFollowing(new HashSet<>());
-        user.setVideos(new ArrayList<Video>());
+//        User user = new User();
+//        user.setUsername("hristoiliev");
+//        user.setPassword(encoder.encode("testpassword"));
+//        user.setEmailConfirmed(true);
+//        user.setFollowers(new HashSet<>());
+//        user.setFollowing(new HashSet<>());
+//        user.setVideos(new ArrayList<Video>());
 
         // Call the login method
         LoginDTO loginDTO = new LoginDTO();

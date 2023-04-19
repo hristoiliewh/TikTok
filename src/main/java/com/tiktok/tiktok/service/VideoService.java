@@ -28,15 +28,16 @@ public class VideoService extends AbstractService {
     public VideoDeletedDTO deleteVideo(int videoId, int loggedUserId) {
         Video video = getVideoById(videoId);
         if (video.getOwner().getId() != loggedUserId) {
-            throw new UnauthorizedException("Can't delete this video. You are unauthorized.");
         }
         videoRepository.deleteById(videoId);
+        logger.info("Video deleted successfully: " + videoId);
         return mapper.map(video, VideoDeletedDTO.class);
     }
 
     public VideoSimpleDTO getById(int videoId, int loggedUserId) {
         Video video = getVideoById(videoId);
         canWatch(video, loggedUserId);
+        logger.info("Video found: " + videoId);
         return mapper.map(video, VideoSimpleDTO.class);
     }
     public List<VideoWithoutOwnerDTO> getAllVideos(int userId) {
@@ -125,8 +126,7 @@ public class VideoService extends AbstractService {
     public int getReactions(int videoId, int loggedUserId) {
         Video video = getVideoById(videoId);
         canWatch(video, loggedUserId);
-        int reactions = video.getReactions().size();
-        return reactions;
+        return video.getReactions().size();
     }
 
     private void canWatch(Video video, int loggedUserId){
