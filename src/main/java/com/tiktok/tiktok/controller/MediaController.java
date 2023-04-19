@@ -33,7 +33,7 @@ public class MediaController extends AbstractController {
     @PostMapping("/videos/media")
     public ResponseEntity<VideoSimpleDTO> uploadVideo(@RequestParam("file") MultipartFile file,
                                       @RequestParam("caption") String caption,
-                                      @RequestParam("isPrivate") Boolean isPrivate,
+                                      @RequestParam("isPrivate") boolean isPrivate,
                                       @RequestParam("soundId") int soundId,
                                       HttpSession s) throws Exception {
         int loggedUserId = getLoggedUserId(s);

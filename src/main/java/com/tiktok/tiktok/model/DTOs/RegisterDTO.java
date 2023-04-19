@@ -22,7 +22,6 @@ public class RegisterDTO {
 
     private String confirmPassword;
     private String confirmationCode;
-    @NotNull(message = "Email is required.")
     @Email(message = "Invalid email.")
     private String email;
     @Pattern(regexp = "^\\d{10}$", message = "Invalid phone number format")

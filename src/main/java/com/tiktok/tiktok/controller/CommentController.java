@@ -34,9 +34,9 @@ public class CommentController extends AbstractController {
     }
 
     @PostMapping("/comments/{commentId}/reply")
-    public ResponseEntity<CommentWithoutRepliedDTO> replyToComment(@PathVariable int commentId, @RequestBody CommentAddDTO dto, HttpSession s) {
+    public ResponseEntity<CommentWithIdOwnerParentDTO> replyToComment(@PathVariable int commentId, @RequestBody CommentAddDTO dto, HttpSession s) {
         int loggedUserId = getLoggedUserId(s);
-        CommentWithoutRepliedDTO comment = commentService.replyToComment(commentId, loggedUserId, dto.getComment());
+        CommentWithIdOwnerParentDTO comment = commentService.replyToComment(commentId, loggedUserId, dto.getComment());
         return ResponseEntity.ok(comment);
     }
 

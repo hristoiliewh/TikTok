@@ -50,7 +50,7 @@ public class VideoService extends AbstractService {
                 .collect(Collectors.toList());
     }
 
-    public List<CommentWithoutVideoDTO> getAllComments(int videoId, int loggedUserId) {
+    public List<CommentWithIdOwnerParentDTO> getAllComments(int videoId, int loggedUserId) {
         Video video = getVideoById(videoId);
         canWatch(video, loggedUserId);
         List<Comment> comments = video.getComments();
@@ -58,7 +58,7 @@ public class VideoService extends AbstractService {
             throw new NotFoundException("No comments found");
         }
         return comments.stream()
-                .map(comment -> mapper.map(comment, CommentWithoutVideoDTO.class))
+                .map(comment -> mapper.map(comment, CommentWithIdOwnerParentDTO.class))
                 .collect(Collectors.toList());
     }
 
@@ -111,7 +111,8 @@ public class VideoService extends AbstractService {
         if (videoReactions.isPresent()) {
             VideoReactions reactions1 = videoReactions.get();
             reactions1.setLiked(!reactions1.isLiked());
-            videoReactionRepository.save(reactions1);
+            videoReactionRepository.delete(reactions1);
+//            videoReactionRepository.save(reactions1);
             return mapper.map(reactions1, VideoReactionDTO.class);
         } else {
             VideoReactions reactions = new VideoReactions();

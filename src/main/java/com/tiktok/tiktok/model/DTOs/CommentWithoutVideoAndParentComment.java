@@ -11,10 +11,12 @@ import java.util.List;
 @Getter
 @NoArgsConstructor
 public class CommentWithoutVideoAndParentComment {
+
     private int id;
     private String comment;
-    private UserSimpleDTO owner;
-    private List<CommentWithoutVideoAndParentComment> repliedComments;
     private LocalDateTime createdAt;
+    private UserWithPicNameIdDTO owner;
+    private List<CommentWithoutVideoAndParentComment> repliedComments;
+
 }
 

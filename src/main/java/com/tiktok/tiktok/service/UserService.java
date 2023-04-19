@@ -30,14 +30,24 @@ public class UserService extends AbstractService {
     private BCryptPasswordEncoder encoder;
 
     private static class PasswordGenerator {
-        private static final String CHARACTERS = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*()_+";
+        private static final String CAPITAL_LETTERS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+        private static final String LETTERS = "abcdefghijklmnopqrstuvwxyz";
+        private static final String CHARACTERS = "!@#$%^&*()_+";
+        private static final String NUMBERS = "0123456789";
+
         private static final Random random = new SecureRandom();
 
         public static String generatePassword() {
             StringBuilder sb = new StringBuilder();
-            for (int i = 0; i < 12; i++) {
-                int index = random.nextInt(CHARACTERS.length());
-                sb.append(CHARACTERS.charAt(index));
+            for (int i = 0; i < 3; i++) {
+                int first = random.nextInt(CHARACTERS.length());
+                sb.append(CHARACTERS.charAt(first));
+                int second = random.nextInt(CAPITAL_LETTERS.length());
+                sb.append(CAPITAL_LETTERS.charAt(second));
+                int third = random.nextInt(LETTERS.length());
+                sb.append(LETTERS.charAt(third));
+                int fourth = random.nextInt(NUMBERS.length());
+                sb.append(NUMBERS.charAt(fourth));
             }
             return sb.toString();
         }
@@ -48,6 +58,9 @@ public class UserService extends AbstractService {
         if (!dto.getPassword().equals(dto.getConfirmPassword())) {
             logger.error("Passwords missmatch! - RegisterDTO: {}", dto);
             throw new BadRequestException("Passwords missmatch!");
+        }
+        if (dto.getEmail().isEmpty()){
+            throw new BadRequestException("Email should be provided.");
         }
         if (userRepository.existsByEmail(dto.getEmail())) {
             logger.error("Email already exists! - RegisterDTO: {}", dto.getEmail());

@@ -52,7 +52,7 @@ public class CommentService extends AbstractService {
         return mapper.map(comment, CommentDeletedDTO.class);
     }
 
-    public CommentWithoutRepliedDTO replyToComment(int commentId, int loggedUserId, String text) {
+    public CommentWithIdOwnerParentDTO replyToComment(int commentId, int loggedUserId, String text) {
         Comment parentComment = getCommentById(commentId);
         User owner = getUserById(loggedUserId);
 
@@ -65,7 +65,7 @@ public class CommentService extends AbstractService {
 
         commentRepository.save(comment);
         logger.info("Replying to comment with id: {}", commentId);
-        return mapper.map(comment, CommentWithoutRepliedDTO.class);
+        return mapper.map(comment, CommentWithIdOwnerParentDTO.class);
     }
 
     public CommentReactionDTO likeDislike(int commentId, int userId) {
@@ -76,7 +76,7 @@ public class CommentService extends AbstractService {
         if (commentReactions.isPresent()) {
             CommentReactions reactions1 = commentReactions.get();
             reactions1.setLiked(!reactions1.isLiked());
-            commentReactionRepository.save(reactions1);
+            commentReactionRepository.delete(reactions1);
             return mapper.map(reactions1, CommentReactionDTO.class);
         } else {
             CommentReactions reactions = new CommentReactions();

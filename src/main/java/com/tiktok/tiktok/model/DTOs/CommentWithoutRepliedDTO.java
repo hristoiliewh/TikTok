@@ -12,7 +12,7 @@ import java.time.LocalDateTime;
 public class CommentWithoutRepliedDTO {
     private int id;
     private String comment;
-    private UserSimpleDTO owner;
+    private UserWithPicNameIdDTO owner;
     private CommentWithoutVideoDTO parentComment;
     private LocalDateTime createdAt;
     private VideoWithoutOwnerDTO video;

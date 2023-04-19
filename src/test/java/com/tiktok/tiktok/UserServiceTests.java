@@ -254,6 +254,61 @@ public class UserServiceTests {
         expected.setVideos(new ArrayList<>());
 
 
+//    @Test
+//    public void testFollow() {
+//        // create two test users
+//        User follower = new User();
+//        follower.setId(1);
+//        follower.setPassword("Password123!");
+//        follower.setName("Hristo Iliev");
+//        follower.setEmail("hristoiliewh@icloud.com");
+//        follower.setPhoneNumber("0888123456");
+//        follower.setDateOfBirth(LocalDate.now().minusYears(26));
+//        follower.setGender("m");
+//        follower.setBio("Hi, i'm Hristo.");
+//        follower.setProfilePhotoURL(null);
+//        follower.setUsername("hristoiliev");
+//        follower.setFollowers(new HashSet<>());
+//        follower.setFollowing(new HashSet<>());
+//        follower.setVideos(new ArrayList<>());
+//
+//        userRepository.save(follower);
+//
+//        User followTo = new User();
+//        followTo.setId(2);
+//        followTo.setPassword("Password123!");
+//        followTo.setName("Hristo Iliev");
+//        followTo.setEmail("hristoiliewh@icloud.com");
+//        followTo.setPhoneNumber("0888123456");
+//        followTo.setDateOfBirth(LocalDate.now().minusYears(26));
+//        followTo.setGender("m");
+//        followTo.setBio("Hi, i'm Hristo.");
+//        followTo.setProfilePhotoURL(null);
+//        followTo.setUsername("hristoiliev");
+//        followTo.setFollowers(new HashSet<>());
+//        followTo.setFollowing(new HashSet<>());
+//        followTo.setVideos(new ArrayList<>());
+//        userRepository.save(followTo);
+//
+//        // call the follow method
+//        int followersCount = userService.follow(follower.getId(), followTo.getId());
+//
+//        // check that the followers count has been updated correctly
+//        assertEquals(1, followersCount);
+//
+//        // check that the follower is now following the followTo user
+//        assertTrue(followTo.getFollowers().contains(follower));
+//
+//        // call the follow method again to unfollow the user
+//        followersCount = userService.follow(follower.getId(), followTo.getId());
+//
+//        // check that the followers count has been updated correctly
+//        assertEquals(0, followersCount);
+//
+//        // check that the follower is no longer following the followTo user
+//        assertFalse(followTo.getFollowers().contains(follower));
+//    }
+
 
         // Check the result
         assertNotNull(expected);

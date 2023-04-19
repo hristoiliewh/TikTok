@@ -34,10 +34,10 @@ public class VideoController extends AbstractController {
     }
 
     @GetMapping("/videos/{videoId}/comments")
-    public ResponseEntity<List<CommentWithoutVideoDTO>> getAllComments(@PathVariable int videoId, HttpSession s) {
+    public ResponseEntity<List<CommentWithIdOwnerParentDTO>> getAllComments(@PathVariable int videoId, HttpSession s) {
         int loggedUserId = checkIfIsLogged(s);
-        List<CommentWithoutVideoDTO> commentWithoutVideoDTOS = videoService.getAllComments(videoId, loggedUserId);
-        return ResponseEntity.ok(commentWithoutVideoDTOS);
+        List<CommentWithIdOwnerParentDTO> commentWithIdOwnerParentDTOS = videoService.getAllComments(videoId, loggedUserId);
+        return ResponseEntity.ok(commentWithIdOwnerParentDTOS);
     }
 
     @GetMapping("/videos/{videoName}/find")
@@ -62,9 +62,9 @@ public class VideoController extends AbstractController {
     }
 
     @GetMapping("/videos/{videoId}/reactions")
-    public ResponseEntity<Integer> getReactions(@PathVariable int videoId, HttpSession s) {
+    public int getReactions(@PathVariable int videoId, HttpSession s) {
         int loggedUserId = checkIfIsLogged(s);
-        int reactions = videoService.getReactions(videoId, loggedUserId);
-        return ResponseEntity.ok(reactions);
+        return videoService.getReactions(videoId, loggedUserId);
+//        return ResponseEntity.ok(reactions);
     }
 }
