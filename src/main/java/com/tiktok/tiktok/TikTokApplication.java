@@ -14,6 +14,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 public class TikTokApplication {
 
     public static void main(String[] args) {
+
         SpringApplication.run(TikTokApplication.class, args);
     }
 

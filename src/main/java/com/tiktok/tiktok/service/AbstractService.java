@@ -1,17 +1,22 @@
 package com.tiktok.tiktok.service;
 
+import ch.qos.logback.classic.BasicConfigurator;
 import com.tiktok.tiktok.model.entities.Comment;
 import com.tiktok.tiktok.model.entities.Sound;
 import com.tiktok.tiktok.model.entities.User;
 import com.tiktok.tiktok.model.entities.Video;
 import com.tiktok.tiktok.model.exceptions.NotFoundException;
 import com.tiktok.tiktok.model.repositories.*;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.Optional;
 
 public abstract class AbstractService {
+
+
     @Autowired
     protected UserRepository userRepository;
     @Autowired

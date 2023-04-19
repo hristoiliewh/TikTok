@@ -1,6 +1,9 @@
 package com.tiktok.tiktok.service;
 
+import ch.qos.logback.classic.BasicConfigurator;
 import com.tiktok.tiktok.model.DTOs.*;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.mindrot.jbcrypt.BCrypt;
 import com.tiktok.tiktok.model.entities.User;
 import com.tiktok.tiktok.model.entities.Video;
@@ -19,6 +22,8 @@ import java.util.stream.Collectors;
 
 @Service
 public class UserService extends AbstractService {
+
+
     @Autowired
     private MailSenderService senderService;
     @Autowired
@@ -39,8 +44,10 @@ public class UserService extends AbstractService {
     }
 
     public UserSimpleDTO register(RegisterDTO dto) {
+
         if (!dto.getPassword().equals(dto.getConfirmPassword())) {
             throw new BadRequestException("Passwords missmatch!");
+
         }
         if (userRepository.existsByEmail(dto.getEmail())) {
             throw new BadRequestException("Email already exists!");
@@ -60,14 +67,14 @@ public class UserService extends AbstractService {
         u.setConfirmationCode(confirmationCode);
         userRepository.save(u);
 
-        String confirmationLink = "https://localuser:6666/confirm/" + confirmationCode;
+//        String confirmationLink = confirmationCode;
         new Thread(() -> {
             senderService.sendEmail(dto.getEmail(),
                     "Confirm your registration",
                     "Dear " + dto.getName() + ",\n\n" +
                             "Thank you for registering with our service. To complete your registration," +
                             " please click on the following link:\n\n" +
-                            confirmationLink + "\n\n" +
+                            "http://localhost:80/users/confirm-registration/" + confirmationCode + "\n\n" +
                             "Best regards,\n" +
                             "TikTok Team.");
         }).start();
