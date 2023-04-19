@@ -67,7 +67,6 @@ public class UserService extends AbstractService {
         u.setConfirmationCode(confirmationCode);
         userRepository.save(u);
 
-//        String confirmationLink = confirmationCode;
         new Thread(() -> {
             senderService.sendEmail(dto.getEmail(),
                     "Confirm your registration",

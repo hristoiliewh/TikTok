@@ -48,8 +48,9 @@ public class CommentController extends AbstractController {
     }
 
     @GetMapping("/comments/{commentId}/reactions")
-    public int getReactions(@PathVariable int commentId, HttpSession s) {
+    public ResponseEntity<Integer> getReactions(@PathVariable int commentId, HttpSession s) {
         int loggedUserId = checkIfIsLogged(s);
-        return commentService.getReactions(commentId, loggedUserId);
+        int reactions =  commentService.getReactions(commentId, loggedUserId);
+        return ResponseEntity.ok(reactions);
     }
 }
