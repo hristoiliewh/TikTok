@@ -6,14 +6,12 @@ import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
 import java.util.List;
 
 @RestController
 public class SoundController extends AbstractController {
     @Autowired
     private SoundService soundService;
-
 
     @GetMapping("/sounds/{soundId}/find")
     public ResponseEntity<SoundSimpleDTO> getById(@PathVariable int soundId) {

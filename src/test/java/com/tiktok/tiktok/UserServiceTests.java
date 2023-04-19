@@ -56,7 +56,6 @@ public class UserServiceTests {
         mockMvc = MockMvcBuilders.standaloneSetup(userController).build();
         mockMvc = MockMvcBuilders.standaloneSetup(userRepository).build();
         mockMvc = MockMvcBuilders.standaloneSetup(senderService).build();
-        mockMvc = MockMvcBuilders.standaloneSetup(userController).build();
 //        MockitoAnnotations.openMocks(this);
     }
 
@@ -263,6 +262,4 @@ public class UserServiceTests {
         assertTrue(expected.getFollowing().isEmpty());
         assertTrue(expected.getVideos().isEmpty());
     }
-
-
 }

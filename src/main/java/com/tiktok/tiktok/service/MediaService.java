@@ -66,6 +66,20 @@ public class MediaService extends AbstractService {
             throw e;
         }
     }
+    private void validateVideoInfo(MultipartFile origin, String caption) {
+        if (origin.isEmpty()) {
+            logger.error("The file is not attached!");
+            throw new BadRequestException("The file is not attached!");
+        }
+        if (caption.length() > 200) {
+            logger.error("The video caption is too long.");
+            throw new BadRequestException("The video caption is too long. Please enter caption up to 200 symbols.");
+        }
+        if (!origin.getContentType().equals("video/mp4")) {
+            logger.error("Invalid video format!");
+            throw new BadRequestException("Invalid video format!");
+        }
+    }
 
     public SoundSimpleDTO uploadSound(MultipartFile origin, String name) throws Exception {
         try {
@@ -110,18 +124,12 @@ public class MediaService extends AbstractService {
         }
     }
 
-    private void validateVideoInfo(MultipartFile origin, String caption) {
-        if (origin.isEmpty()) {
-            logger.error("The file is not attached!");
-            throw new BadRequestException("The file is not attached!");
+    public File download(String fileName) {
+        fileName = "uploads" + File.separator + fileName;
+        File f = new File(fileName);
+        if (f.exists()) {
+            return f;
         }
-        if (caption.length() > 200) {
-            logger.error("The video caption is too long.");
-            throw new BadRequestException("The video caption is too long. Please enter caption up to 200 symbols.");
-        }
-        if (!origin.getContentType().equals("video/mp4")) {
-            logger.error("Invalid video format!");
-            throw new BadRequestException("Invalid video format!");
-        }
+        throw new NotFoundException("File not found");
     }
 }
