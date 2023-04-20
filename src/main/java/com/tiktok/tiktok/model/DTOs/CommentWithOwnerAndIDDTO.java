@@ -4,12 +4,15 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.time.LocalDateTime;
+
 @Getter
 @Setter
 @NoArgsConstructor
 public class CommentWithOwnerAndIDDTO {
     private int id;
-    private UserWithPicNameIdDTO owner;
     private String comment;
+    private LocalDateTime createdAt;
+    private UserWithPicNameIdDTO owner;
 
 }

@@ -13,9 +13,9 @@ public class CommentController extends AbstractController {
     private CommentService commentService;
 
     @PostMapping("/videos/{videoId}/comment")
-    public ResponseEntity<CommentFullInfoDTO> addComment(@PathVariable int videoId, @RequestBody CommentAddDTO dto, HttpSession s) {
+    public ResponseEntity<CommentWithoutParentAndReplayedDTO> addComment(@PathVariable int videoId, @RequestBody CommentAddDTO dto, HttpSession s) {
         int loggedUserId = getLoggedUserId(s);
-        CommentFullInfoDTO commentFullInfoDTO = commentService.addComment(videoId, loggedUserId, dto.getComment());
+        CommentWithoutParentAndReplayedDTO commentFullInfoDTO = commentService.addComment(videoId, loggedUserId, dto.getComment());
         return ResponseEntity.ok(commentFullInfoDTO);
     }
 

@@ -34,9 +34,9 @@ public class VideoController extends AbstractController {
     }
 
     @GetMapping("/videos/{videoId}/comments")
-    public ResponseEntity<List<CommentWithIdOwnerParentDTO>> getAllComments(@PathVariable int videoId, HttpSession s) {
+    public ResponseEntity<List<CommentWithOwnerAndIDDTO>> getAllComments(@PathVariable int videoId, HttpSession s) {
         int loggedUserId = checkIfIsLogged(s);
-        List<CommentWithIdOwnerParentDTO> commentWithIdOwnerParentDTOS = videoService.getAllComments(videoId, loggedUserId);
+        List<CommentWithOwnerAndIDDTO> commentWithIdOwnerParentDTOS = videoService.getAllComments(videoId, loggedUserId);
         return ResponseEntity.ok(commentWithIdOwnerParentDTOS);
     }
 

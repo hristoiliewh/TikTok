@@ -9,7 +9,7 @@ import lombok.Setter;
 @NoArgsConstructor
 public class CommentWithIdOwnerParentDTO {
     private int id;
-    private UserWithPicNameIdDTO owner;
     private String comment;
+    private UserWithPicNameIdDTO owner;
     private CommentWithOwnerAndIDDTO parentComment;
 }
