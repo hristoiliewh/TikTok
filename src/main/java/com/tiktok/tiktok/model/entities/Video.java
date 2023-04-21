@@ -37,6 +37,7 @@ public class Video{
     private Sound sound;
 
     private int views;
+//    private String region;
 
     @OneToMany(mappedBy = "video")
     private List<Comment> comments;

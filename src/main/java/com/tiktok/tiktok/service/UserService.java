@@ -11,6 +11,8 @@ import com.tiktok.tiktok.model.exceptions.BadRequestException;
 import com.tiktok.tiktok.model.exceptions.NotFoundException;
 import com.tiktok.tiktok.model.exceptions.UnauthorizedException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -158,8 +160,10 @@ public class UserService extends AbstractService {
         return mapper.map(user, UserFullInfoDTO.class);
     }
 
-    public List<UserWithPicNameIdDTO> getAllFollowers(int userId) {
-        Set<User> followers = getUserById(userId).getFollowers();
+    public List<UserWithPicNameIdDTO> getAllFollowers(int userId, int page, int limit) {
+        pageable = PageRequest.of(page, limit);
+        Page<User> usersPage = userRepository.findAllByFollowers(userId,pageable);
+        List<User> followers = usersPage.getContent();
         if (followers.size() == 0) {
             throw new NotFoundException("No followers found");
         }
@@ -169,8 +173,10 @@ public class UserService extends AbstractService {
         return followersDTO;
     }
 
-    public List<UserWithPicNameIdDTO> getAllFollowing(int userId) {
-        Set<User> following = getUserById(userId).getFollowing();
+    public List<UserWithPicNameIdDTO> getAllFollowing(int userId, int page, int limit) {
+        pageable = PageRequest.of(page, limit);
+        Page<User> usersPage = userRepository.findAllByFollowing(userId,pageable);
+        List<User> following = usersPage.getContent();
         if (following.size() == 0) {
             throw new NotFoundException("No following users found");
         }

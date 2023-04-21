@@ -60,16 +60,20 @@ public class UserController extends AbstractController {
     }
 
     @GetMapping("/users/{id}/followed")
-    public ResponseEntity<List<UserWithPicNameIdDTO>> getAllFollowers(@PathVariable int id, HttpSession s) {
+    public ResponseEntity<List<UserWithPicNameIdDTO>> getAllFollowers(@RequestParam(defaultValue = "0") int page,
+                                                                      @RequestParam(defaultValue = "4") int limit,
+                                                                      @PathVariable int id, HttpSession s) {
         isLogged(s);
-        List<UserWithPicNameIdDTO> user = userService.getAllFollowers(id);
+        List<UserWithPicNameIdDTO> user = userService.getAllFollowers(id, page, limit);
         return ResponseEntity.ok(user);
     }
 
     @GetMapping("/users/{id}/following")
-    public ResponseEntity<List<UserWithPicNameIdDTO>> getAllFollowing(@PathVariable int id, HttpSession s) {
+    public ResponseEntity<List<UserWithPicNameIdDTO>> getAllFollowing(@RequestParam(defaultValue = "0") int page,
+                                                                      @RequestParam(defaultValue = "4") int limit,
+                                                                      @PathVariable int id, HttpSession s) {
         isLogged(s);
-        List<UserWithPicNameIdDTO> user = userService.getAllFollowing(id);
+        List<UserWithPicNameIdDTO> user = userService.getAllFollowing(id, page, limit);
         return ResponseEntity.ok(user);
     }
 

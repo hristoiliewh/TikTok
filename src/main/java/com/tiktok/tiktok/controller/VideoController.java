@@ -65,8 +65,8 @@ public class VideoController extends AbstractController {
     }
 
     @GetMapping("/videos/homePage")
-    public ResponseEntity<List<VideoResponseDTO>> showVideosHomePage(@RequestParam(defaultValue = "0") int page,
-                                                                     @RequestParam(defaultValue = "1") int limit, HttpSession s) {
+    public ResponseEntity<List<VideoResponseDTO>> showFeed(@RequestParam(defaultValue = "0") int page,
+                                                           @RequestParam(defaultValue = "1") int limit, HttpSession s) {
         int loggedUserId = getLoggedUserId(s);
         return ResponseEntity.ok(videoService.showFeed(loggedUserId, page, limit));
     }

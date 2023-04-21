@@ -16,6 +16,14 @@ public interface UserRepository extends JpaRepository<User, Integer> {
     Optional<User> getByEmail(String email);
     Optional<User> getByUsername(String username);
     Optional<User> getByConfirmationCode(String confirmationCode);
+    @Query(value = "SELECT * FROM users " +
+                "JOIN users_follow_users ON users.id = follower_id " +
+                "WHERE following_id = :userId", nativeQuery = true)
+    Page<User> findAllByFollowers(int userId, Pageable pageable);
+    @Query(value = "SELECT * FROM users " +
+            "JOIN users_follow_users ON users.id = following_id " +
+            "WHERE follower_id = :userId", nativeQuery = true)
+    Page<User> findAllByFollowing(int userId, Pageable pageable);
 
     boolean existsByUsername(String username);
 
