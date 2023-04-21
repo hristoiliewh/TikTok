@@ -15,8 +15,12 @@ import java.util.Optional;
 @Repository
 public interface VideoRepository extends JpaRepository<Video, Integer> {
 
-    @Query(value = "SELECT * FROM videos WHERE caption LIKE %:name%", nativeQuery = true)
-    List<Video> findAllContains(@Param("name") String name);
+    @Query(value = "SELECT * FROM videos AS v " +
+            "WHERE caption LIKE %:name% " +
+            "AND (v.is_private = FALSE " +
+            "OR (v.is_private = TRUE AND v.owner_id = :loggedUserId)) " +
+            "ORDER BY v.views DESC", nativeQuery = true)
+    Page<Video> findAllContains(@Param("name") String name,int loggedUserId, Pageable pageable);
 
     Optional<Video> findByUrl(String url);
     Page<Video> findAllByOwnerId(int userId, Pageable pageable);

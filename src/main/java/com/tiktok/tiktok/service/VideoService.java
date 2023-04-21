@@ -60,21 +60,14 @@ public class VideoService extends AbstractService {
                 .collect(Collectors.toList());
     }
 
-    public List<VideoSimpleDTO> getByName(String videoName, int loggedUserId) {
-        List<Video> videos = videoRepository.findAllContains(videoName);
+    public List<VideoSimpleDTO> getByName(String videoName, int loggedUserId, int page, int limit) {
+        pageable = PageRequest.of(page, limit);
+        Page<Video> videoPage = videoRepository.findAllContains(videoName, loggedUserId, pageable);
+        List<Video> videos = videoPage.getContent();
         if (videos.size() == 0) {
             throw new NotFoundException("No videos with the given name found.");
         }
-        List<Video> videosNotPrivate = new ArrayList<>();
-        for (Video v : videos) {
-            if (isPossibleToWatch(v, loggedUserId)) {
-                videosNotPrivate.add(v);
-            }
-        }
-        if (videosNotPrivate.size() == 0) {
-            throw new NotFoundException("No videos with the given name found.");
-        }
-        return videosNotPrivate.stream()
+        return videos.stream()
                 .map(v -> mapper.map(v, VideoSimpleDTO.class))
                 .collect(Collectors.toList());
     }

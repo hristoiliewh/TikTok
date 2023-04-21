@@ -36,9 +36,11 @@ public class VideoController extends AbstractController {
     }
 
     @GetMapping("/videos/{videoName}/find")
-    public ResponseEntity<List<VideoSimpleDTO>> getByName(@PathVariable String videoName, HttpSession s) {
+    public ResponseEntity<List<VideoSimpleDTO>> getByName(@RequestParam(defaultValue = "0") int page,
+                                                          @RequestParam(defaultValue = "1") int limit,
+                                                          @PathVariable String videoName, HttpSession s) {
         int loggedUserId = checkIfIsLogged(s);
-        List<VideoSimpleDTO> videoSimpleDTOS = videoService.getByName(videoName, loggedUserId);
+        List<VideoSimpleDTO> videoSimpleDTOS = videoService.getByName(videoName, loggedUserId, page, limit);
         return ResponseEntity.ok(videoSimpleDTOS);
     }
 
