@@ -43,6 +43,14 @@ public class VideoController extends AbstractController {
         List<VideoSimpleDTO> videoSimpleDTOS = videoService.getByName(videoName, loggedUserId, page, limit);
         return ResponseEntity.ok(videoSimpleDTOS);
     }
+    @GetMapping("/videos/my-reaction")
+    public ResponseEntity<List<VideoSimpleDTO>> getMyReactions(@RequestParam(defaultValue = "0") int page,
+                                                               @RequestParam(defaultValue = "1") int limit,
+                                                               HttpSession s) {
+        int loggedUserId = getLoggedUserId(s);
+        List<VideoSimpleDTO> videoSimpleDTOS = videoService.getMyReactions(loggedUserId, page, limit);
+        return ResponseEntity.ok(videoSimpleDTOS);
+    }
 
     @GetMapping("/videos/hashtag/{hashtag}")
     public ResponseEntity<List<VideoSimpleDTO>> getByHashtag(@RequestParam(defaultValue = "0") int page,

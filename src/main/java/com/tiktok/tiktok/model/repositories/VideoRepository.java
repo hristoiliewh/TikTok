@@ -24,6 +24,10 @@ public interface VideoRepository extends JpaRepository<Video, Integer> {
 
     Optional<Video> findByUrl(String url);
     Page<Video> findAllByOwnerId(int userId, Pageable pageable);
+    @Query(value = "SELECT * FROM videos AS v " +
+            "JOIN users_react_to_videos AS u ON v.id = u.video_id " +
+            "WHERE u.user_id = :userId", nativeQuery = true)
+    Page<Video> findAllByReactions(int userId, Pageable pageable);
 
     @Query(value = "SELECT * " +
             "FROM videos AS v " +

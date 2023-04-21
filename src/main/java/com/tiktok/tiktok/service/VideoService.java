@@ -9,6 +9,7 @@ import com.tiktok.tiktok.model.repositories.VideoReactionRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
@@ -116,7 +117,7 @@ public class VideoService extends AbstractService {
     }
 
     public List<VideoResponseDTO> showFeed(int loggedUserId, int pageNumber, int videosPerPage) {
-        pageable = PageRequest.of(pageNumber, videosPerPage);
+        pageable = PageRequest.of(pageNumber, videosPerPage, Sort.by("created_at").descending());
         Page<Video> videos = videoRepository.showAllVideosByViews(loggedUserId, pageable);
         List<VideoResponseDTO> videoResponseDTOS = videos.stream()
                 .map(v -> mapper.map(v, VideoResponseDTO.class))
@@ -133,5 +134,17 @@ public class VideoService extends AbstractService {
             }
         }
         return videoResponseDTOS;
+    }
+
+    public List<VideoSimpleDTO> getMyReactions(int loggedUserId, int page, int limit) {
+        pageable = PageRequest.of(page, limit, Sort.by("created_at").descending());
+        Page<Video> videoPage = videoRepository.findAllByReactions(loggedUserId, pageable);
+        List<Video> videos = videoPage.getContent();
+        if (videos.size() == 0) {
+            throw new NotFoundException("No videos found.");
+        }
+        return videos.stream()
+                .map(v -> mapper.map(v, VideoSimpleDTO.class))
+                .collect(Collectors.toList());
     }
 }
