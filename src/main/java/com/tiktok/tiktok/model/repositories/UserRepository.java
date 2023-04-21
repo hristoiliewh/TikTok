@@ -15,6 +15,9 @@ public interface UserRepository extends JpaRepository<User, Integer> {
 
     Optional<User> getByEmail(String email);
     Optional<User> getByUsername(String username);
+    @Query(value = "SELECT * FROM users " +
+            "WHERE username LIKE %:username% ", nativeQuery = true)
+    Page<User> findAllByUsername(String username, Pageable pageable);
     Optional<User> getByConfirmationCode(String confirmationCode);
     @Query(value = "SELECT * FROM users " +
                 "JOIN users_follow_users ON users.id = follower_id " +

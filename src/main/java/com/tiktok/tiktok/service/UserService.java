@@ -147,12 +147,17 @@ public class UserService extends AbstractService {
         return followersCount;
     }
 
-    public UserFullInfoDTO searchByUsername(String username) {
-        Optional<User> user = userRepository.getByUsername(username);
-        if (!user.isPresent()) {
+    public List<UserWithPicNameIdDTO> searchByUsername(String username, int page, int limit) {
+        pageable = PageRequest.of(page, limit);
+        Page<User> usersPage = userRepository.findAllByUsername(username, pageable);
+        List<User> users = usersPage.getContent();
+        if (users.size() == 0) {
             throw new NotFoundException("User not found");
         }
-        return mapper.map(user, UserFullInfoDTO.class);
+        List<UserWithPicNameIdDTO> usersWithUsername = users.stream()
+                .map(u -> mapper.map(u, UserWithPicNameIdDTO.class))
+                .collect(Collectors.toList());
+        return usersWithUsername;
     }
 
     public UserFullInfoDTO getById(int userId) {

@@ -4,7 +4,6 @@ import com.tiktok.tiktok.model.DTOs.*;
 import com.tiktok.tiktok.model.entities.User;
 import com.tiktok.tiktok.service.AbstractService;
 import com.tiktok.tiktok.service.UserService;
-import io.swagger.annotations.ApiOperation;
 import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
 import org.apache.logging.log4j.LogManager;
@@ -48,11 +47,12 @@ public class UserController extends AbstractController {
     }
 
     @GetMapping("/users/{username}")
-    public ResponseEntity<UserFullInfoDTO> searchByUsername(@PathVariable String username, HttpSession s) {
-        UserFullInfoDTO userFullInfoDTO = userService.searchByUsername(username);
+    public ResponseEntity<List<UserWithPicNameIdDTO>> searchByUsername(@RequestParam(defaultValue = "0") int page,
+                                                            @RequestParam(defaultValue = "1") int limit,
+                                                            @PathVariable String username, HttpSession s) {
+        List<UserWithPicNameIdDTO> userFullInfoDTO = userService.searchByUsername(username, page, limit);
         return ResponseEntity.ok(userFullInfoDTO);
     }
-    @ApiOperation(value = "Get user by ID", nickname = "getUserById")
     @GetMapping("/users/{id}/find")
     public ResponseEntity<UserFullInfoDTO> getById(@PathVariable int id) {
 
