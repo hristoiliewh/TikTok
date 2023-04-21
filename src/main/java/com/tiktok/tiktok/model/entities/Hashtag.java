@@ -22,7 +22,7 @@ public class Hashtag {
     @Column
     private String tag;
     @ManyToMany(mappedBy = "hashtags")
-    private Set<Video> video = new HashSet<>();
+    private Set<Video> videos = new HashSet<>();
 
     @Override
     public boolean equals(Object o) {

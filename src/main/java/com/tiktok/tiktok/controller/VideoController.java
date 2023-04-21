@@ -27,17 +27,12 @@ public class VideoController extends AbstractController {
         return ResponseEntity.ok(videoSimpleDTO);
     }
     @GetMapping("/users/{id}/videos")
-    public ResponseEntity<List<VideoWithoutOwnerDTO>> getAllVideos(@PathVariable int id, HttpSession s) {
-        isLogged(s);
-        List<VideoWithoutOwnerDTO> videoWithoutOwnerDTO =  videoService.getAllVideos(id);
-        return ResponseEntity.ok(videoWithoutOwnerDTO);
-    }
-
-    @GetMapping("/videos/{videoId}/comments")
-    public ResponseEntity<List<CommentWithOwnerAndIDDTO>> getAllComments(@PathVariable int videoId, HttpSession s) {
+    public ResponseEntity<List<VideoWithoutOwnerDTO>> getAllVideos(@RequestParam(defaultValue = "0") int page,
+                                                                   @RequestParam(defaultValue = "1") int limit,
+                                                                   @PathVariable int id, HttpSession s) {
         int loggedUserId = checkIfIsLogged(s);
-        List<CommentWithOwnerAndIDDTO> commentWithIdOwnerParentDTOS = videoService.getAllComments(videoId, loggedUserId);
-        return ResponseEntity.ok(commentWithIdOwnerParentDTOS);
+        List<VideoWithoutOwnerDTO> videoWithoutOwnerDTO =  videoService.getAllVideos(id, loggedUserId, page,limit);
+        return ResponseEntity.ok(videoWithoutOwnerDTO);
     }
 
     @GetMapping("/videos/{videoName}/find")
@@ -48,9 +43,11 @@ public class VideoController extends AbstractController {
     }
 
     @GetMapping("/videos/hashtag/{hashtag}")
-    public ResponseEntity<List<VideoSimpleDTO>> getByHashtag(@PathVariable String hashtag, HttpSession s) {
+    public ResponseEntity<List<VideoSimpleDTO>> getByHashtag(@RequestParam(defaultValue = "0") int page,
+                                                             @RequestParam(defaultValue = "1") int limit,
+                                                             @PathVariable String hashtag, HttpSession s) {
         int loggedUserId = checkIfIsLogged(s);
-        List<VideoSimpleDTO> videoSimpleDTOS = videoService.getByHashtag(hashtag, loggedUserId);
+        List<VideoSimpleDTO> videoSimpleDTOS = videoService.getByHashtag(hashtag, loggedUserId, page, limit);
         return ResponseEntity.ok(videoSimpleDTOS);
     }
 
@@ -65,6 +62,14 @@ public class VideoController extends AbstractController {
     public int getReactions(@PathVariable int videoId, HttpSession s) {
         int loggedUserId = checkIfIsLogged(s);
         return videoService.getReactions(videoId, loggedUserId);
-//        return ResponseEntity.ok(reactions);
     }
+
+    @GetMapping("/videos/homePage")
+    public ResponseEntity<List<VideoResponseDTO>> showVideosHomePage(@RequestParam(defaultValue = "0") int page,
+                                                                     @RequestParam(defaultValue = "1") int limit, HttpSession s) {
+        int loggedUserId = getLoggedUserId(s);
+        return ResponseEntity.ok(videoService.showFeed(loggedUserId, page, limit));
+    }
+
+
 }

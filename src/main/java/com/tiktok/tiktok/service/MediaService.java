@@ -57,6 +57,7 @@ public class MediaService extends AbstractService {
             video.setCreatedAt(LocalDateTime.now());
             video.setOwner(user);
             video.setPrivate(isPrivate);
+            video.setViews(0);
             Optional<Sound> sound = soundRepository.findById(soundId);
             video.setSound(sound.isPresent() ? sound.get() : null);
             String path = uploadMedia(origin);
@@ -135,9 +136,15 @@ public class MediaService extends AbstractService {
     public File download(String fileName) {
         fileName = "uploads" + File.separator + fileName;
         File f = new File(fileName);
-        if (f.exists()) {
-            return f;
+        if (!f.exists()) {
+            throw new NotFoundException("File not found");
         }
-        throw new NotFoundException("File not found");
+        String extension = FilenameUtils.getExtension(fileName);
+        if ("mp4".equalsIgnoreCase(extension)) {
+            Optional<Video> video = videoRepository.findByUrl(fileName);
+            video.get().setViews(video.get().getViews() + 1);
+            videoRepository.save(video.get());
+        }
+        return f;
     }
 }

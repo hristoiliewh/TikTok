@@ -12,6 +12,8 @@ public class VideoSimpleDTO {
 
     private int id;
     private String caption;
+    private int numberOfReactions;
+    private int views;
     private LocalDateTime createdAt;
     private boolean isPrivate;
     private String url;

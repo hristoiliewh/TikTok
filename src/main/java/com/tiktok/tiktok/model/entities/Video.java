@@ -17,7 +17,7 @@ import java.util.Set;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity(name = "videos")
-public class Video {
+public class Video{
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
@@ -35,6 +35,8 @@ public class Video {
     @ManyToOne
     @JoinColumn(name = "sound_id", referencedColumnName = "id")
     private Sound sound;
+
+    private int views;
 
     @OneToMany(mappedBy = "video")
     private List<Comment> comments;

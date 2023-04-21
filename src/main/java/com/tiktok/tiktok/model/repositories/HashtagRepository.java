@@ -9,4 +9,5 @@ public interface HashtagRepository extends JpaRepository<Hashtag, Integer> {
     boolean existsByTag(String tag);
 
     Hashtag findByTag(String tag);
+
 }
