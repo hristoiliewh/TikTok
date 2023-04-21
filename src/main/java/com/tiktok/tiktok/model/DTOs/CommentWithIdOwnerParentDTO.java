@@ -11,8 +11,8 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 public class CommentWithIdOwnerParentDTO {
     private int id;
-    private UserWithPicNameIdDTO owner;
     private String comment;
+    private UserWithPicNameIdDTO owner;
     private LocalDateTime createdAt;
     private CommentWithOwnerAndIDDTO parentComment;
 }

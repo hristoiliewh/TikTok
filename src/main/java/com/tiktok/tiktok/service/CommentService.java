@@ -21,7 +21,7 @@ public class CommentService extends AbstractService {
     @Autowired
     private CommentReactionRepository commentReactionRepository;
 
-    public CommentFullInfoDTO addComment(int videoId, int loggedUserId, String comment) {
+    public CommentWithoutParentAndReplayedDTO addComment(int videoId, int loggedUserId, String comment) {
         Video video = getVideoById(videoId);
         if (!isPossibleToWatch(video, loggedUserId)) {
             logger.error("User with ID " + loggedUserId + " attempted to access private video with ID " + videoId);
@@ -35,7 +35,7 @@ public class CommentService extends AbstractService {
         c.setCreatedAt(LocalDateTime.now());
         commentRepository.save(c);
         logger.info("Comment added successfully by user with ID " + loggedUserId + " to video with ID " + videoId);
-        return mapper.map(c, CommentFullInfoDTO.class);
+        return mapper.map(c, CommentWithoutParentAndReplayedDTO.class);
     }
 
     public CommentWithoutVideoAndParentComment getById(int commentId, int loggedUserId) {

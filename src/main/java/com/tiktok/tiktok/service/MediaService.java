@@ -29,6 +29,10 @@ public class MediaService extends AbstractService {
 
     public UserSimpleDTO uploadProfilePhoto(MultipartFile origin, int userId) throws Exception {
         try {
+            if (origin.isEmpty()) {
+                logger.error("The file is not attached!");
+                throw new BadRequestException("The file is not attached!");
+            }
             String contentType = origin.getContentType();
             if (!contentType.equals("image/jpeg") && !contentType.equals("image/png")) {
                 throw new BadRequestException("Only JPEG and PNG images are allowed");
@@ -83,6 +87,10 @@ public class MediaService extends AbstractService {
 
     public SoundSimpleDTO uploadSound(MultipartFile origin, String name) throws Exception {
         try {
+            if (origin.isEmpty()) {
+                logger.error("The file is not attached!");
+                throw new BadRequestException("The file is not attached!");
+            }
             String fileName = origin.getOriginalFilename();
             String fileExtension = fileName.substring(fileName.lastIndexOf('.') + 1);
 

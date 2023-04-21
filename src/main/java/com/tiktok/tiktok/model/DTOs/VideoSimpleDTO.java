@@ -11,17 +11,11 @@ import java.time.LocalDateTime;
 public class VideoSimpleDTO {
 
     private int id;
-
     private String caption;
-
     private LocalDateTime createdAt;
-
     private boolean isPrivate;
-
     private String url;
-
-    private UserSimpleDTO owner;
-
     private SoundSimpleDTO sound;
+    private UserWithPicNameIdDTO owner;
 
 }

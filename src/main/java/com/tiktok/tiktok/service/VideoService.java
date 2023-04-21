@@ -50,6 +50,18 @@ public class VideoService extends AbstractService {
                 .collect(Collectors.toList());
     }
 
+    public List<CommentWithOwnerAndIDDTO> getAllComments(int videoId, int loggedUserId) {
+        Video video = getVideoById(videoId);
+        canWatch(video, loggedUserId);
+        List<Comment> comments = video.getComments();
+        if (comments.size() == 0) {
+            throw new NotFoundException("No comments found");
+        }
+        return comments.stream()
+                .map(comment -> mapper.map(comment, CommentWithOwnerAndIDDTO.class))
+                .collect(Collectors.toList());
+    }
+
     public List<VideoSimpleDTO> getByName(String videoName, int loggedUserId) {
         List<Video> videos = videoRepository.findAllContains(videoName);
         if (videos.size() == 0) {
@@ -100,6 +112,7 @@ public class VideoService extends AbstractService {
             VideoReactions reactions1 = videoReactions.get();
             reactions1.setLiked(!reactions1.isLiked());
             videoReactionRepository.delete(reactions1);
+//            videoReactionRepository.save(reactions1);
             return mapper.map(reactions1, VideoReactionDTO.class);
         } else {
             VideoReactions reactions = new VideoReactions();

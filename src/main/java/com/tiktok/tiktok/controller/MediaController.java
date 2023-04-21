@@ -7,6 +7,7 @@ import com.tiktok.tiktok.model.DTOs.UserSimpleDTO;
 import com.tiktok.tiktok.service.MediaService;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
+import jakarta.validation.constraints.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -24,7 +25,6 @@ public class MediaController extends AbstractController {
     @PostMapping("/users/media")
 
     public ResponseEntity<UserSimpleDTO> uploadProfilePhoto(@RequestParam("file") MultipartFile file, HttpSession s) throws Exception {
-
         int loggedUserId = getLoggedUserId(s);
         UserSimpleDTO userSimpleDTO = mediaService.uploadProfilePhoto(file, loggedUserId);
         return ResponseEntity.ok(userSimpleDTO);
