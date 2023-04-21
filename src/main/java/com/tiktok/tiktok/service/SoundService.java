@@ -3,6 +3,8 @@ package com.tiktok.tiktok.service;
 import com.tiktok.tiktok.model.DTOs.SoundSimpleDTO;
 import com.tiktok.tiktok.model.entities.Sound;
 import com.tiktok.tiktok.model.exceptions.NotFoundException;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -17,9 +19,10 @@ public class SoundService extends AbstractService {
         return mapper.map(sound, SoundSimpleDTO.class);
     }
 
-    public List<SoundSimpleDTO> getAll() {
-        List<Sound> sounds = soundRepository.findAll();
-        if (sounds.size() == 0) {
+    public List<SoundSimpleDTO> getAll(int page, int limit) {
+        pageable = PageRequest.of(page, limit);
+        Page<Sound> sounds = soundRepository.findAll(pageable);
+        if (sounds.getContent().size() == 0) {
             throw new NotFoundException("No sound found");
         }
         return sounds.stream()
@@ -27,9 +30,10 @@ public class SoundService extends AbstractService {
                 .collect(Collectors.toList());
     }
 
-    public List<SoundSimpleDTO> getByName(String soundName) {
-        List<Sound> sounds = soundRepository.findAllContains(soundName);
-        if (sounds.size() == 0) {
+    public List<SoundSimpleDTO> getByName(String soundName, int page, int limit) {
+        pageable = PageRequest.of(page, limit);
+        Page<Sound> sounds = soundRepository.findAllContains(soundName, pageable);
+        if (sounds.getContent().size() == 0) {
             throw new NotFoundException("Sound not found");
         }
         return sounds.stream()

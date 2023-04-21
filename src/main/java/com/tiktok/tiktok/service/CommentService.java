@@ -2,13 +2,18 @@ package com.tiktok.tiktok.service;
 
 import com.tiktok.tiktok.model.DTOs.*;
 import com.tiktok.tiktok.model.entities.*;
+import com.tiktok.tiktok.model.exceptions.NotFoundException;
 import com.tiktok.tiktok.model.exceptions.UnauthorizedException;
 import com.tiktok.tiktok.model.repositories.CommentReactionRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class CommentService extends AbstractService {
@@ -40,6 +45,19 @@ public class CommentService extends AbstractService {
             throw new UnauthorizedException("Can't delete this comment. You are unauthorized.");
         }
         return mapper.map(comment, CommentWithoutVideoAndParentComment.class);
+    }
+
+    public List<CommentWithIdOwnerParentDTO> getAllComments(int videoId, int loggedUserId, int page, int limit) {
+        Video video = getVideoById(videoId);
+        canWatch(video, loggedUserId);
+        pageable = PageRequest.of(page, limit);
+        Page<Comment> comments = commentRepository.findAllByVideoIdAndCreatedAt(pageable, videoId);
+        if (comments.getContent().size() == 0) {
+            throw new NotFoundException("No comments found");
+        }
+        return comments.stream()
+                .map(comment -> mapper.map(comment, CommentWithIdOwnerParentDTO.class))
+                .collect(Collectors.toList());
     }
 
     public CommentDeletedDTO deleteComment(int commentId, int loggedUserId) {

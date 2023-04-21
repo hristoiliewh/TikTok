@@ -284,5 +284,4 @@ public class UserService extends AbstractService {
         }).start();
         return "Password changed successfully.";
     }
-
 }

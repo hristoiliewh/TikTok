@@ -6,11 +6,13 @@ import com.tiktok.tiktok.model.entities.Sound;
 import com.tiktok.tiktok.model.entities.User;
 import com.tiktok.tiktok.model.entities.Video;
 import com.tiktok.tiktok.model.exceptions.NotFoundException;
+import com.tiktok.tiktok.model.exceptions.UnauthorizedException;
 import com.tiktok.tiktok.model.repositories.*;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Pageable;
 
 import java.util.Optional;
 
@@ -27,6 +29,7 @@ public abstract class AbstractService {
     protected CommentRepository commentRepository;
     @Autowired
     protected ModelMapper mapper;
+    protected static Pageable pageable;
 
     protected User getUserById(int id) {
         return userRepository.findById(id).orElseThrow(() -> new NotFoundException("User not found"));
@@ -49,5 +52,10 @@ public abstract class AbstractService {
             return false;
         }
         return true;
+    }
+    protected void canWatch(Video video, int loggedUserId){
+        if (!isPossibleToWatch(video, loggedUserId)) {
+            throw new UnauthorizedException("This video is private and you do not have access to it.");
+        }
     }
 }

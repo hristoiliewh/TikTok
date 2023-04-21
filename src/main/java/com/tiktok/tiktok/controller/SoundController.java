@@ -20,16 +20,18 @@ public class SoundController extends AbstractController {
     }
 
     @GetMapping("/sounds")
-    public ResponseEntity<List<SoundSimpleDTO>> getAll(HttpSession s) {
+    public ResponseEntity<List<SoundSimpleDTO>> getAll(@RequestParam(defaultValue = "0") int page,
+                                                       @RequestParam(defaultValue = "2") int limit, HttpSession s) {
         isLogged(s);
-        List<SoundSimpleDTO> soundSimpleDTOS = soundService.getAll();
+        List<SoundSimpleDTO> soundSimpleDTOS = soundService.getAll(page, limit);
         return ResponseEntity.ok(soundSimpleDTOS);
     }
 
     @GetMapping("/sounds/{soundName}")
-    public ResponseEntity<List<SoundSimpleDTO>> getByName(@PathVariable String soundName) {
+    public ResponseEntity<List<SoundSimpleDTO>> getByName(@PathVariable String soundName, @RequestParam(defaultValue = "0") int page,
+                                                          @RequestParam(defaultValue = "2") int limit) {
 
-        List<SoundSimpleDTO> soundSimpleDTOS = soundService.getByName(soundName);
+        List<SoundSimpleDTO> soundSimpleDTOS = soundService.getByName(soundName, page, limit);
         return ResponseEntity.ok(soundSimpleDTOS);
     }
 }

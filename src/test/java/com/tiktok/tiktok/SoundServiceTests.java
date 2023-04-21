@@ -59,4 +59,83 @@ public class SoundServiceTests {
         Assertions.assertEquals(1, expected.getId());
         Assertions.assertEquals("Sound1", expected.getName());
     }
+    /*
+
+    @Test
+    public void testGetAllSoundsExist() {
+        // Arrange
+        Sound sound1 = new Sound();
+        sound1.setId(1);
+        sound1.setUrl("uploads/443a8493-96fd-41e7-89b2-a6441d9314f2.mp3");
+        sound1.setName("Sound1");
+        Sound sound2 = new Sound();
+        sound2.setId(2);
+        sound2.setName("Sound2");
+        sound2.setUrl("uploads/443a8493-96fd-41e7-89b2-a6441d9314f9.mp3");
+
+//        List<Sound> sounds = Arrays.asList(sound1, sound2);
+//        when(soundRepository.findAll()).thenReturn(sounds);
+
+        // Act
+        List<SoundSimpleDTO> expected = new ArrayList<>();
+
+        SoundSimpleDTO s1 = new SoundSimpleDTO();
+        s1.setId(1);
+        s1.setUrl("uploads/443a8493-96fd-41e7-89b2-a6441d9314f2.mp3");
+        s1.setName("Sound1");
+
+        SoundSimpleDTO s2 = new SoundSimpleDTO();
+        s1.setId(2);
+        s1.setUrl("uploads/443a8493-96fd-41e7-89b2-a6441d9314f9.mp3");
+        s1.setName("Sound2");
+
+        expected.add(s1);
+        expected.add(s2);
+
+        // Assert
+        assertNotNull(expected);
+        Assertions.assertEquals(2, expected.size());
+        Assertions.assertEquals("Sound1", expected.get(0).getName());
+        Assertions.assertEquals("Sound2", expected.get(1).getName());
+    }
+
+    @Test
+    void testGetAllSoundsDoesNotExistThrowNotFoundException() {
+        // Arrange
+        when(soundRepository.findAll()).thenReturn(Arrays.asList());
+
+        // Act & Assert
+        Assertions.assertThrows(NotFoundException.class, () -> soundService.getAll());
+    }
+
+    @Test
+    void testGetByNameSoundExists() {
+        // Arrange
+        Sound sound1 = new Sound();
+        sound1.setId(1);
+        sound1.setName("Sound1");
+        Sound sound2 = new Sound();
+        sound2.setId(2);
+        sound2.setName("Sound2");
+        List<Sound> sounds = Arrays.asList(sound1, sound2);
+        when(soundRepository.findAllContains("ound")).thenReturn(sounds);
+        // Act
+        List<SoundSimpleDTO> soundSimpleDTOList = soundService.getByName("ound");
+
+        // Assert
+        Assertions.assertEquals(2, soundSimpleDTOList.size());
+        Assertions.assertEquals("Sound1", soundSimpleDTOList.get(0).getName());
+        Assertions.assertEquals("Sound2", soundSimpleDTOList.get(1).getName());
+    }
+
+    @Test
+    void testGetByNameSoundDoesNotExistThrowNotFoundException() {
+        // Arrange
+        when(soundRepository.findAllContains("sound")).thenReturn(Arrays.asList());
+
+        // Act & Assert
+        Assertions.assertThrows(NotFoundException.class, () -> soundService.getByName("ound"));
+    }
+
+     */
 }
