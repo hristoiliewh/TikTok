@@ -25,6 +25,7 @@ public class VideoService extends AbstractService {
     public VideoDeletedDTO deleteVideo(int videoId, int loggedUserId) {
         Video video = getVideoById(videoId);
         if (video.getOwner().getId() != loggedUserId) {
+            throw new BadRequestException("You don't have permission to delete this video");
         }
         videoRepository.deleteById(videoId);
         logger.info("Video deleted successfully: " + videoId);

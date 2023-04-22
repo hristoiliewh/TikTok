@@ -1,16 +1,15 @@
 package com.tiktok.tiktok;
 import com.tiktok.tiktok.controller.UserController;
-import com.tiktok.tiktok.model.DTOs.usersDTOs.LoginDTO;
-import com.tiktok.tiktok.model.DTOs.usersDTOs.RegisterDTO;
-import com.tiktok.tiktok.model.DTOs.usersDTOs.UserFullInfoDTO;
-import com.tiktok.tiktok.model.DTOs.usersDTOs.UserSimpleDTO;
+import com.tiktok.tiktok.model.DTOs.usersDTOs.*;
 import com.tiktok.tiktok.model.entities.User;
 import com.tiktok.tiktok.model.exceptions.BadRequestException;
+import com.tiktok.tiktok.model.exceptions.NotFoundException;
+import com.tiktok.tiktok.model.exceptions.UnauthorizedException;
 import com.tiktok.tiktok.model.repositories.UserRepository;
 import com.tiktok.tiktok.service.MailSenderService;
 import com.tiktok.tiktok.service.UserService;
+import org.junit.Test;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.runner.RunWith;
 import org.mockito.*;
@@ -119,5 +118,79 @@ public class UserServiceTests {
         verify(userRepository, times(1)).getByUsername(username);
         verify(encoder, times(1)).matches(password, user.getPassword());
         verify(mapper, times(1)).map(user, UserFullInfoDTO.class);
+    }
+    @Test(expected = UnauthorizedException.class)
+    public void testLoginUserNotFound() {
+        // Arrange
+        String username = "testuser";
+        LoginDTO loginData = new LoginDTO();
+        loginData.setUsername(username);
+        when(userRepository.getByUsername(username)).thenReturn(Optional.empty());
+        // Act
+        userService.login(loginData);
+    }
+    @Test(expected = UnauthorizedException.class)
+    public void testLoginUnauthorized() {
+        // Arrange
+        String username = "testuser";
+        String password = "password";
+        User user = new User();
+        user.setUsername(username);
+        user.setPassword(encoder.encode("wrong_password"));
+        when(userRepository.getByUsername(username)).thenReturn(Optional.of(user));
+        when(encoder.matches(password, user.getPassword())).thenReturn(false);
+
+        LoginDTO loginData = new LoginDTO();
+        loginData.setUsername(username);
+        loginData.setPassword(password);
+        // Act
+        userService.login(loginData);
+    }
+    @Test
+    public void testEditSuccess() {
+        // Arrange
+        int userId = 1;
+        String newPassword = "New_password1!";
+        String confirmNewPassword = "New_password1!";
+        UserEditDTO userEditDTO = new UserEditDTO();
+        userEditDTO.setPassword(newPassword);
+        userEditDTO.setConfirmPassword(confirmNewPassword);
+        userEditDTO.setBio("");
+        userEditDTO.setEmail("");
+        userEditDTO.setPhoneNumber("");
+        userEditDTO.setName("");
+        userEditDTO.setUsername("");
+
+        User user = new User();
+        user.setId(userId);
+        when(userRepository.findById(userId)).thenReturn(Optional.of(user));
+        when(encoder.encode(newPassword)).thenReturn("encoded_new_password");
+
+        User updatedUser = new User();
+        updatedUser.setId(userId);
+        updatedUser.setPassword("encoded_new_password");
+        when(userRepository.save(user)).thenReturn(updatedUser);
+
+        UserSimpleDTO expected = new UserSimpleDTO();
+        expected.setId(userId);
+        expected.setUsername(user.getUsername());
+        when(mapper.map(updatedUser, UserSimpleDTO.class)).thenReturn(expected);
+        // Act
+        UserSimpleDTO result = userService.editAccount(userEditDTO, userId);
+        // Assert
+        assertEquals(expected.getId(), result.getId());
+        assertEquals(expected.getUsername(), result.getUsername());
+    }
+    @Test(expected = NotFoundException.class)
+    public void testChangePassMismatchedPassword() {
+        // Arrange
+        int userId = 1;
+        String newPassword = "new_password";
+        String confirmNewPassword = "wrong_password";
+        UserEditDTO changePassDTO = new UserEditDTO();
+        changePassDTO.setPassword(newPassword);
+        changePassDTO.setConfirmPassword(confirmNewPassword);
+        // Act
+        userService.editAccount(changePassDTO, userId);
     }
 }
