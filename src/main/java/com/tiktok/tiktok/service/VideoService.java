@@ -12,7 +12,6 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import java.util.*;
-import java.util.stream.Collectors;
 
 @Service
 public class VideoService extends AbstractService {
@@ -35,38 +34,30 @@ public class VideoService extends AbstractService {
     public VideoSimpleDTO getById(int videoId, int loggedUserId) {
         Video video = getVideoById(videoId);
         int reactions = video.getReactions().size();
+        int comments = video.getComments().size();
         isPossibleToWatch(video, loggedUserId);
         logger.info("Video found: " + videoId);
         VideoSimpleDTO videoSimpleDTO = mapper.map(video, VideoSimpleDTO.class);
         videoSimpleDTO.setNumberOfReactions(reactions);
+        videoSimpleDTO.setNumberOfComments(comments);
         return videoSimpleDTO;
     }
 
-    public Page<VideoWithoutOwnerDTO> getAllVideos(int userId, int loggedUserId, int page, int limit) {
+    public Page<VideoSimpleDTO> getAllVideos(int userId, int loggedUserId, int page, int limit) {
         pageable = PageRequest.of(page, limit, Sort.by("created_at").descending());
-        Page<VideoWithoutOwnerDTO> videoPage;
+        Page<Video> videos;
         if (userId == loggedUserId){
-            videoPage = videoRepository.findAllByOwnerId(loggedUserId,pageable)
-                    .map(v -> mapper.map(v, VideoWithoutOwnerDTO.class));
+            videos = videoRepository.findAllByOwnerId(loggedUserId,pageable);
+        } else {
+            videos = videoRepository.showAllVideosCreatedAt(userId, pageable);
         }
-        else {
-            videoPage = videoRepository.showAllVideosCreatedAt(userId, pageable)
-            .map(v -> mapper.map(v, VideoWithoutOwnerDTO.class));
-        }
-        if (videoPage.getContent().size() == 0) {
-            throw new NotFoundException("No videos found");
-        }
-        return videoPage;
+        return mapVideosToDTOs(videos);
     }
 
     public Page<VideoSimpleDTO> getByName(String videoName, int loggedUserId, int page, int limit) {
         pageable = PageRequest.of(page, limit);
-        Page<VideoSimpleDTO> videoPage = videoRepository.findAllContains(videoName, loggedUserId, pageable)
-                .map(v -> mapper.map(v, VideoSimpleDTO.class));
-        if (videoPage.getContent().size() == 0) {
-            throw new NotFoundException("No videos with the given name found.");
-        }
-        return videoPage;
+        Page<Video> videos = videoRepository.findAllContains(videoName, loggedUserId, pageable);
+        return mapVideosToDTOs(videos);
     }
 
     public Page<VideoSimpleDTO> getByHashtag(String hashtag, int loggedUserId, int page, int limit) {
@@ -74,12 +65,8 @@ public class VideoService extends AbstractService {
             throw new NotFoundException("No results found for #" + hashtag + "");
         }
         pageable = PageRequest.of(page, limit);
-        Page<VideoSimpleDTO> videoPage = videoRepository.findAllNotPrivateVideosByHashtag("#" + hashtag,loggedUserId, pageable)
-                .map(v -> mapper.map(v, VideoSimpleDTO.class));
-        if (videoPage.getContent().size() == 0) {
-            throw new NotFoundException("No videos found");
-        }
-        return videoPage;
+        Page<Video> videos = videoRepository.findAllNotPrivateVideosByHashtag("#" + hashtag,loggedUserId, pageable);
+        return mapVideosToDTOs(videos);
     }
 
     public VideoReactionDTO likeDislike(int videoId, int loggedUserId) {
@@ -111,27 +98,25 @@ public class VideoService extends AbstractService {
     public Page<VideoSimpleDTO> showFeed(int loggedUserId, int pageNumber, int videosPerPage) {
         pageable = PageRequest.of(pageNumber, videosPerPage, Sort.by("created_at").descending());
         Page<Video> videos = videoRepository.showAllVideosByViews(loggedUserId, pageable);
-        Page<VideoSimpleDTO> videoSimpleDTOS = videos.map(v -> mapper.map(v, VideoSimpleDTO.class));
-
-        if (videoSimpleDTOS.getContent().size() == 0) {
-            throw new BadRequestException("No more videos.");
-        } else {
-            for (int i = 0; i < videoSimpleDTOS.getContent().size(); i++) {
-                int reactions = videos.getContent().get(i).getReactions().size();
-                int comments = videos.getContent().get(i).getComments().size();
-                videoSimpleDTOS.getContent().get(i).setNumberOfReactions(reactions);
-                videoSimpleDTOS.getContent().get(i).setNumberOfComments(comments);
-            }
-        }
-        return videoSimpleDTOS;
+        return mapVideosToDTOs(videos);
     }
 
     public Page<VideoSimpleDTO> getMyLikedVideos(int loggedUserId, int page, int limit) {
         pageable = PageRequest.of(page, limit, Sort.by("created_at").descending());
-        Page<VideoSimpleDTO> videoPage = videoRepository.findAllByReactions(loggedUserId, pageable)
-                .map(v -> mapper.map(v, VideoSimpleDTO.class));
-        if (videoPage.getContent().size() == 0) {
+        Page<Video> videos =  videoRepository.findAllByReactions(loggedUserId, pageable);
+        return mapVideosToDTOs(videos);
+    }
+
+    private Page<VideoSimpleDTO> mapVideosToDTOs(Page<Video> videos){
+        if (videos.getContent().size() == 0) {
             throw new NotFoundException("No videos found.");
+        }
+        Page<VideoSimpleDTO> videoPage = videos.map(v -> mapper.map(v, VideoSimpleDTO.class));
+        for (int i = 0; i < videoPage.getContent().size(); i++) {
+            int reactions = videos.getContent().get(i).getReactions().size();
+            int comments = videos.getContent().get(i).getComments().size();
+            videoPage.getContent().get(i).setNumberOfReactions(reactions);
+            videoPage.getContent().get(i).setNumberOfComments(comments);
         }
         return videoPage;
     }

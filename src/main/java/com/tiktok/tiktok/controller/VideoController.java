@@ -29,12 +29,12 @@ public class VideoController extends AbstractController {
     }
 
     @GetMapping("/users/{id}/videos")
-    public ResponseEntity<Page<VideoWithoutOwnerDTO>> getAllVideos(@RequestParam(defaultValue = "0") int page,
+    public ResponseEntity<Page<VideoSimpleDTO>> getAllVideos(@RequestParam(defaultValue = "0") int page,
                                                                    @RequestParam(defaultValue = "1") int limit,
                                                                    @PathVariable int id, HttpSession s) {
         int loggedUserId = checkIfIsLogged(s);
-        Page<VideoWithoutOwnerDTO> videoWithoutOwnerDTO =  videoService.getAllVideos(id, loggedUserId, page,limit);
-        return ResponseEntity.ok(videoWithoutOwnerDTO);
+        Page<VideoSimpleDTO> videoSimpleDTO =  videoService.getAllVideos(id, loggedUserId, page,limit);
+        return ResponseEntity.ok(videoSimpleDTO);
     }
 
     @GetMapping("/videos/{videoName}/find")
