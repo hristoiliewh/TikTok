@@ -1,4 +1,4 @@
-package com.tiktok.tiktok.model.DTOs;
+package com.tiktok.tiktok.model.DTOs.usersDTOs;
 
 import jakarta.validation.constraints.*;
 import lombok.Getter;

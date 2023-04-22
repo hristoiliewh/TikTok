@@ -10,7 +10,6 @@ import org.springframework.stereotype.Service;
 
 @Service
 public class MailSenderService {
-
     protected static final Logger logger = LogManager.getLogger(AbstractService.class);
 
     @Autowired
@@ -30,5 +29,4 @@ public class MailSenderService {
             throw new InternalError("Failed to send email. Please try again later.");
         }
     }
-
 }

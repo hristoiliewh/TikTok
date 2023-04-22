@@ -1,4 +1,4 @@
-package com.tiktok.tiktok.model.DTOs;
+package com.tiktok.tiktok.model.DTOs.commentsDTOs;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;

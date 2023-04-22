@@ -1,12 +1,11 @@
 package com.tiktok.tiktok.controller;
 
-import com.tiktok.tiktok.model.DTOs.*;
+import com.tiktok.tiktok.model.DTOs.commentsDTOs.*;
 import com.tiktok.tiktok.service.CommentService;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
 import java.util.List;
 
 @RestController
@@ -15,16 +14,16 @@ public class CommentController extends AbstractController {
     private CommentService commentService;
 
     @PostMapping("/videos/{videoId}/comment")
-    public ResponseEntity<CommentWithoutParentAndReplayedDTO> addComment(@PathVariable int videoId, @RequestBody CommentAddDTO dto, HttpSession s) {
+    public ResponseEntity<CommentWithIdOwnerVideoDTO> addComment(@PathVariable int videoId, @RequestBody CommentAddDTO dto, HttpSession s) {
         int loggedUserId = getLoggedUserId(s);
-        CommentWithoutParentAndReplayedDTO commentFullInfoDTO = commentService.addComment(videoId, loggedUserId, dto.getComment());
+        CommentWithIdOwnerVideoDTO commentFullInfoDTO = commentService.addComment(videoId, loggedUserId, dto.getComment());
         return ResponseEntity.ok(commentFullInfoDTO);
     }
 
     @GetMapping("/comments/{commentId}")
-    public ResponseEntity<CommentWithoutVideoAndParentComment> getById(@PathVariable int commentId, HttpSession s) {
+    public ResponseEntity<CommentWithIdOwnerReplied> getById(@PathVariable int commentId, HttpSession s) {
         int loggedUserId = getLoggedUserId(s);
-        CommentWithoutVideoAndParentComment comment = commentService.getById(commentId, loggedUserId);
+        CommentWithIdOwnerReplied comment = commentService.getById(commentId, loggedUserId);
         return ResponseEntity.ok(comment);
     }
 
@@ -35,6 +34,7 @@ public class CommentController extends AbstractController {
         List<CommentWithIdOwnerParentDTO> commentWithIdOwnerParentDTOS = commentService.getAllComments(videoId, loggedUserId, page, limit);
         return ResponseEntity.ok(commentWithIdOwnerParentDTOS);
     }
+
     @DeleteMapping("/comments/{commentId}")
     public ResponseEntity<CommentDeletedDTO> deleteComment(@PathVariable int commentId, HttpSession s) {
         int loggedUserId = getLoggedUserId(s);

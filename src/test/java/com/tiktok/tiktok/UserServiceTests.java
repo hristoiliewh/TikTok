@@ -1,32 +1,25 @@
 package com.tiktok.tiktok;
 import com.tiktok.tiktok.controller.UserController;
-import com.tiktok.tiktok.model.DTOs.*;
+import com.tiktok.tiktok.model.DTOs.usersDTOs.LoginDTO;
+import com.tiktok.tiktok.model.DTOs.usersDTOs.RegisterDTO;
+import com.tiktok.tiktok.model.DTOs.usersDTOs.UserFullInfoDTO;
+import com.tiktok.tiktok.model.DTOs.usersDTOs.UserSimpleDTO;
 import com.tiktok.tiktok.model.entities.User;
-import com.tiktok.tiktok.model.entities.Video;
 import com.tiktok.tiktok.model.exceptions.BadRequestException;
-import com.tiktok.tiktok.model.exceptions.UnauthorizedException;
 import com.tiktok.tiktok.model.repositories.UserRepository;
 import com.tiktok.tiktok.service.MailSenderService;
 import com.tiktok.tiktok.service.UserService;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpSession;
-import lombok.SneakyThrows;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.*;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.Optional;
-import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;

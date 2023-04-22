@@ -6,7 +6,6 @@ import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-
 import java.io.Serializable;
 
 @Getter
@@ -15,7 +14,6 @@ import java.io.Serializable;
 @EqualsAndHashCode
 @Embeddable
 public class VideosReactionsKey implements Serializable {
-
     @Column(name = "video_id")
     private int videoId;
 

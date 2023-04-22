@@ -1,13 +1,11 @@
 package com.tiktok.tiktok.controller;
 
-
-import com.tiktok.tiktok.model.DTOs.SoundSimpleDTO;
-import com.tiktok.tiktok.model.DTOs.VideoSimpleDTO;
-import com.tiktok.tiktok.model.DTOs.UserSimpleDTO;
+import com.tiktok.tiktok.model.DTOs.soundsDTOs.SoundDTO;
+import com.tiktok.tiktok.model.DTOs.videosDTOs.VideoSimpleDTO;
+import com.tiktok.tiktok.model.DTOs.usersDTOs.UserSimpleDTO;
 import com.tiktok.tiktok.service.MediaService;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
-import jakarta.validation.constraints.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -18,12 +16,10 @@ import java.nio.file.Files;
 
 @RestController
 public class MediaController extends AbstractController {
-
     @Autowired
     private MediaService mediaService;
 
     @PostMapping("/users/media")
-
     public ResponseEntity<UserSimpleDTO> uploadProfilePhoto(@RequestParam("file") MultipartFile file, HttpSession s) throws Exception {
         int loggedUserId = getLoggedUserId(s);
         UserSimpleDTO userSimpleDTO = mediaService.uploadProfilePhoto(file, loggedUserId);
@@ -42,11 +38,11 @@ public class MediaController extends AbstractController {
     }
 
     @PostMapping("/sounds/media")
-    public ResponseEntity<SoundSimpleDTO> uploadSound(@RequestParam("file") MultipartFile file,
-                                      @RequestParam("name") String name,
-                                      HttpSession s) throws Exception {
+    public ResponseEntity<SoundDTO> uploadSound(@RequestParam("file") MultipartFile file,
+                                                @RequestParam("name") String name,
+                                                HttpSession s) throws Exception {
         isLogged(s);
-        SoundSimpleDTO soundSimpleDTO = mediaService.uploadSound(file, name);
+        SoundDTO soundSimpleDTO = mediaService.uploadSound(file, name);
         return ResponseEntity.ok(soundSimpleDTO);
     }
 

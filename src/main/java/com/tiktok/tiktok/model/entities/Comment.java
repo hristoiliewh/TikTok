@@ -2,7 +2,6 @@ package com.tiktok.tiktok.model.entities;
 
 import jakarta.persistence.*;
 import lombok.*;
-
 import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.List;

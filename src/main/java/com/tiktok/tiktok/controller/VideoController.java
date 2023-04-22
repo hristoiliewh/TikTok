@@ -1,6 +1,6 @@
 package com.tiktok.tiktok.controller;
 
-import com.tiktok.tiktok.model.DTOs.*;
+import com.tiktok.tiktok.model.DTOs.videosDTOs.*;
 import com.tiktok.tiktok.service.VideoService;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,6 +26,7 @@ public class VideoController extends AbstractController {
         VideoSimpleDTO videoSimpleDTO = videoService.getById(videoId, loggedUserId);
         return ResponseEntity.ok(videoSimpleDTO);
     }
+
     @GetMapping("/users/{id}/videos")
     public ResponseEntity<List<VideoWithoutOwnerDTO>> getAllVideos(@RequestParam(defaultValue = "0") int page,
                                                                    @RequestParam(defaultValue = "1") int limit,
@@ -43,12 +44,13 @@ public class VideoController extends AbstractController {
         List<VideoSimpleDTO> videoSimpleDTOS = videoService.getByName(videoName, loggedUserId, page, limit);
         return ResponseEntity.ok(videoSimpleDTOS);
     }
+
     @GetMapping("/videos/my-reaction")
-    public ResponseEntity<List<VideoSimpleDTO>> getMyReactions(@RequestParam(defaultValue = "0") int page,
+    public ResponseEntity<List<VideoSimpleDTO>> getMyLikedVideos(@RequestParam(defaultValue = "0") int page,
                                                                @RequestParam(defaultValue = "1") int limit,
                                                                HttpSession s) {
         int loggedUserId = getLoggedUserId(s);
-        List<VideoSimpleDTO> videoSimpleDTOS = videoService.getMyReactions(loggedUserId, page, limit);
+        List<VideoSimpleDTO> videoSimpleDTOS = videoService.getMyLikedVideos(loggedUserId, page, limit);
         return ResponseEntity.ok(videoSimpleDTOS);
     }
 
@@ -75,11 +77,9 @@ public class VideoController extends AbstractController {
     }
 
     @GetMapping("/videos/homePage")
-    public ResponseEntity<List<VideoResponseDTO>> showFeed(@RequestParam(defaultValue = "0") int page,
+    public ResponseEntity<List<VideoSimpleDTO>> showFeed(@RequestParam(defaultValue = "0") int page,
                                                            @RequestParam(defaultValue = "1") int limit, HttpSession s) {
         int loggedUserId = getLoggedUserId(s);
         return ResponseEntity.ok(videoService.showFeed(loggedUserId, page, limit));
     }
-
-
 }

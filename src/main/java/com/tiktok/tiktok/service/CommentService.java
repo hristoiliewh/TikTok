@@ -1,15 +1,15 @@
 package com.tiktok.tiktok.service;
 
-import com.tiktok.tiktok.model.DTOs.*;
+import com.tiktok.tiktok.model.DTOs.commentsDTOs.*;
 import com.tiktok.tiktok.model.entities.*;
 import com.tiktok.tiktok.model.exceptions.NotFoundException;
 import com.tiktok.tiktok.model.exceptions.UnauthorizedException;
 import com.tiktok.tiktok.model.repositories.CommentReactionRepository;
+import com.tiktok.tiktok.model.repositories.CommentRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
-
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
@@ -17,16 +17,15 @@ import java.util.stream.Collectors;
 
 @Service
 public class CommentService extends AbstractService {
-
     @Autowired
     private CommentReactionRepository commentReactionRepository;
 
-    public CommentWithoutParentAndReplayedDTO addComment(int videoId, int loggedUserId, String comment) {
+    @Autowired
+    protected CommentRepository commentRepository;
+
+    public CommentWithIdOwnerVideoDTO addComment(int videoId, int loggedUserId, String comment) {
         Video video = getVideoById(videoId);
-        if (!isPossibleToWatch(video, loggedUserId)) {
-            logger.error("User with ID " + loggedUserId + " attempted to access private video with ID " + videoId);
-            throw new UnauthorizedException("This video is private and you do not have access to it.");
-        }
+        isPossibleToWatch(video, loggedUserId);
         User owner = getUserById(loggedUserId);
         Comment c = new Comment();
         c.setVideo(video);
@@ -35,21 +34,21 @@ public class CommentService extends AbstractService {
         c.setCreatedAt(LocalDateTime.now());
         commentRepository.save(c);
         logger.info("Comment added successfully by user with ID " + loggedUserId + " to video with ID " + videoId);
-        return mapper.map(c, CommentWithoutParentAndReplayedDTO.class);
+        return mapper.map(c, CommentWithIdOwnerVideoDTO.class);
     }
 
-    public CommentWithoutVideoAndParentComment getById(int commentId, int loggedUserId) {
+    public CommentWithIdOwnerReplied getById(int commentId, int loggedUserId) {
         Comment comment = getCommentById(commentId);
         if (comment.getOwner().getId() != loggedUserId) {
             logger.error("Unauthorized attempt to access comment with id: {}", commentId);
             throw new UnauthorizedException("Can't delete this comment. You are unauthorized.");
         }
-        return mapper.map(comment, CommentWithoutVideoAndParentComment.class);
+        return mapper.map(comment, CommentWithIdOwnerReplied.class);
     }
 
     public List<CommentWithIdOwnerParentDTO> getAllComments(int videoId, int loggedUserId, int page, int limit) {
         Video video = getVideoById(videoId);
-        canWatch(video, loggedUserId);
+        isPossibleToWatch(video, loggedUserId);
         pageable = PageRequest.of(page, limit);
         Page<Comment> comments = commentRepository.findAllByVideoIdAndCreatedAt(pageable, videoId);
         if (comments.getContent().size() == 0) {
@@ -109,9 +108,11 @@ public class CommentService extends AbstractService {
     public int getReactions(int commentId, int userId) {
         Comment comment = getCommentById(commentId);
         Video video = getVideoById(comment.getVideo().getId());
-        if (!isPossibleToWatch(video, userId)) {
-            throw new UnauthorizedException("This video is private and you do not have access to it's comments.");
-        }
+        isPossibleToWatch(video, userId);
         return comment.getReactions().size();
+    }
+
+    private Comment getCommentById(int id) {
+        return commentRepository.findById(id).orElseThrow(() -> new NotFoundException("Comment not found"));
     }
 }

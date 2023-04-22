@@ -1,7 +1,7 @@
 package com.tiktok.tiktok;
 
 import com.tiktok.tiktok.controller.SoundController;
-import com.tiktok.tiktok.model.DTOs.SoundSimpleDTO;
+import com.tiktok.tiktok.model.DTOs.soundsDTOs.SoundDTO;
 import com.tiktok.tiktok.model.entities.Sound;
 import com.tiktok.tiktok.model.repositories.SoundRepository;
 import com.tiktok.tiktok.service.SoundService;
@@ -48,7 +48,7 @@ public class SoundServiceTests {
         sound.setUrl("uploads/443a8493-96fd-41e7-89b2-a6441d9314f2.mp3");
 
         // Act
-        SoundSimpleDTO expected = new SoundSimpleDTO();
+        SoundDTO expected = new SoundDTO();
         expected.setId(1);
         expected.setName("Sound1");
         expected.setUrl("uploads/443a8493-96fd-41e7-89b2-a6441d9314f2.mp3");

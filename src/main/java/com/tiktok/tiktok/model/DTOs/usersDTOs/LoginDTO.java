@@ -1,6 +1,5 @@
-package com.tiktok.tiktok.model.DTOs;
+package com.tiktok.tiktok.model.DTOs.usersDTOs;
 
-import jakarta.validation.constraints.Pattern;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;

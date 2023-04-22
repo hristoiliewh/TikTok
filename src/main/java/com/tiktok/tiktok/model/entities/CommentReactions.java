@@ -1,6 +1,5 @@
 package com.tiktok.tiktok.model.entities;
 
-
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;

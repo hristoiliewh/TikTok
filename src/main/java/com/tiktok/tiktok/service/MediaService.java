@@ -1,10 +1,10 @@
 package com.tiktok.tiktok.service;
 
-import com.tiktok.tiktok.model.DTOs.SoundSimpleDTO;
-import com.tiktok.tiktok.model.DTOs.VideoSimpleDTO;
+import com.tiktok.tiktok.model.DTOs.soundsDTOs.SoundDTO;
+import com.tiktok.tiktok.model.DTOs.videosDTOs.VideoSimpleDTO;
 import com.tiktok.tiktok.model.entities.Hashtag;
 import com.tiktok.tiktok.model.entities.Sound;
-import com.tiktok.tiktok.model.DTOs.UserSimpleDTO;
+import com.tiktok.tiktok.model.DTOs.usersDTOs.UserSimpleDTO;
 import com.tiktok.tiktok.model.entities.User;
 import com.tiktok.tiktok.model.entities.Video;
 import com.tiktok.tiktok.model.exceptions.BadRequestException;
@@ -13,7 +13,6 @@ import org.apache.commons.io.FilenameUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
-
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -23,7 +22,6 @@ import java.util.*;
 @Service
 
 public class MediaService extends AbstractService {
-
     @Autowired
     private HashtagService hashtagService;
 
@@ -71,6 +69,7 @@ public class MediaService extends AbstractService {
             throw e;
         }
     }
+
     private void validateVideoInfo(MultipartFile origin, String caption) {
         if (origin.isEmpty()) {
             logger.error("The file is not attached!");
@@ -86,7 +85,7 @@ public class MediaService extends AbstractService {
         }
     }
 
-    public SoundSimpleDTO uploadSound(MultipartFile origin, String name) throws Exception {
+    public SoundDTO uploadSound(MultipartFile origin, String name) throws Exception {
         try {
             if (origin.isEmpty()) {
                 logger.error("The file is not attached!");
@@ -106,7 +105,7 @@ public class MediaService extends AbstractService {
             sound.setName(name);
             sound.setUrl(path);
             soundRepository.save(sound);
-            return mapper.map(sound, SoundSimpleDTO.class);
+            return mapper.map(sound, SoundDTO.class);
         }
         catch (BadRequestException e){
             logger.error("Error occurred while uploading sound: {}", e.getMessage());

@@ -1,12 +1,7 @@
 package com.tiktok.tiktok.service;
 
-import ch.qos.logback.classic.BasicConfigurator;
-import com.tiktok.tiktok.model.DTOs.*;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-import org.mindrot.jbcrypt.BCrypt;
+import com.tiktok.tiktok.model.DTOs.usersDTOs.*;
 import com.tiktok.tiktok.model.entities.User;
-import com.tiktok.tiktok.model.entities.Video;
 import com.tiktok.tiktok.model.exceptions.BadRequestException;
 import com.tiktok.tiktok.model.exceptions.NotFoundException;
 import com.tiktok.tiktok.model.exceptions.UnauthorizedException;
@@ -15,7 +10,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
-
 import java.security.SecureRandom;
 import java.time.LocalDate;
 import java.time.Period;
@@ -24,8 +18,6 @@ import java.util.stream.Collectors;
 
 @Service
 public class UserService extends AbstractService {
-
-
     @Autowired
     private MailSenderService senderService;
     @Autowired
@@ -36,7 +28,6 @@ public class UserService extends AbstractService {
         private static final String LETTERS = "abcdefghijklmnopqrstuvwxyz";
         private static final String CHARACTERS = "!@#$%^&*()_+";
         private static final String NUMBERS = "0123456789";
-
         private static final Random random = new SecureRandom();
 
         public static String generatePassword() {
@@ -120,7 +111,6 @@ public class UserService extends AbstractService {
             throw e;
         }
     }
-
 
     private boolean isValidAge(LocalDate dateOfBirth){
         LocalDate today = LocalDate.now();

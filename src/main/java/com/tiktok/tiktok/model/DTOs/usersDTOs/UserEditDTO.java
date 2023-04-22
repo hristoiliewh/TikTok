@@ -1,11 +1,8 @@
-package com.tiktok.tiktok.model.DTOs;
+package com.tiktok.tiktok.model.DTOs.usersDTOs;
 
-import jakarta.validation.constraints.Pattern;
-import jakarta.validation.constraints.Size;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.hibernate.validator.constraints.Email;
 
 @Setter
 @Getter

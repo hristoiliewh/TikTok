@@ -1,22 +1,16 @@
 package com.tiktok.tiktok.controller;
 
-import com.tiktok.tiktok.model.DTOs.*;
-import com.tiktok.tiktok.model.entities.User;
-import com.tiktok.tiktok.service.AbstractService;
+import com.tiktok.tiktok.model.DTOs.usersDTOs.*;
 import com.tiktok.tiktok.service.UserService;
 import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
-import java.util.Map;
 @RestController
 public class UserController extends AbstractController {
-
     @Autowired
     private UserService userService;
 
@@ -53,6 +47,7 @@ public class UserController extends AbstractController {
         List<UserWithPicNameIdDTO> userFullInfoDTO = userService.searchByUsername(username, page, limit);
         return ResponseEntity.ok(userFullInfoDTO);
     }
+
     @GetMapping("/users/{id}/find")
     public ResponseEntity<UserFullInfoDTO> getById(@PathVariable int id) {
 

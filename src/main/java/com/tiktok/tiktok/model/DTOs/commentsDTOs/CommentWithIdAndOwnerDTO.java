@@ -1,19 +1,19 @@
-package com.tiktok.tiktok.model.DTOs;
+package com.tiktok.tiktok.model.DTOs.commentsDTOs;
 
+import com.tiktok.tiktok.model.DTOs.usersDTOs.UserWithPicNameIdDTO;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.time.LocalDateTime;
 
-@Setter
 @Getter
+@Setter
 @NoArgsConstructor
-public class CommentWithoutRepliedDTO {
+public class CommentWithIdAndOwnerDTO {
     private int id;
     private String comment;
-    private UserWithPicNameIdDTO owner;
-    private CommentWithoutVideoDTO parentComment;
     private LocalDateTime createdAt;
-    private VideoWithoutOwnerDTO video;
+    private UserWithPicNameIdDTO owner;
+
 }

@@ -1,5 +1,6 @@
-package com.tiktok.tiktok.model.DTOs;
+package com.tiktok.tiktok.model.DTOs.videosDTOs;
 
+import com.tiktok.tiktok.model.DTOs.usersDTOs.UserReactionsDTO;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;

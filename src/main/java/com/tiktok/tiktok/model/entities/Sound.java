@@ -5,7 +5,6 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-
 import java.util.List;
 
 @Getter
@@ -21,7 +20,6 @@ public class Sound {
     private String name;
     @Column
     private String url;
-
     @OneToMany(mappedBy = "sound")
     private List<Video> videos;
 }

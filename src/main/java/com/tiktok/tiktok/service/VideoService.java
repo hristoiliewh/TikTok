@@ -1,6 +1,6 @@
 package com.tiktok.tiktok.service;
 
-import com.tiktok.tiktok.model.DTOs.*;
+import com.tiktok.tiktok.model.DTOs.videosDTOs.*;
 import com.tiktok.tiktok.model.entities.*;
 import com.tiktok.tiktok.model.exceptions.BadRequestException;
 import com.tiktok.tiktok.model.exceptions.NotFoundException;
@@ -9,16 +9,13 @@ import com.tiktok.tiktok.model.repositories.VideoReactionRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
-
 import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
 public class VideoService extends AbstractService {
-
     @Autowired
     private VideoReactionRepository videoReactionRepository;
 
@@ -37,13 +34,14 @@ public class VideoService extends AbstractService {
     public VideoSimpleDTO getById(int videoId, int loggedUserId) {
         Video video = getVideoById(videoId);
         int reactions = video.getReactions().size();
-        canWatch(video, loggedUserId);
+        isPossibleToWatch(video, loggedUserId);
         logger.info("Video found: " + videoId);
         VideoSimpleDTO videoSimpleDTO = mapper.map(video, VideoSimpleDTO.class);
         videoSimpleDTO.setNumberOfReactions(reactions);
         return videoSimpleDTO;
     }
-    public List<VideoWithoutOwnerDTO> getAllVideos(int userId,int loggedUserId, int page, int limit) {
+
+    public List<VideoWithoutOwnerDTO> getAllVideos(int userId, int loggedUserId, int page, int limit) {
         pageable = PageRequest.of(page, limit, Sort.by("created_at").descending());
         Page<Video> videoPage;
         if (userId == loggedUserId){
@@ -88,11 +86,9 @@ public class VideoService extends AbstractService {
                 .collect(Collectors.toList());
     }
 
-
-
     public VideoReactionDTO likeDislike(int videoId, int loggedUserId) {
         Video video = getVideoById(videoId);
-        canWatch(video, loggedUserId);
+        isPossibleToWatch(video, loggedUserId);
         User user = getUserById(loggedUserId);
         Optional<VideoReactions> videoReactions = videoReactionRepository.findByVideoAndUser(video, user);
         if (videoReactions.isPresent()) {
@@ -112,31 +108,31 @@ public class VideoService extends AbstractService {
 
     public int getReactions(int videoId, int loggedUserId) {
         Video video = getVideoById(videoId);
-        canWatch(video, loggedUserId);
+        isPossibleToWatch(video, loggedUserId);
         return video.getReactions().size();
     }
 
-    public List<VideoResponseDTO> showFeed(int loggedUserId, int pageNumber, int videosPerPage) {
+    public List<VideoSimpleDTO> showFeed(int loggedUserId, int pageNumber, int videosPerPage) {
         pageable = PageRequest.of(pageNumber, videosPerPage, Sort.by("created_at").descending());
         Page<Video> videos = videoRepository.showAllVideosByViews(loggedUserId, pageable);
-        List<VideoResponseDTO> videoResponseDTOS = videos.stream()
-                .map(v -> mapper.map(v, VideoResponseDTO.class))
+        List<VideoSimpleDTO> videoSimpleDTOS = videos.stream()
+                .map(v -> mapper.map(v, VideoSimpleDTO.class))
                 .collect(Collectors.toList());
 
-        if (videoResponseDTOS.size() == 0) {
+        if (videoSimpleDTOS.size() == 0) {
             throw new BadRequestException("No more videos.");
         } else {
-            for (int i = 0; i < videoResponseDTOS.size(); i++) {
+            for (int i = 0; i < videoSimpleDTOS.size(); i++) {
                 int reactions = videos.getContent().get(i).getReactions().size();
                 int comments = videos.getContent().get(i).getComments().size();
-                videoResponseDTOS.get(i).setNumberOfReactions(reactions);
-                videoResponseDTOS.get(i).setNumberOfComments(comments);
+                videoSimpleDTOS.get(i).setNumberOfReactions(reactions);
+                videoSimpleDTOS.get(i).setNumberOfComments(comments);
             }
         }
-        return videoResponseDTOS;
+        return videoSimpleDTOS;
     }
 
-    public List<VideoSimpleDTO> getMyReactions(int loggedUserId, int page, int limit) {
+    public List<VideoSimpleDTO> getMyLikedVideos(int loggedUserId, int page, int limit) {
         pageable = PageRequest.of(page, limit, Sort.by("created_at").descending());
         Page<Video> videoPage = videoRepository.findAllByReactions(loggedUserId, pageable);
         List<Video> videos = videoPage.getContent();

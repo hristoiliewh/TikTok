@@ -1,6 +1,6 @@
 package com.tiktok.tiktok.controller;
 
-import com.tiktok.tiktok.model.DTOs.SoundSimpleDTO;
+import com.tiktok.tiktok.model.DTOs.soundsDTOs.SoundDTO;
 import com.tiktok.tiktok.service.SoundService;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,24 +14,24 @@ public class SoundController extends AbstractController {
     private SoundService soundService;
 
     @GetMapping("/sounds/{soundId}/find")
-    public ResponseEntity<SoundSimpleDTO> getById(@PathVariable int soundId) {
-        SoundSimpleDTO soundSimpleDTO = soundService.getById(soundId);
+    public ResponseEntity<SoundDTO> getById(@PathVariable int soundId) {
+        SoundDTO soundSimpleDTO = soundService.getById(soundId);
         return ResponseEntity.ok(soundSimpleDTO);
     }
 
     @GetMapping("/sounds")
-    public ResponseEntity<List<SoundSimpleDTO>> getAll(@RequestParam(defaultValue = "0") int page,
-                                                       @RequestParam(defaultValue = "2") int limit, HttpSession s) {
+    public ResponseEntity<List<SoundDTO>> getAll(@RequestParam(defaultValue = "0") int page,
+                                                 @RequestParam(defaultValue = "2") int limit, HttpSession s) {
         isLogged(s);
-        List<SoundSimpleDTO> soundSimpleDTOS = soundService.getAll(page, limit);
+        List<SoundDTO> soundSimpleDTOS = soundService.getAll(page, limit);
         return ResponseEntity.ok(soundSimpleDTOS);
     }
 
     @GetMapping("/sounds/{soundName}")
-    public ResponseEntity<List<SoundSimpleDTO>> getByName(@PathVariable String soundName, @RequestParam(defaultValue = "0") int page,
-                                                          @RequestParam(defaultValue = "2") int limit) {
+    public ResponseEntity<List<SoundDTO>> getByName(@PathVariable String soundName, @RequestParam(defaultValue = "0") int page,
+                                                    @RequestParam(defaultValue = "2") int limit) {
 
-        List<SoundSimpleDTO> soundSimpleDTOS = soundService.getByName(soundName, page, limit);
+        List<SoundDTO> soundSimpleDTOS = soundService.getByName(soundName, page, limit);
         return ResponseEntity.ok(soundSimpleDTOS);
     }
 }

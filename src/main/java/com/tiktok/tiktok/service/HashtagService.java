@@ -1,14 +1,10 @@
 package com.tiktok.tiktok.service;
 
 import com.tiktok.tiktok.model.entities.Hashtag;
-import com.tiktok.tiktok.model.entities.User;
-import com.tiktok.tiktok.model.entities.Video;
 import com.tiktok.tiktok.model.exceptions.BadRequestException;
 import com.tiktok.tiktok.model.repositories.HashtagRepository;
-import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -34,7 +30,6 @@ public class HashtagService extends AbstractService {
             return hashtagRepository.findByTag("#" + hashtag);
         }
     }
-
 
     private boolean isValidHashtag(String hashtag) {
         String pattern = "^[a-zA-Z0-9._-]{3,30}$";
