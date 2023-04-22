@@ -12,22 +12,29 @@ import com.tiktok.tiktok.service.UserService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.runner.RunWith;
 import org.mockito.*;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.modelmapper.ModelMapper;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
-@ExtendWith(MockitoExtension.class)
+@RunWith(SpringRunner.class)
+@SpringBootTest(classes = TikTokApplicationTests.class)
 public class UserServiceTests {
 
-    @Mock
+    @InjectMocks
     private UserService userService;
 
     @InjectMocks
@@ -36,7 +43,9 @@ public class UserServiceTests {
     @Mock
     private UserRepository userRepository;
     @Mock
-    private PasswordEncoder encoder;
+    private BCryptPasswordEncoder encoder;
+    @Mock
+    private ModelMapper mapper;
 
     @Mock
     private MailSenderService senderService = mock(MailSenderService.class);
@@ -46,268 +55,69 @@ public class UserServiceTests {
     @BeforeEach
     public void setUp() {
         // configure any required mock behavior
-        mockMvc = MockMvcBuilders.standaloneSetup(userController).build();
         mockMvc = MockMvcBuilders.standaloneSetup(userRepository).build();
-        mockMvc = MockMvcBuilders.standaloneSetup(senderService).build();
 //        MockitoAnnotations.openMocks(this);
     }
 
-    @Test
-    public void testRegisterWithValidInput() {
-        RegisterDTO registerDTO = new RegisterDTO();
-        // set properties of dto object
-        registerDTO.setName("Hristo Iliev");
-        registerDTO.setPassword("Password123!");
-        registerDTO.setConfirmPassword("Password123!");
-        registerDTO.setEmail("hristoiliewh@icloud.com");
-        registerDTO.setPhoneNumber("0888123456");
-        registerDTO.setDateOfBirth(LocalDate.now().minusYears(26));
-        registerDTO.setGender("m");
-        registerDTO.setBio("Hi, i'm Hristo.");
-        registerDTO.setUsername("hristoiliev");
-        User u = new User();
-        // set properties of u object
-
-        u.setName("Hristo Iliev");
-        u.setPassword("Password123!");
-        u.setEmail("hristoiliewh@icloud.com");
-        u.setPhoneNumber("0888123456");
-        u.setDateOfBirth(LocalDate.now().minusYears(26));
-        u.setGender("m");
-        u.setBio("Hi, i'm Hristo.");
-        u.setUsername("hristoiliev");
-        u.setId(1);
-
-        UserSimpleDTO expected = new UserSimpleDTO();
-        // set properties of expected object
-        expected.setId(1);
-        expected.setName("Hristo Iliev");
-        expected.setEmail("hristoiliewh@icloud.com");
-        expected.setPhoneNumber("0888123456");
-        expected.setDateOfBirth(LocalDate.now().minusYears(26));
-        expected.setGender("m");
-        expected.setBio("Hi, i'm Hristo.");
-        expected.setProfilePhotoURL(null);
-        expected.setUsername("hristoiliev");
-
-        when(userService.register(registerDTO)).thenReturn(expected);
-
-        UserSimpleDTO result = userController.register(registerDTO).getBody();
-
-        assertNotNull(result);
-        assertEquals(expected.getId(), result.getId());
+    private RegisterDTO getValidRegisterData() {
+        RegisterDTO registerData = new RegisterDTO();
+        registerData.setEmail("test@example.com");
+        registerData.setUsername("testuser");
+        registerData.setPassword("123aaaA$");
+        registerData.setConfirmPassword("123aaaA$");
+        registerData.setGender("m");
+        registerData.setName("Test test");
+        registerData.setPhoneNumber("0999123456");
+        return registerData;
     }
 
-    @Test
-    public void testRegisterWithPasswordMismatch() {
-        RegisterDTO dto = new RegisterDTO();
-        dto.setName("John Doe");
-        dto.setEmail("johndoe@example.com");
-        dto.setPhoneNumber("1234567890");
-        dto.setDateOfBirth(LocalDate.of(2000, 1, 1));
-        dto.setGender("m");
-        dto.setBio("Lorem ipsum dolor sit amet.");
-        dto.setUsername("johndoe123");
-        dto.setPassword("strongPassword");
-        dto.setConfirmPassword("weakPassword"); // setting mismatched password here
-
-        BadRequestException badRequestException = new BadRequestException("Password missmatch");
-
-        when(userService.register(dto)).thenThrow(badRequestException);
-
-        BadRequestException exception = assertThrows(BadRequestException.class, () -> {
-            userService.register(dto);
-        });
-
-        assertEquals(badRequestException.getMessage(),exception.getMessage());
+    @org.junit.Test(expected = BadRequestException.class)
+    public void testRegisterPasswordsNotMatching() {
+        // Creating a user register DTO with passwords that don't match
+        RegisterDTO registerData = getValidRegisterData();
+        registerData.setConfirmPassword("notMatchingPassword");
+        // Calling the register method should throw a BadRequestException
+        userService.register(registerData);
     }
 
-    @Test
-    public void testRegisterWithExistingEmail() {
-        RegisterDTO dto = new RegisterDTO();
-        dto.setName("Jane Doe");
-        dto.setEmail("janedoe@example.com"); // setting existing email here
-        dto.setPhoneNumber("0987654321");
-        dto.setDateOfBirth(LocalDate.of(1995, 5, 15));
-        dto.setGender("f");
-        dto.setBio("Lorem ipsum dolor sit amet.");
-        dto.setUsername("janedoe123");
-        dto.setPassword("strongPassword");
-        dto.setConfirmPassword("strongPassword");
-
-        BadRequestException badRequestException = new BadRequestException("Email already exists!");
-
-        when(userService.register(dto)).thenThrow(badRequestException);
-
-        BadRequestException exception = assertThrows(BadRequestException.class, () -> {
-            userController.register(dto);
-        });
-
-        assertEquals(badRequestException.getMessage(), exception.getMessage());
+    @org.junit.Test(expected = BadRequestException.class)
+    public void testRegisterEmailAlreadyExists() {
+        // Mocking the repository to return true when checking if the email already exists
+        when(userRepository.existsByEmail(anyString())).thenReturn(true);
+        // Creating a user register DTO with a strong password
+        RegisterDTO registerData = getValidRegisterData();
+        // Calling the register method should throw a BadRequestException
+        userService.register(registerData);
     }
 
-    @Test
-    public void testRegisterWithExistingUsername() {
-        RegisterDTO dto = new RegisterDTO();
-        dto.setName("John Doe");
-        dto.setEmail("johndoe@example.com");
-        dto.setPhoneNumber("1234567890");
-        dto.setDateOfBirth(LocalDate.of(2000, 1, 1));
-        dto.setGender("m");
-        dto.setBio("Lorem ipsum dolor sit amet.");
-        dto.setUsername("existingUser"); // setting existing username here
-        dto.setPassword("strongPassword");
-        dto.setConfirmPassword("strongPassword");
+    @org.junit.Test
+    public void testLoginSuccess() {
+        // Arrange
+        String username = "testuser";
+        String password = "password";
+        User user = new User();
+        user.setId(1);
+        user.setUsername(username);
+        user.setPassword(encoder.encode(password));
+        user.setEmailConfirmed(true);
+        when(userRepository.getByUsername(username)).thenReturn(Optional.of(user));
+        when(encoder.matches(password, user.getPassword())).thenReturn(true);
 
-        BadRequestException badRequestException = new BadRequestException("Username already exists!");
+        UserFullInfoDTO userFullInfoDTO = new UserFullInfoDTO();
+        userFullInfoDTO.setId(user.getId());
+        userFullInfoDTO.setUsername(user.getUsername());
+        when(mapper.map(user, UserFullInfoDTO.class)).thenReturn(userFullInfoDTO);
 
-        when(userService.register(dto)).thenThrow(badRequestException);
-
-        BadRequestException exception = assertThrows(BadRequestException.class, () -> {
-            userController.register(dto);
-        });
-
-        assertEquals(badRequestException.getMessage(), exception.getMessage());
-    }
-
-    @Test
-    public void testRegisterWithExistingPhoneNumber() {
-        RegisterDTO dto = new RegisterDTO();
-        dto.setName("John Doe");
-        dto.setEmail("johndoe@example.com");
-        dto.setPhoneNumber("1234567890"); // setting an existing phone number here
-        dto.setDateOfBirth(LocalDate.of(2000, 1, 1));
-        dto.setGender("m");
-        dto.setBio("Lorem ipsum dolor sit amet.");
-        dto.setUsername("johndoe123");
-        dto.setPassword("strongPassword");
-        dto.setConfirmPassword("strongPassword");
-
-        BadRequestException badRequestException = new BadRequestException("Phone number already exists!");
-
-        when(userService.register(dto)).thenThrow(badRequestException);
-
-        BadRequestException exception = assertThrows(BadRequestException.class, () -> {
-            userController.register(dto);
-        });
-
-        assertEquals(badRequestException.getMessage(), exception.getMessage());
-    }
-    @Test
-    public void testRegisterWithInvalidAge() {
-        RegisterDTO dto = new RegisterDTO();
-        dto.setName("John Doe");
-        dto.setEmail("johndoe@example.com");
-        dto.setPhoneNumber("1234567890");
-        dto.setDateOfBirth(LocalDate.now().minusYears(15)); // setting age below 16 here
-        dto.setGender("m");
-        dto.setBio("Lorem ipsum dolor sit amet.");
-        dto.setUsername("johndoe123");
-        dto.setPassword("strongPassword");
-        dto.setConfirmPassword("strongPassword");
-
-        BadRequestException badRequestException = new BadRequestException("You must be older than 16 years.");
-
-        when(userService.register(dto)).thenThrow(badRequestException);
-
-        BadRequestException exception = assertThrows(BadRequestException.class, () -> {
-            userController.register(dto);
-        });
-
-        assertEquals(badRequestException.getMessage(), exception.getMessage());
-    }
-
-    @Test
-    public void testLogin() {
-        // Set up a test user
-//        User user = new User();
-//        user.setUsername("hristoiliev");
-//        user.setPassword(encoder.encode("testpassword"));
-//        user.setEmailConfirmed(true);
-//        user.setFollowers(new HashSet<>());
-//        user.setFollowing(new HashSet<>());
-//        user.setVideos(new ArrayList<Video>());
-
-        // Call the login method
-        LoginDTO loginDTO = new LoginDTO();
-        loginDTO.setUsername("hristoiliev");
-        loginDTO.setPassword("testpassword");
-        UserFullInfoDTO expected = new UserFullInfoDTO();
-        expected.setId(1);
-        expected.setName("Hristo Iliev");
-        expected.setEmail("hristoiliev@icloud.com");
-        expected.setPhoneNumber("0888123456");
-        expected.setDateOfBirth(LocalDate.now().minusYears(26));
-        expected.setGender("m");
-        expected.setBio("Hi, i'm Hristo.");
-        expected.setProfilePhotoURL(null);
-        expected.setUsername("hristoiliev");
-        expected.setFollowers(new ArrayList<>());
-        expected.setFollowing(new ArrayList<>());
-        expected.setVideos(new ArrayList<>());
-
-
-//    @Test
-//    public void testFollow() {
-//        // create two test users
-//        User follower = new User();
-//        follower.setId(1);
-//        follower.setPassword("Password123!");
-//        follower.setName("Hristo Iliev");
-//        follower.setEmail("hristoiliewh@icloud.com");
-//        follower.setPhoneNumber("0888123456");
-//        follower.setDateOfBirth(LocalDate.now().minusYears(26));
-//        follower.setGender("m");
-//        follower.setBio("Hi, i'm Hristo.");
-//        follower.setProfilePhotoURL(null);
-//        follower.setUsername("hristoiliev");
-//        follower.setFollowers(new HashSet<>());
-//        follower.setFollowing(new HashSet<>());
-//        follower.setVideos(new ArrayList<>());
-//
-//        userRepository.save(follower);
-//
-//        User followTo = new User();
-//        followTo.setId(2);
-//        followTo.setPassword("Password123!");
-//        followTo.setName("Hristo Iliev");
-//        followTo.setEmail("hristoiliewh@icloud.com");
-//        followTo.setPhoneNumber("0888123456");
-//        followTo.setDateOfBirth(LocalDate.now().minusYears(26));
-//        followTo.setGender("m");
-//        followTo.setBio("Hi, i'm Hristo.");
-//        followTo.setProfilePhotoURL(null);
-//        followTo.setUsername("hristoiliev");
-//        followTo.setFollowers(new HashSet<>());
-//        followTo.setFollowing(new HashSet<>());
-//        followTo.setVideos(new ArrayList<>());
-//        userRepository.save(followTo);
-//
-//        // call the follow method
-//        int followersCount = userService.follow(follower.getId(), followTo.getId());
-//
-//        // check that the followers count has been updated correctly
-//        assertEquals(1, followersCount);
-//
-//        // check that the follower is now following the followTo user
-//        assertTrue(followTo.getFollowers().contains(follower));
-//
-//        // call the follow method again to unfollow the user
-//        followersCount = userService.follow(follower.getId(), followTo.getId());
-//
-//        // check that the followers count has been updated correctly
-//        assertEquals(0, followersCount);
-//
-//        // check that the follower is no longer following the followTo user
-//        assertFalse(followTo.getFollowers().contains(follower));
-//    }
-
-
-        // Check the result
-        assertNotNull(expected);
-        assertEquals("hristoiliev", expected.getUsername());
-        assertTrue(expected.getFollowers().isEmpty());
-        assertTrue(expected.getFollowing().isEmpty());
-        assertTrue(expected.getVideos().isEmpty());
+        LoginDTO loginData = new LoginDTO();
+        loginData.setUsername(username);
+        loginData.setPassword(password);
+        // Act
+        UserFullInfoDTO result = userService.login(loginData);
+        // Assert
+        assertEquals(user.getId(), result.getId());
+        assertEquals(user.getUsername(), result.getUsername());
+        verify(userRepository, times(1)).getByUsername(username);
+        verify(encoder, times(1)).matches(password, user.getPassword());
+        verify(mapper, times(1)).map(user, UserFullInfoDTO.class);
     }
 }
