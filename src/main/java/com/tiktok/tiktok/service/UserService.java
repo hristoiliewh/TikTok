@@ -155,31 +155,24 @@ public class UserService extends AbstractService {
         return mapper.map(user, UserFullInfoDTO.class);
     }
 
-    public List<UserWithPicNameIdDTO> getAllFollowers(int userId, int page, int limit) {
+    public Page<UserWithPicNameIdDTO> getAllFollowers(int userId, int page, int limit) {
         pageable = PageRequest.of(page, limit);
-        Page<User> usersPage = userRepository.findAllByFollowers(userId,pageable);
-        List<User> followers = usersPage.getContent();
-        if (followers.size() == 0) {
+        Page<UserWithPicNameIdDTO> usersPage = userRepository.findAllByFollowers(userId,pageable)
+                .map(u -> mapper.map(u, UserWithPicNameIdDTO.class));
+        if (usersPage.getContent().size() == 0) {
             throw new NotFoundException("No followers found");
         }
-        List<UserWithPicNameIdDTO> followersDTO = followers.stream()
-                .map(f -> mapper.map(f, UserWithPicNameIdDTO.class))
-                .collect(Collectors.toList());
-        return followersDTO;
+        return usersPage;
     }
 
-    public List<UserWithPicNameIdDTO> getAllFollowing(int userId, int page, int limit) {
+    public Page<UserWithPicNameIdDTO> getAllFollowing(int userId, int page, int limit) {
         pageable = PageRequest.of(page, limit);
-        Page<User> usersPage = userRepository.findAllByFollowing(userId,pageable);
-        List<User> following = usersPage.getContent();
-        if (following.size() == 0) {
+        Page<UserWithPicNameIdDTO> usersPage = userRepository.findAllByFollowing(userId,pageable)
+                .map(u -> mapper.map(u, UserWithPicNameIdDTO.class));
+        if (usersPage.getContent().size() == 0) {
             throw new NotFoundException("No following users found");
         }
-        List<UserWithPicNameIdDTO> followingDTO = following.stream()
-                .map(f -> mapper.map(f, UserWithPicNameIdDTO.class))
-                .collect(Collectors.toList());
-
-        return followingDTO;
+        return usersPage;
     }
 
     public UserDeletedDTO deleteAccount(int userId) {

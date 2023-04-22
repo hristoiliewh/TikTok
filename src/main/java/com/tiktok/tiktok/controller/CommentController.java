@@ -4,6 +4,7 @@ import com.tiktok.tiktok.model.DTOs.commentsDTOs.*;
 import com.tiktok.tiktok.service.CommentService;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import java.util.List;
@@ -28,10 +29,10 @@ public class CommentController extends AbstractController {
     }
 
     @GetMapping("/videos/{videoId}/comments")
-    public ResponseEntity<List<CommentWithIdOwnerParentDTO>> getAllComments(@PathVariable int videoId, @RequestParam(defaultValue = "0") int page,
+    public ResponseEntity<Page<CommentWithIdOwnerParentDTO>> getAllComments(@PathVariable int videoId, @RequestParam(defaultValue = "0") int page,
                                                                             @RequestParam(defaultValue = "4") int limit, HttpSession s) {
         int loggedUserId = checkIfIsLogged(s);
-        List<CommentWithIdOwnerParentDTO> commentWithIdOwnerParentDTOS = commentService.getAllComments(videoId, loggedUserId, page, limit);
+        Page<CommentWithIdOwnerParentDTO> commentWithIdOwnerParentDTOS = commentService.getAllComments(videoId, loggedUserId, page, limit);
         return ResponseEntity.ok(commentWithIdOwnerParentDTOS);
     }
 

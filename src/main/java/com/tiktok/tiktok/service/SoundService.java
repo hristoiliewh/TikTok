@@ -17,25 +17,23 @@ public class SoundService extends AbstractService {
         return mapper.map(sound, SoundDTO.class);
     }
 
-    public List<SoundDTO> getAll(int page, int limit) {
+    public Page<SoundDTO> getAll(int page, int limit) {
         pageable = PageRequest.of(page, limit);
-        Page<Sound> sounds = soundRepository.findAll(pageable);
+        Page<SoundDTO> sounds = soundRepository.findAll(pageable)
+                .map(s -> mapper.map(s, SoundDTO.class));
         if (sounds.getContent().size() == 0) {
             throw new NotFoundException("No sound found");
         }
-        return sounds.stream()
-                .map(sound -> mapper.map(sound, SoundDTO.class))
-                .collect(Collectors.toList());
+        return sounds;
     }
 
-    public List<SoundDTO> getByName(String soundName, int page, int limit) {
+    public Page<SoundDTO> getByName(String soundName, int page, int limit) {
         pageable = PageRequest.of(page, limit);
-        Page<Sound> sounds = soundRepository.findAllContains(soundName, pageable);
+        Page<SoundDTO> sounds = soundRepository.findAllContains(soundName, pageable)
+                .map(s -> mapper.map(s, SoundDTO.class));
         if (sounds.getContent().size() == 0) {
             throw new NotFoundException("Sound not found");
         }
-        return sounds.stream()
-                .map(s -> mapper.map(s, SoundDTO.class))
-                .collect(Collectors.toList());
+        return sounds;
     }
 }

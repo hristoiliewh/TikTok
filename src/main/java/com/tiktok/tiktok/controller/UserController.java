@@ -5,6 +5,7 @@ import com.tiktok.tiktok.service.UserService;
 import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import java.util.List;
@@ -56,20 +57,20 @@ public class UserController extends AbstractController {
     }
 
     @GetMapping("/users/{id}/followed")
-    public ResponseEntity<List<UserWithPicNameIdDTO>> getAllFollowers(@RequestParam(defaultValue = "0") int page,
+    public ResponseEntity<Page<UserWithPicNameIdDTO>> getAllFollowers(@RequestParam(defaultValue = "0") int page,
                                                                       @RequestParam(defaultValue = "4") int limit,
                                                                       @PathVariable int id, HttpSession s) {
         isLogged(s);
-        List<UserWithPicNameIdDTO> user = userService.getAllFollowers(id, page, limit);
+        Page<UserWithPicNameIdDTO> user = userService.getAllFollowers(id, page, limit);
         return ResponseEntity.ok(user);
     }
 
     @GetMapping("/users/{id}/following")
-    public ResponseEntity<List<UserWithPicNameIdDTO>> getAllFollowing(@RequestParam(defaultValue = "0") int page,
+    public ResponseEntity<Page<UserWithPicNameIdDTO>> getAllFollowing(@RequestParam(defaultValue = "0") int page,
                                                                       @RequestParam(defaultValue = "4") int limit,
                                                                       @PathVariable int id, HttpSession s) {
         isLogged(s);
-        List<UserWithPicNameIdDTO> user = userService.getAllFollowing(id, page, limit);
+        Page<UserWithPicNameIdDTO> user = userService.getAllFollowing(id, page, limit);
         return ResponseEntity.ok(user);
     }
 

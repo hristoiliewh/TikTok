@@ -123,17 +123,17 @@ public class VideoServiceTest {
         when(mapper.map(video, VideoSimpleDTO.class)).thenReturn(videoSimpleDTO);
 
         // Act
-        List<VideoSimpleDTO> result = videoService.getByHashtag(hashtag, loggedUserId, page, limit);
+        Page<VideoSimpleDTO> result = videoService.getByHashtag(hashtag, loggedUserId, page, limit);
 
         // Assert
-        assertEquals (1, result.size());
-        assertEquals (videoSimpleDTO.getId(), result.get(0).getId());
-        assertEquals(videoSimpleDTO.getOwner(), result.get(0).getOwner());
-        assertEquals(videoSimpleDTO.isPrivate(), result.get(0).isPrivate());
-        assertEquals(videoSimpleDTO.isPrivate(), result.get(0).isPrivate());
-        assertEquals (videoSimpleDTO.getUrl(), result.get(0).getUrl());
-        assertEquals (videoSimpleDTO.getViews(), result.get(0).getViews());
-        assertEquals (videoSimpleDTO.getCreatedAt(), result.get(0).getCreatedAt());
+        assertEquals (1, result.getContent().size());
+        assertEquals (videoSimpleDTO.getId(), result.getContent().get(0).getId());
+        assertEquals(videoSimpleDTO.getOwner(), result.getContent().get(0).getOwner());
+        assertEquals(videoSimpleDTO.isPrivate(), result.getContent().get(0).isPrivate());
+        assertEquals(videoSimpleDTO.isPrivate(), result.getContent().get(0).isPrivate());
+        assertEquals (videoSimpleDTO.getUrl(), result.getContent().get(0).getUrl());
+        assertEquals (videoSimpleDTO.getViews(), result.getContent().get(0).getViews());
+        assertEquals (videoSimpleDTO.getCreatedAt(), result.getContent().get(0).getCreatedAt());
         verify(hashtagRepository, times(1)).existsByTag("#" + hashtag);
         verify(videoRepository, times(1)).findAllNotPrivateVideosByHashtag("#" + hashtag, loggedUserId, PageRequest.of(page, limit));
         verify(mapper, times(1)).map(video, VideoSimpleDTO.class);

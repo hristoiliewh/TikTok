@@ -46,17 +46,16 @@ public class CommentService extends AbstractService {
         return mapper.map(comment, CommentWithIdOwnerReplied.class);
     }
 
-    public List<CommentWithIdOwnerParentDTO> getAllComments(int videoId, int loggedUserId, int page, int limit) {
+    public Page<CommentWithIdOwnerParentDTO> getAllComments(int videoId, int loggedUserId, int page, int limit) {
         Video video = getVideoById(videoId);
         isPossibleToWatch(video, loggedUserId);
         pageable = PageRequest.of(page, limit);
-        Page<Comment> comments = commentRepository.findAllByVideoIdAndCreatedAt(pageable, videoId);
+        Page<CommentWithIdOwnerParentDTO> comments = commentRepository.findAllByVideoIdAndCreatedAt(pageable, videoId)
+                .map(c -> mapper.map(c, CommentWithIdOwnerParentDTO.class));
         if (comments.getContent().size() == 0) {
             throw new NotFoundException("No comments found");
         }
-        return comments.stream()
-                .map(comment -> mapper.map(comment, CommentWithIdOwnerParentDTO.class))
-                .collect(Collectors.toList());
+        return comments;
     }
 
     public CommentDeletedDTO deleteComment(int commentId, int loggedUserId) {

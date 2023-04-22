@@ -42,49 +42,44 @@ public class VideoService extends AbstractService {
         return videoSimpleDTO;
     }
 
-    public List<VideoWithoutOwnerDTO> getAllVideos(int userId, int loggedUserId, int page, int limit) {
+    public Page<VideoWithoutOwnerDTO> getAllVideos(int userId, int loggedUserId, int page, int limit) {
         pageable = PageRequest.of(page, limit, Sort.by("created_at").descending());
-        Page<Video> videoPage;
+        Page<VideoWithoutOwnerDTO> videoPage;
         if (userId == loggedUserId){
-            videoPage = videoRepository.findAllByOwnerId(loggedUserId,pageable);
+            videoPage = videoRepository.findAllByOwnerId(loggedUserId,pageable)
+                    .map(v -> mapper.map(v, VideoWithoutOwnerDTO.class));
         }
         else {
-            videoPage = videoRepository.showAllVideosCreatedAt(userId, pageable);
+            videoPage = videoRepository.showAllVideosCreatedAt(userId, pageable)
+            .map(v -> mapper.map(v, VideoWithoutOwnerDTO.class));
         }
-        List<Video> videos = videoPage.getContent();
-        if (videos.size() == 0) {
+        if (videoPage.getContent().size() == 0) {
             throw new NotFoundException("No videos found");
         }
-        return videos.stream()
-                .map(v -> mapper.map(v, VideoWithoutOwnerDTO.class))
-                .collect(Collectors.toList());
+        return videoPage;
     }
 
-    public List<VideoSimpleDTO> getByName(String videoName, int loggedUserId, int page, int limit) {
+    public Page<VideoSimpleDTO> getByName(String videoName, int loggedUserId, int page, int limit) {
         pageable = PageRequest.of(page, limit);
-        Page<Video> videoPage = videoRepository.findAllContains(videoName, loggedUserId, pageable);
-        List<Video> videos = videoPage.getContent();
-        if (videos.size() == 0) {
+        Page<VideoSimpleDTO> videoPage = videoRepository.findAllContains(videoName, loggedUserId, pageable)
+                .map(v -> mapper.map(v, VideoSimpleDTO.class));
+        if (videoPage.getContent().size() == 0) {
             throw new NotFoundException("No videos with the given name found.");
         }
-        return videos.stream()
-                .map(v -> mapper.map(v, VideoSimpleDTO.class))
-                .collect(Collectors.toList());
+        return videoPage;
     }
 
-    public List<VideoSimpleDTO> getByHashtag(String hashtag, int loggedUserId, int page, int limit) {
+    public Page<VideoSimpleDTO> getByHashtag(String hashtag, int loggedUserId, int page, int limit) {
         if (!hashtagRepository.existsByTag("#" + hashtag)) {
             throw new NotFoundException("No results found for #" + hashtag + "");
         }
         pageable = PageRequest.of(page, limit);
-        Page<Video> videoPage = videoRepository.findAllNotPrivateVideosByHashtag("#" + hashtag,loggedUserId, pageable);
-        List<Video> videos = videoPage.getContent();
-        if (videos.size() == 0) {
+        Page<VideoSimpleDTO> videoPage = videoRepository.findAllNotPrivateVideosByHashtag("#" + hashtag,loggedUserId, pageable)
+                .map(v -> mapper.map(v, VideoSimpleDTO.class));
+        if (videoPage.getContent().size() == 0) {
             throw new NotFoundException("No videos found");
         }
-        return videos.stream()
-                .map(v -> mapper.map(v, VideoSimpleDTO.class))
-                .collect(Collectors.toList());
+        return videoPage;
     }
 
     public VideoReactionDTO likeDislike(int videoId, int loggedUserId) {
@@ -113,35 +108,31 @@ public class VideoService extends AbstractService {
         return video.getReactions().size();
     }
 
-    public List<VideoSimpleDTO> showFeed(int loggedUserId, int pageNumber, int videosPerPage) {
+    public Page<VideoSimpleDTO> showFeed(int loggedUserId, int pageNumber, int videosPerPage) {
         pageable = PageRequest.of(pageNumber, videosPerPage, Sort.by("created_at").descending());
         Page<Video> videos = videoRepository.showAllVideosByViews(loggedUserId, pageable);
-        List<VideoSimpleDTO> videoSimpleDTOS = videos.stream()
-                .map(v -> mapper.map(v, VideoSimpleDTO.class))
-                .collect(Collectors.toList());
+        Page<VideoSimpleDTO> videoSimpleDTOS = videos.map(v -> mapper.map(v, VideoSimpleDTO.class));
 
-        if (videoSimpleDTOS.size() == 0) {
+        if (videoSimpleDTOS.getContent().size() == 0) {
             throw new BadRequestException("No more videos.");
         } else {
-            for (int i = 0; i < videoSimpleDTOS.size(); i++) {
+            for (int i = 0; i < videoSimpleDTOS.getContent().size(); i++) {
                 int reactions = videos.getContent().get(i).getReactions().size();
                 int comments = videos.getContent().get(i).getComments().size();
-                videoSimpleDTOS.get(i).setNumberOfReactions(reactions);
-                videoSimpleDTOS.get(i).setNumberOfComments(comments);
+                videoSimpleDTOS.getContent().get(i).setNumberOfReactions(reactions);
+                videoSimpleDTOS.getContent().get(i).setNumberOfComments(comments);
             }
         }
         return videoSimpleDTOS;
     }
 
-    public List<VideoSimpleDTO> getMyLikedVideos(int loggedUserId, int page, int limit) {
+    public Page<VideoSimpleDTO> getMyLikedVideos(int loggedUserId, int page, int limit) {
         pageable = PageRequest.of(page, limit, Sort.by("created_at").descending());
-        Page<Video> videoPage = videoRepository.findAllByReactions(loggedUserId, pageable);
-        List<Video> videos = videoPage.getContent();
-        if (videos.size() == 0) {
+        Page<VideoSimpleDTO> videoPage = videoRepository.findAllByReactions(loggedUserId, pageable)
+                .map(v -> mapper.map(v, VideoSimpleDTO.class));
+        if (videoPage.getContent().size() == 0) {
             throw new NotFoundException("No videos found.");
         }
-        return videos.stream()
-                .map(v -> mapper.map(v, VideoSimpleDTO.class))
-                .collect(Collectors.toList());
+        return videoPage;
     }
 }

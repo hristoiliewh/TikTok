@@ -78,9 +78,9 @@ public class SoundServiceTests {
         // Mocking the mapper to return a SoundDTO object when mapping the Sound object
         when(mapper.map(any(Sound.class), eq(SoundDTO.class))).thenReturn(soundDTO);
         // Calling getAll should return a list with one mapped SoundDTO object
-        List<SoundDTO> result = soundService.getAll(0, 10);
-        assertEquals(1, result.size());
-        assertEquals(soundDTO, result.get(0));
+        Page<SoundDTO> result = soundService.getAll(0, 10);
+        assertEquals(1, result.getContent().size());
+        assertEquals(soundDTO, result.getContent().get(0));
     }
 
     @Test
