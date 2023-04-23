@@ -33,10 +33,11 @@ public class VideoService extends AbstractService {
     }
 
     public VideoSimpleDTO getById(int videoId, int loggedUserId) {
-        Video video = getVideoById(videoId);
-        int reactions = video.getReactions().size();
-        isPossibleToWatch(video, loggedUserId);
-        logger.info("Video found: " + videoId);
+        Optional<Video> video = videoRepository.findById(videoId, loggedUserId);
+        if (video.isEmpty()){
+            throw new BadRequestException("Video not found.");
+        }
+        int reactions = video.get().getReactions().size();
         VideoSimpleDTO videoSimpleDTO = mapper.map(video, VideoSimpleDTO.class);
         videoSimpleDTO.setNumberOfReactions(reactions);
         return videoSimpleDTO;
@@ -44,15 +45,8 @@ public class VideoService extends AbstractService {
 
     public Page<VideoWithoutOwnerDTO> getAllVideos(int userId, int loggedUserId, int page, int limit) {
         pageable = PageRequest.of(page, limit, Sort.by("created_at").descending());
-        Page<VideoWithoutOwnerDTO> videoPage;
-        if (userId == loggedUserId){
-            videoPage = videoRepository.findAllByOwnerId(loggedUserId,pageable)
-                    .map(v -> mapper.map(v, VideoWithoutOwnerDTO.class));
-        }
-        else {
-            videoPage = videoRepository.showAllVideosCreatedAt(userId, pageable)
-            .map(v -> mapper.map(v, VideoWithoutOwnerDTO.class));
-        }
+        Page<VideoWithoutOwnerDTO> videoPage = videoRepository.findAllByOwnerId(userId, loggedUserId,pageable)
+                .map(v -> mapper.map(v, VideoWithoutOwnerDTO.class));
         if (videoPage.getContent().size() == 0) {
             throw new NotFoundException("No videos found");
         }

@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
+
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
@@ -24,11 +25,13 @@ public class CommentService extends AbstractService {
     protected CommentRepository commentRepository;
 
     public CommentWithIdOwnerVideoDTO addComment(int videoId, int loggedUserId, String comment) {
-        Video video = getVideoById(videoId);
-        isPossibleToWatch(video, loggedUserId);
+        Optional<Video> video = videoRepository.findById(videoId, loggedUserId);
+        if (video.isEmpty()){
+            throw new NotFoundException("Video not found.");
+        }
         User owner = getUserById(loggedUserId);
         Comment c = new Comment();
-        c.setVideo(video);
+        c.setVideo(video.get());
         c.setOwner(owner);
         c.setComment(comment.trim());
         c.setCreatedAt(LocalDateTime.now());
@@ -38,19 +41,16 @@ public class CommentService extends AbstractService {
     }
 
     public CommentWithIdOwnerReplied getById(int commentId, int loggedUserId) {
-        Comment comment = getCommentById(commentId);
-        if (comment.getOwner().getId() != loggedUserId) {
-            logger.error("Unauthorized attempt to access comment with id: {}", commentId);
-            throw new UnauthorizedException("Can't delete this comment. You are unauthorized.");
+        Optional<Comment> comment = commentRepository.findById(commentId, loggedUserId);
+        if (comment.isEmpty()){
+            throw new NotFoundException("Comment not found.");
         }
         return mapper.map(comment, CommentWithIdOwnerReplied.class);
     }
 
     public Page<CommentWithIdOwnerParentDTO> getAllComments(int videoId, int loggedUserId, int page, int limit) {
-        Video video = getVideoById(videoId);
-        isPossibleToWatch(video, loggedUserId);
         pageable = PageRequest.of(page, limit);
-        Page<CommentWithIdOwnerParentDTO> comments = commentRepository.findAllByVideoIdAndCreatedAt(pageable, videoId)
+        Page<CommentWithIdOwnerParentDTO> comments = commentRepository.findAllByVideoIdAndCreatedAt(videoId, loggedUserId, pageable)
                 .map(c -> mapper.map(c, CommentWithIdOwnerParentDTO.class));
         if (comments.getContent().size() == 0) {
             throw new NotFoundException("No comments found");
@@ -59,9 +59,9 @@ public class CommentService extends AbstractService {
     }
 
     public CommentDeletedDTO deleteComment(int commentId, int loggedUserId) {
-        Comment comment = getCommentById(commentId);
-        if (comment.getOwner().getId() != loggedUserId) {
-            throw new UnauthorizedException("Can't delete this comment. You are unauthorized.");
+        Optional<Comment> comment = commentRepository.findById(commentId);
+        if (comment.isEmpty()){
+            throw new NotFoundException("Comment not found.");
         }
         logger.info("Deleting comment with id: {}", commentId);
         commentRepository.deleteById(commentId);
@@ -69,12 +69,15 @@ public class CommentService extends AbstractService {
     }
 
     public CommentWithIdOwnerParentDTO replyToComment(int commentId, int loggedUserId, String text) {
-        Comment parentComment = getCommentById(commentId);
+        Optional<Comment> parentComment = commentRepository.findById(commentId, loggedUserId);
+        if (parentComment.isEmpty()){
+            throw new NotFoundException("Comment not found.");
+        }
         User owner = getUserById(loggedUserId);
 
         Comment comment = new Comment();
-        comment.setParentComment(parentComment);
-        comment.setVideo(parentComment.getVideo());
+        comment.setParentComment(parentComment.get());
+        comment.setVideo(parentComment.get().getVideo());
         comment.setOwner(owner);
         comment.setComment(text);
         comment.setCreatedAt(LocalDateTime.now());
@@ -84,11 +87,13 @@ public class CommentService extends AbstractService {
         return mapper.map(comment, CommentWithIdOwnerParentDTO.class);
     }
 
-    public CommentReactionDTO likeDislike(int commentId, int userId) {
-        logger.info("Liking/disliking comment with id: {}", commentId);
-        Comment comment = getCommentById(commentId);
-        User user = getUserById(userId);
-        Optional<CommentReactions> commentReactions = commentReactionRepository.findByCommentAndUser(comment, user);
+    public CommentReactionDTO likeDislike(int commentId, int loggedUserId) {
+        Optional<Comment> comment = commentRepository.findById(commentId, loggedUserId);
+        if (comment.isEmpty()){
+            throw new NotFoundException("Comment not found.");
+        }
+        User user = getUserById(loggedUserId);
+        Optional<CommentReactions> commentReactions = commentReactionRepository.findByCommentAndUser(comment.get(), user);
         if (commentReactions.isPresent()) {
             CommentReactions reactions1 = commentReactions.get();
             reactions1.setLiked(!reactions1.isLiked());
@@ -97,21 +102,20 @@ public class CommentService extends AbstractService {
         } else {
             CommentReactions reactions = new CommentReactions();
             reactions.setUser(user);
-            reactions.setComment(comment);
+            reactions.setComment(comment.get());
             reactions.setLiked(true);
             commentReactionRepository.save(reactions);
             return mapper.map(reactions, CommentReactionDTO.class);
         }
     }
 
-    public int getReactions(int commentId, int userId) {
-        Comment comment = getCommentById(commentId);
-        Video video = getVideoById(comment.getVideo().getId());
-        isPossibleToWatch(video, userId);
-        return comment.getReactions().size();
-    }
-
-    private Comment getCommentById(int id) {
-        return commentRepository.findById(id).orElseThrow(() -> new NotFoundException("Comment not found"));
+    public int getReactions(int commentId, int loggedUserId) {
+        Optional<Comment> comment = commentRepository.findById(commentId, loggedUserId);
+        if (comment.isEmpty()){
+            throw new NotFoundException("Comment not found.");
+        }
+        Video video = getVideoById(comment.get().getVideo().getId());
+        isPossibleToWatch(video, loggedUserId);
+        return comment.get().getReactions().size();
     }
 }

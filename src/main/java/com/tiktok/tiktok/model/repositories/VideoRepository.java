@@ -20,7 +20,17 @@ public interface VideoRepository extends JpaRepository<Video, Integer> {
     Page<Video> findAllContains(@Param("name") String name,int loggedUserId, Pageable pageable);
 
     Optional<Video> findByUrl(String url);
-    Page<Video> findAllByOwnerId(int userId, Pageable pageable);
+    @Query(value = "SELECT * FROM videos AS v " +
+                "WHERE id = :videoId " +
+                "AND (v.is_private = FALSE " +
+                "OR (v.is_private = TRUE AND v.owner_id = :loggedUserId))", nativeQuery = true)
+    Optional<Video> findById(int videoId, int loggedUserId);
+    @Query(value = "SELECT * FROM videos AS v " +
+            "WHERE owner_id = :userId " +
+            "AND (v.is_private = FALSE " +
+            "OR (v.is_private = TRUE AND v.owner_id = :loggedUserId)) " +
+            "ORDER BY v.views DESC", nativeQuery = true)
+    Page<Video> findAllByOwnerId(int userId, int loggedUserId, Pageable pageable);
     @Query(value = "SELECT * FROM videos AS v " +
             "JOIN users_react_to_videos AS u ON v.id = u.video_id " +
             "WHERE u.user_id = :userId", nativeQuery = true)
@@ -37,12 +47,11 @@ public interface VideoRepository extends JpaRepository<Video, Integer> {
             "FROM videos v " +
             "JOIN video_tags t ON v.id = t.video_id " +
             "JOIN hashtags h ON h.id = t.hashtag_id " +
-            "JOIN users u ON u.id = v.owner_id " +
             "WHERE h.tag = :hashtag " +
             "AND (v.is_private = FALSE " +
             "OR (v.is_private = TRUE AND v.owner_id = :loggedUserId)) " +
             "ORDER BY v.views DESC", nativeQuery = true)
-    Page<Video> findAllNotPrivateVideosByHashtag(@Param("hashtag") String hashtag, @Param("loggedUserId") int loggedUserId, Pageable pageable);
+    Page<Video> findAllNotPrivateVideosByHashtag(String hashtag, int loggedUserId, Pageable pageable);
 
     @Query(value = "SELECT * " +
             "FROM videos AS v " +
