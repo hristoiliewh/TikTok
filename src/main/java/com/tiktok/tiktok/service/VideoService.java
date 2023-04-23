@@ -12,7 +12,6 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import java.util.*;
-import java.util.stream.Collectors;
 
 @Service
 public class VideoService extends AbstractService {
@@ -38,8 +37,14 @@ public class VideoService extends AbstractService {
             throw new BadRequestException("Video not found.");
         }
         int reactions = video.get().getReactions().size();
+        Video video = getVideoById(videoId);
+        int reactions = video.getReactions().size();
+        int comments = video.getComments().size();
+        isPossibleToWatch(video, loggedUserId);
+        logger.info("Video found: " + videoId);
         VideoSimpleDTO videoSimpleDTO = mapper.map(video, VideoSimpleDTO.class);
         videoSimpleDTO.setNumberOfReactions(reactions);
+        videoSimpleDTO.setNumberOfComments(comments);
         return videoSimpleDTO;
     }
 
@@ -122,10 +127,20 @@ public class VideoService extends AbstractService {
 
     public Page<VideoSimpleDTO> getMyLikedVideos(int loggedUserId, int page, int limit) {
         pageable = PageRequest.of(page, limit, Sort.by("created_at").descending());
-        Page<VideoSimpleDTO> videoPage = videoRepository.findAllByReactions(loggedUserId, pageable)
-                .map(v -> mapper.map(v, VideoSimpleDTO.class));
-        if (videoPage.getContent().size() == 0) {
+        Page<Video> videos =  videoRepository.findAllByReactions(loggedUserId, pageable);
+        return mapVideosToDTOs(videos);
+    }
+
+    private Page<VideoSimpleDTO> mapVideosToDTOs(Page<Video> videos){
+        if (videos.getContent().size() == 0) {
             throw new NotFoundException("No videos found.");
+        }
+        Page<VideoSimpleDTO> videoPage = videos.map(v -> mapper.map(v, VideoSimpleDTO.class));
+        for (int i = 0; i < videoPage.getContent().size(); i++) {
+            int reactions = videos.getContent().get(i).getReactions().size();
+            int comments = videos.getContent().get(i).getComments().size();
+            videoPage.getContent().get(i).setNumberOfReactions(reactions);
+            videoPage.getContent().get(i).setNumberOfComments(comments);
         }
         return videoPage;
     }
