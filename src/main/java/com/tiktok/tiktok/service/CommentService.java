@@ -3,18 +3,14 @@ package com.tiktok.tiktok.service;
 import com.tiktok.tiktok.model.DTOs.commentsDTOs.*;
 import com.tiktok.tiktok.model.entities.*;
 import com.tiktok.tiktok.model.exceptions.NotFoundException;
-import com.tiktok.tiktok.model.exceptions.UnauthorizedException;
 import com.tiktok.tiktok.model.repositories.CommentReactionRepository;
 import com.tiktok.tiktok.model.repositories.CommentRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
-
 import java.time.LocalDateTime;
-import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 @Service
 public class CommentService extends AbstractService {
@@ -40,12 +36,12 @@ public class CommentService extends AbstractService {
         return mapper.map(c, CommentWithIdOwnerVideoDTO.class);
     }
 
-    public CommentWithIdOwnerReplied getById(int commentId, int loggedUserId) {
+    public CommentWithIdOwnerRepliedDTO getById(int commentId, int loggedUserId) {
         Optional<Comment> comment = commentRepository.findById(commentId, loggedUserId);
         if (comment.isEmpty()){
             throw new NotFoundException("Comment not found.");
         }
-        return mapper.map(comment, CommentWithIdOwnerReplied.class);
+        return mapper.map(comment, CommentWithIdOwnerRepliedDTO.class);
     }
 
     public Page<CommentWithIdOwnerParentDTO> getAllComments(int videoId, int loggedUserId, int page, int limit) {

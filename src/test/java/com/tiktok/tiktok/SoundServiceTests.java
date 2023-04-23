@@ -8,23 +8,15 @@ import com.tiktok.tiktok.service.SoundService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.modelmapper.ModelMapper;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.test.context.junit4.SpringRunner;
-import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.setup.MockMvcBuilders;
-
 import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
 import java.util.Optional;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
@@ -53,13 +45,13 @@ public class SoundServiceTests {
     public void testGetByIdSoundExists() {
         Sound sound = new Sound();
         sound.setId(1);
-        // Mocking the soundRepository to return a Sound object when getById is called
+
         when(soundRepository.findById(1)).thenReturn(Optional.of(sound));
-        // Mocking the mapper to return a SoundDTO object when mapping the Sound object
+
         when(mapper.map(sound, SoundDTO.class)).thenReturn(soundDTO);
-        // Act
+
         SoundDTO result = soundService.getById(1);
-        // Assert
+
         assertEquals(soundDTO.getId(), result.getId());
         verify(soundRepository, times(1)).findById(1);
         verify(mapper, times(1)).map(sound, SoundDTO.class);
@@ -67,19 +59,17 @@ public class SoundServiceTests {
 
     @Test
     public void testGetByIdSoundNotFound() {
-        // Mocking the soundRepository to return an empty optional when getById is called
         when(soundRepository.findById(anyInt())).thenReturn(Optional.empty());
-        // Calling getById should throw a NotFoundException
+
         assertThrows(NotFoundException.class, () -> soundService.getById(1));
     }
 
     @Test
     public void testGetAllSoundsFound() {
-        // Mocking the soundRepository to return a Page object with one Sound object when findAll is called
         when(soundRepository.findAll(any(PageRequest.class))).thenReturn(new PageImpl<>(Arrays.asList(new Sound())));
-        // Mocking the mapper to return a SoundDTO object when mapping the Sound object
+
         when(mapper.map(any(Sound.class), eq(SoundDTO.class))).thenReturn(soundDTO);
-        // Calling getAll should return a list with one mapped SoundDTO object
+
         Page<SoundDTO> result = soundService.getAll(0, 10);
         assertEquals(1, result.getContent().size());
         assertEquals(soundDTO, result.getContent().get(0));
@@ -87,9 +77,8 @@ public class SoundServiceTests {
 
     @Test
     public void testGetAllSoundsNotFound() {
-        // Mocking the soundRepository to return an empty Page object when findAll is called
         when(soundRepository.findAll(any(PageRequest.class))).thenReturn(Page.empty());
-        // Calling getAll should throw a NotFoundException
+
         assertThrows(NotFoundException.class, () -> soundService.getAll(0, 10));
     }
 }

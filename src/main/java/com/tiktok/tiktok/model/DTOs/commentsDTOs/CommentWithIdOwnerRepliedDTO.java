@@ -9,7 +9,7 @@ import java.util.List;
 @Setter
 @Getter
 @NoArgsConstructor
-public class CommentWithIdOwnerReplied extends CommentWithIdAndOwnerDTO {
-    private List<CommentWithIdOwnerReplied> repliedComments;
+public class CommentWithIdOwnerRepliedDTO extends CommentWithIdAndOwnerDTO {
+    private List<CommentWithIdOwnerRepliedDTO> repliedComments;
 }
 

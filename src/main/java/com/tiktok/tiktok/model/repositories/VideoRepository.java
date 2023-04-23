@@ -29,7 +29,7 @@ public interface VideoRepository extends JpaRepository<Video, Integer> {
             "WHERE owner_id = :userId " +
             "AND (v.is_private = FALSE " +
             "OR (v.is_private = TRUE AND v.owner_id = :loggedUserId)) " +
-            "ORDER BY v.views DESC", nativeQuery = true)
+            "ORDER BY v.created_at DESC", nativeQuery = true)
     Page<Video> findAllByOwnerId(int userId, int loggedUserId, Pageable pageable);
     @Query(value = "SELECT * FROM videos AS v " +
             "JOIN users_react_to_videos AS u ON v.id = u.video_id " +

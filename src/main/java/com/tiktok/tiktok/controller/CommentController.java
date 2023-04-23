@@ -7,7 +7,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import java.util.List;
 
 @RestController
 public class CommentController extends AbstractController {
@@ -22,9 +21,9 @@ public class CommentController extends AbstractController {
     }
 
     @GetMapping("/comments/{commentId}")
-    public ResponseEntity<CommentWithIdOwnerReplied> getById(@PathVariable int commentId, HttpSession s) {
+    public ResponseEntity<CommentWithIdOwnerRepliedDTO> getById(@PathVariable int commentId, HttpSession s) {
         int loggedUserId = getLoggedUserId(s);
-        CommentWithIdOwnerReplied comment = commentService.getById(commentId, loggedUserId);
+        CommentWithIdOwnerRepliedDTO comment = commentService.getById(commentId, loggedUserId);
         return ResponseEntity.ok(comment);
     }
 
