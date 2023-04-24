@@ -2,6 +2,7 @@ package com.tiktok.tiktok.service;
 
 import com.tiktok.tiktok.model.DTOs.commentsDTOs.*;
 import com.tiktok.tiktok.model.entities.*;
+import com.tiktok.tiktok.model.exceptions.BadRequestException;
 import com.tiktok.tiktok.model.exceptions.NotFoundException;
 import com.tiktok.tiktok.model.repositories.CommentReactionRepository;
 import com.tiktok.tiktok.model.repositories.CommentRepository;
@@ -68,6 +69,9 @@ public class CommentService extends AbstractService {
         Optional<Comment> parentComment = commentRepository.findById(commentId, loggedUserId);
         if (parentComment.isEmpty()){
             throw new NotFoundException("Comment not found.");
+        }
+        if (parentComment.get().getParentComment() != null){
+            throw new BadRequestException("Sorry, you cannot reply to a replied comment.");
         }
         User owner = getUserById(loggedUserId);
 
