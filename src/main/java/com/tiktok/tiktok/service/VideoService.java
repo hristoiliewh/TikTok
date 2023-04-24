@@ -22,8 +22,8 @@ public class VideoService extends AbstractService {
     private HashtagRepository hashtagRepository;
 
     public VideoDeletedDTO deleteVideo(int videoId, int loggedUserId) {
-        Video video = getVideoById(videoId);
-        if (video.getOwner().getId() != loggedUserId) {
+        Optional<Video> video = videoRepository.findById(videoId,loggedUserId);
+        if (video.get().getOwner().getId() != loggedUserId) {
             throw new BadRequestException("You don't have permission to delete this video");
         }
         videoRepository.deleteById(videoId);
@@ -66,10 +66,12 @@ public class VideoService extends AbstractService {
     }
 
     public VideoReactionDTO likeDislike(int videoId, int loggedUserId) {
-        Video video = getVideoById(videoId);
-        isPossibleToWatch(video, loggedUserId);
+        Optional<Video> video = videoRepository.findById(videoId, loggedUserId);
+        if (video.isEmpty()){
+            throw new NotFoundException("No video found.");
+        }
         User user = getUserById(loggedUserId);
-        Optional<VideoReactions> videoReactions = videoReactionRepository.findByVideoAndUser(video, user);
+        Optional<VideoReactions> videoReactions = videoReactionRepository.findByVideoAndUser(video.get(), user);
         if (videoReactions.isPresent()) {
             VideoReactions reactions1 = videoReactions.get();
             reactions1.setLiked(!reactions1.isLiked());
@@ -78,7 +80,7 @@ public class VideoService extends AbstractService {
         } else {
             VideoReactions reactions = new VideoReactions();
             reactions.setUser(user);
-            reactions.setVideo(video);
+            reactions.setVideo(video.get());
             reactions.setLiked(true);
             videoReactionRepository.save(reactions);
             return mapper.map(reactions, VideoReactionDTO.class);

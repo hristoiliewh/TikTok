@@ -14,7 +14,6 @@ public class CommentWithIdAndOwnerDTO {
     private int id;
     private String comment;
     private LocalDateTime createdAt;
-    private int numberOfReactions;
     private UserWithPicNameIdDTO owner;
 
 }

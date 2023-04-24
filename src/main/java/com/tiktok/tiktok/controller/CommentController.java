@@ -28,10 +28,10 @@ public class CommentController extends AbstractController {
     }
 
     @GetMapping("/videos/{videoId}/comments")
-    public ResponseEntity<Page<CommentWithIdOwnerParentDTO>> getAllComments(@PathVariable int videoId, @RequestParam(defaultValue = "0") int page,
+    public ResponseEntity<Page<CommentWithIdOwnerRepliedDTO>> getAllComments(@PathVariable int videoId, @RequestParam(defaultValue = "0") int page,
                                                                             @RequestParam(defaultValue = "4") int limit, HttpSession s) {
         int loggedUserId = checkIfIsLogged(s);
-        Page<CommentWithIdOwnerParentDTO> commentWithIdOwnerParentDTOS = commentService.getAllComments(videoId, loggedUserId, page, limit);
+        Page<CommentWithIdOwnerRepliedDTO> commentWithIdOwnerParentDTOS = commentService.getAllComments(videoId, loggedUserId, page, limit);
         return ResponseEntity.ok(commentWithIdOwnerParentDTOS);
     }
 

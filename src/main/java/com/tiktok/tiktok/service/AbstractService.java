@@ -26,14 +26,4 @@ public abstract class AbstractService {
     protected User getUserById(int id) {
         return userRepository.findById(id).orElseThrow(() -> new NotFoundException("User not found"));
     }
-
-    protected Video getVideoById(int id) {
-        return videoRepository.findById(id).orElseThrow(() -> new NotFoundException("Video not found"));
-    }
-
-    protected void isPossibleToWatch(Video video, int userId) {
-        if (video.isPrivate() && video.getOwner().getId() != userId) {
-            throw new UnauthorizedException("This video is private and you do not have access to it.");
-        }
-    }
 }

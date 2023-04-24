@@ -47,13 +47,13 @@ public class CommentService extends AbstractService {
         return dto;
     }
 
-    public Page<CommentWithIdOwnerParentDTO> getAllComments(int videoId, int loggedUserId, int page, int limit) {
+    public Page<CommentWithIdOwnerRepliedDTO> getAllComments(int videoId, int loggedUserId, int page, int limit) {
         pageable = PageRequest.of(page, limit);
         Page<Comment> comments = commentRepository.findAllByVideoIdAndCreatedAt(videoId, loggedUserId, pageable);
         if (comments.getContent().size() == 0) {
             throw new NotFoundException("No comments found");
         }
-        Page<CommentWithIdOwnerParentDTO> dtos = comments.map(c -> mapper.map(c, CommentWithIdOwnerParentDTO.class));
+        Page<CommentWithIdOwnerRepliedDTO> dtos = comments.map(c -> mapper.map(c, CommentWithIdOwnerRepliedDTO.class));
         for (int i = 0; i < comments.getContent().size(); i++) {
             int reactions = comments.getContent().get(i).getReactions().size();
             dtos.getContent().get(i).setNumberOfReactions(reactions);

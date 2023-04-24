@@ -11,5 +11,6 @@ import java.util.List;
 @NoArgsConstructor
 public class CommentWithIdOwnerRepliedDTO extends CommentWithIdAndOwnerDTO {
     private List<CommentWithIdOwnerRepliedDTO> repliedComments;
+    private int numberOfReactions;
 }
 
