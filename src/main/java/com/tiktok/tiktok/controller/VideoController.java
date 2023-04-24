@@ -71,12 +71,6 @@ public class VideoController extends AbstractController {
         return ResponseEntity.ok(videoReactionDTO);
     }
 
-    @GetMapping("/videos/{videoId}/reactions")
-    public int getReactions(@PathVariable int videoId, HttpSession s) {
-        int loggedUserId = checkIfIsLogged(s);
-        return videoService.getReactions(videoId, loggedUserId);
-    }
-
     @GetMapping("/videos/homePage")
     public ResponseEntity<Page<VideoSimpleDTO>> showFeed(@RequestParam(defaultValue = "0") int page,
                                                            @RequestParam(defaultValue = "1") int limit, HttpSession s) {

@@ -191,7 +191,7 @@ public class UserService extends AbstractService {
             if (!corrections.getPassword().matches("^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[!@#$%^&*()_+])(?=\\S+$).{8,}$")) {
                 throw new BadRequestException("Weak password");
             }
-            u.setPassword(corrections.getPassword());
+            u.setPassword(encoder.encode(corrections.getPassword()));
         }
         if (!corrections.getName().equals("")) {
             if (!corrections.getName().matches("^[A-Za-z -]{2,50}$")) {

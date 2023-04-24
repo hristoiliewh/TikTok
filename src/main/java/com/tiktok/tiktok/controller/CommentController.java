@@ -55,11 +55,4 @@ public class CommentController extends AbstractController {
         CommentReactionDTO comment = commentService.likeDislike(commentId, loggedUserId);
         return ResponseEntity.ok(comment);
     }
-
-    @GetMapping("/comments/{commentId}/reactions")
-    public ResponseEntity<Integer> getReactions(@PathVariable int commentId, HttpSession s) {
-        int loggedUserId = checkIfIsLogged(s);
-        int reactions =  commentService.getReactions(commentId, loggedUserId);
-        return ResponseEntity.ok(reactions);
-    }
 }

@@ -85,12 +85,6 @@ public class VideoService extends AbstractService {
         }
     }
 
-    public int getReactions(int videoId, int loggedUserId) {
-        Video video = getVideoById(videoId);
-        isPossibleToWatch(video, loggedUserId);
-        return video.getReactions().size();
-    }
-
     public Page<VideoSimpleDTO> showFeed(int loggedUserId, int pageNumber, int videosPerPage) {
         pageable = PageRequest.of(pageNumber, videosPerPage, Sort.by("created_at").descending());
         Page<Video> videos = videoRepository.showAllVideosByViews(loggedUserId, pageable);

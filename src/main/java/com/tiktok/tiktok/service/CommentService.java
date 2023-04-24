@@ -108,14 +108,4 @@ public class CommentService extends AbstractService {
             return mapper.map(reactions, CommentReactionDTO.class);
         }
     }
-
-    public int getReactions(int commentId, int loggedUserId) {
-        Optional<Comment> comment = commentRepository.findById(commentId, loggedUserId);
-        if (comment.isEmpty()){
-            throw new NotFoundException("Comment not found.");
-        }
-        Video video = getVideoById(comment.get().getVideo().getId());
-        isPossibleToWatch(video, loggedUserId);
-        return comment.get().getReactions().size();
-    }
 }
