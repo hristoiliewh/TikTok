@@ -42,17 +42,23 @@ public class CommentService extends AbstractService {
         if (comment.isEmpty()){
             throw new NotFoundException("Comment not found.");
         }
-        return mapper.map(comment, CommentWithIdOwnerRepliedDTO.class);
+        CommentWithIdOwnerRepliedDTO dto = mapper.map(comment, CommentWithIdOwnerRepliedDTO.class);
+        dto.setNumberOfReactions(comment.get().getReactions().size());
+        return dto;
     }
 
     public Page<CommentWithIdOwnerParentDTO> getAllComments(int videoId, int loggedUserId, int page, int limit) {
         pageable = PageRequest.of(page, limit);
-        Page<CommentWithIdOwnerParentDTO> comments = commentRepository.findAllByVideoIdAndCreatedAt(videoId, loggedUserId, pageable)
-                .map(c -> mapper.map(c, CommentWithIdOwnerParentDTO.class));
+        Page<Comment> comments = commentRepository.findAllByVideoIdAndCreatedAt(videoId, loggedUserId, pageable);
         if (comments.getContent().size() == 0) {
             throw new NotFoundException("No comments found");
         }
-        return comments;
+        Page<CommentWithIdOwnerParentDTO> dtos = comments.map(c -> mapper.map(c, CommentWithIdOwnerParentDTO.class));
+        for (int i = 0; i < comments.getContent().size(); i++) {
+            int reactions = comments.getContent().get(i).getReactions().size();
+            dtos.getContent().get(i).setNumberOfReactions(reactions);
+        }
+        return dtos;
     }
 
     public CommentDeletedDTO deleteComment(int commentId, int loggedUserId) {
